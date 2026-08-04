@@ -28,7 +28,7 @@
   --type-h1: 36px;
   --type-h2: 31px;
   --type-h3: 26px;
-  --hero-height: 422.5px;
+  --hero-height: 560px;
   --icon-weight: 4px;
 }
 
@@ -37,7 +37,7 @@
     --type-h1: 42px;
     --type-h2: 36px;
     --type-h3: 27px;
-    --hero-height: 650px;
+    --hero-height: 800px;
   }
 }
 
