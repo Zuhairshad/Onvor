@@ -11,7 +11,8 @@ import {
   IconSearch,
   IconUser,
 } from "@/components/theme/icons";
-import { BRAND, NAV } from "@/lib/content/onvor";
+import { MegaMenu } from "@/components/theme/MegaMenu";
+import { BRAND, MEGA_MENUS, NAV } from "@/lib/content/onvor";
 
 type NavItem = {
   label: string;
@@ -35,21 +36,22 @@ const LINK_CLASS =
   "after:absolute after:inset-x-[15px] after:bottom-[3px] after:h-px after:origin-left " +
   "after:scale-x-0 after:bg-current after:transition-transform hover:after:scale-x-100";
 
-function NavLink({ item }: { item: NavItem }) {
-  const [open, setOpen] = useState(false);
+const menuId = (label: string) => `megamenu-${label.replace(/\s+/g, "-").toLowerCase()}`;
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+type NavLinkProps = {
+  item: NavItem;
+  /** Label of the menu currently open, if any. */
+  openMenu: string | null;
+  onOpen: (label: string | null) => void;
+};
 
-  if (!item.children) {
+function NavLink({ item, openMenu, onOpen }: NavLinkProps) {
+  const hasMega = item.label in MEGA_MENUS;
+  const open = openMenu === item.label;
+
+  if (!hasMega) {
     return (
-      <li>
+      <li onMouseEnter={() => onOpen(null)}>
         <Link href={item.href} className={LINK_CLASS}>
           {item.label}
         </Link>
@@ -58,45 +60,17 @@ function NavLink({ item }: { item: NavItem }) {
   }
 
   return (
-    <li
-      className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      // Closing on blur that leaves the subtree keeps keyboard and mouse in sync.
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false);
-      }}
-    >
+    <li onMouseEnter={() => onOpen(item.label)}>
       <Link
         href={item.href}
-        className={LINK_CLASS}
+        className={`${LINK_CLASS} ${open ? "after:scale-x-100" : ""}`}
         aria-expanded={open}
-        onFocus={() => setOpen(true)}
+        aria-controls={menuId(item.label)}
+        onFocus={() => onOpen(item.label)}
       >
         {item.label}
         <IconChevronDown className="h-[6px] w-[10px]" />
       </Link>
-
-      <div
-        className={[
-          "absolute top-full left-1/2 z-40 -translate-x-1/2 pt-3",
-          open ? "block" : "hidden",
-        ].join(" ")}
-      >
-        <ul className="border-hairline min-w-[220px] list-none border bg-white py-2 shadow-[0_6px_20px_rgba(42,55,67,0.08)]">
-          {item.children.map((child) => (
-            <li key={child.label}>
-              <Link
-                href={child.href}
-                className="text-ink hover:bg-body-dim block px-5 py-2 text-[14px] whitespace-nowrap"
-                onClick={() => setOpen(false)}
-              >
-                {child.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
     </li>
   );
 }
@@ -113,6 +87,7 @@ type HeaderProps = {
 export function Header({ overlay = false }: HeaderProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const closeButton = useRef<HTMLButtonElement | null>(null);
   const hamburger = useRef<HTMLButtonElement | null>(null);
 
@@ -129,6 +104,15 @@ export function Header({ overlay = false }: HeaderProps) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [overlay]);
+
+  useEffect(() => {
+    if (!openMenu) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenMenu(null);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [openMenu]);
 
   // Lock scroll and move focus into the drawer while it is open.
   useEffect(() => {
@@ -148,7 +132,9 @@ export function Header({ overlay = false }: HeaderProps) {
     };
   }, [drawerOpen, closeDrawer]);
 
-  const isLight = overlay && !scrolled;
+  // A white panel under a transparent header would look detached, so an open
+  // mega menu forces the solid treatment.
+  const isLight = overlay && !scrolled && !openMenu;
 
   return (
     <header
@@ -162,7 +148,10 @@ export function Header({ overlay = false }: HeaderProps) {
           : "text-ink bg-white shadow-[0_0_1px_rgba(0,0,0,0.2)]",
       ].join(" ")}
     >
-      <div className="page-width">
+      <div
+        className="page-width"
+        onMouseLeave={() => setOpenMenu(null)}
+      >
         {/* .site-header — padding 7px 0 mobile, 20px 0 from 769px. */}
         <div className="flex items-center justify-between gap-4 py-[7px] imp:py-[20px]">
           {/* Left: search on desktop, drawer trigger on mobile. */}
@@ -190,7 +179,12 @@ export function Header({ overlay = false }: HeaderProps) {
           <nav aria-label="Primary" className="flex items-center justify-center imp:flex-1">
             <ul className="hidden list-none items-center imp:flex imp:flex-1 imp:justify-end">
               {NAV_LEFT.map((item) => (
-                <NavLink key={item.label} item={item} />
+                <NavLink
+                  key={item.label}
+                  item={item}
+                  openMenu={openMenu}
+                  onOpen={setOpenMenu}
+                />
               ))}
             </ul>
 
@@ -213,7 +207,12 @@ export function Header({ overlay = false }: HeaderProps) {
 
             <ul className="hidden list-none items-center imp:flex imp:flex-1">
               {NAV_RIGHT.map((item) => (
-                <NavLink key={item.label} item={item} />
+                <NavLink
+                  key={item.label}
+                  item={item}
+                  openMenu={openMenu}
+                  onOpen={setOpenMenu}
+                />
               ))}
             </ul>
           </nav>
@@ -236,6 +235,17 @@ export function Header({ overlay = false }: HeaderProps) {
             </Link>
           </div>
         </div>
+        {/* Mega-menu panels live outside the header row so each spans the full
+            header width, the way the reference's static-positioned items do. */}
+        {Object.entries(MEGA_MENUS).map(([label, content]) => (
+          <MegaMenu
+            key={label}
+            id={menuId(label)}
+            content={content}
+            open={openMenu === label}
+            onNavigate={() => setOpenMenu(null)}
+          />
+        ))}
       </div>
 
       {/* Mobile drawer */}

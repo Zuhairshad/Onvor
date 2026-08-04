@@ -250,3 +250,152 @@ export const SOCIALS = [
   { label: "Instagram", href: "https://www.instagram.com/theonvor/" },
   { label: "Facebook", href: "https://www.facebook.com/wearonvor" },
 ] as const;
+
+/**
+ * Mega-menu structure for the header.
+ *
+ * The reference theme runs two mega-menu shapes: image-topped category columns,
+ * and text columns alongside arch-topped promo cards. Both are used here.
+ *
+ * Onvor's catalog is shallower than the reference's — 14 collections against its
+ * editorial sprawl — so columns carry two to five links rather than being padded
+ * out with invented categories. Menu images reuse product shots, since their
+ * collections have no collection images and their two banners have SUMMER'26
+ * burnt into the artwork.
+ */
+export type MegaColumn = {
+  heading: string;
+  headingHref?: string;
+  image?: string;
+  links: { label: string; href: string }[];
+};
+
+export type MegaPromo = {
+  heading: string;
+  text?: string;
+  cta?: string;
+  href: string;
+  image: string;
+};
+
+export type MegaMenuContent = {
+  columns: MegaColumn[];
+  promos?: MegaPromo[];
+};
+
+export const MEGA_MENUS: Record<string, MegaMenuContent> = {
+  Men: {
+    columns: [
+      {
+        heading: "Tops",
+        headingHref: "/collections/oversized-tees-men",
+        image: "/onvor/products/signature-tee-steel-grey-1.jpg",
+        links: [
+          { label: "Loose Fit Tees", href: "/collections/oversized-tees-men" },
+          { label: "All Tops", href: "/collections/t-shirt" },
+        ],
+      },
+      {
+        heading: "Bottoms",
+        headingHref: "/collections/bottoms",
+        image: "/onvor/products/signature-straight-fit-black-1.jpg",
+        links: [
+          { label: "Baggy Trouser", href: "/collections/baggy-trouser" },
+          { label: "Straight Fit Trouser", href: "/collections/straight-fit-trouser" },
+          { label: "Pleated Trousers", href: "/collections/pleated-trousers" },
+          { label: "All Bottoms", href: "/collections/bottoms" },
+        ],
+      },
+      {
+        heading: "Shorts",
+        headingHref: "/collections/shorts",
+        image: "/onvor/products/stamp-shorts-grey-1.jpg",
+        links: [{ label: "Shop Shorts", href: "/collections/shorts" }],
+      },
+    ],
+    promos: [
+      {
+        heading: "Shop Men",
+        text: "Unisex basics cut for an easy, relaxed fit.",
+        href: "/collections/men",
+        image: "/onvor/products/refined-loose-fit-tee-black-1.jpg",
+      },
+    ],
+  },
+
+  Women: {
+    columns: [
+      {
+        heading: "Tops",
+        headingHref: "/collections/oversized-tees-women",
+        image: "/onvor/products/urdu-calligraphy-tee-white-1.jpg",
+        links: [
+          { label: "Loose Fit Tees", href: "/collections/oversized-tees-women" },
+          { label: "All Tops", href: "/collections/t-shirt" },
+        ],
+      },
+      {
+        heading: "Bottoms",
+        headingHref: "/collections/trousers-women",
+        image: "/onvor/products/signature-straight-fit-black-2.jpg",
+        links: [
+          { label: "Trousers", href: "/collections/trousers-women" },
+          { label: "All Bottoms", href: "/collections/bottoms" },
+        ],
+      },
+    ],
+    promos: [
+      {
+        heading: "Shop Women",
+        text: "The same cotton basics, cut to the same easy fit.",
+        href: "/collections/women",
+        image: "/onvor/products/stamp-rainbow-tee-1.jpg",
+      },
+    ],
+  },
+
+  "Shop All": {
+    columns: [
+      {
+        heading: "Featured",
+        headingHref: "/collections/all-products",
+        links: [
+          { label: "All Products", href: "/collections/all-products" },
+          { label: "Men", href: "/collections/men" },
+          { label: "Women", href: "/collections/women" },
+        ],
+      },
+      {
+        heading: "Shop by category",
+        links: [
+          { label: "Tops", href: "/collections/t-shirt" },
+          { label: "Bottoms", href: "/collections/bottoms" },
+          { label: "Shorts", href: "/collections/shorts" },
+        ],
+      },
+      {
+        heading: "Shop by fit",
+        links: [
+          { label: "Loose Fit Tees", href: "/collections/oversized-tees" },
+          { label: "Baggy Trouser", href: "/collections/baggy-trouser" },
+          { label: "Straight Fit Trouser", href: "/collections/straight-fit-trouser" },
+          { label: "Pleated Trousers", href: "/collections/pleated-trousers" },
+        ],
+      },
+    ],
+    promos: [
+      {
+        heading: "Loose Fit Tees",
+        text: "100% cotton, built to keep their shape.",
+        href: "/collections/oversized-tees",
+        image: "/onvor/products/stamp-tee-white-1.jpg",
+      },
+      {
+        heading: "New in bottoms",
+        cta: "Shop bottoms",
+        href: "/collections/bottoms",
+        image: "/onvor/products/signature-shorts-charcoal-1.jpg",
+      },
+    ],
+  },
+};
