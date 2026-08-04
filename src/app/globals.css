@@ -1,26 +1,181 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Design tokens, taken verbatim from the Impulse theme's own custom properties.
+   Names on the left are ours; the comment names the theme's original variable.
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-ink: #2a3743; /* --colorTextBody / --colorFooter / --colorBtnPrimary */
+  --color-ink-light: #3e5162; /* --colorBtnPrimaryLight (button hover) */
+  --color-announcement: #edebe7; /* --colorAnnouncement */
+  --color-hairline: #e0dfdf; /* --colorBorder */
+  --color-accent: #ffd5c1; /* text-with-icons icon colour */
+  --color-body-dim: #f2f2f2; /* --colorBodyDim */
+
+  --font-heading: var(--font-host-grotesk), sans-serif; /* --typeHeaderPrimary */
+  --font-body: var(--font-fustat), sans-serif; /* --typeBasePrimary */
+
+  --radius-btn: 50px; /* --buttonRadius */
+  --tracking-caps: 0.2em; /* --typeUppercaseSpacing */
+  --tracking-body: 0.025em; /* --typeBaseSpacing */
+
+  /* Impulse switches layout at 769px, not Tailwind's 768px. */
+  --breakpoint-imp: 769px;
+}
+
+/* Sizes the theme sets in px and we reuse from raw CSS. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --type-h1: 36px;
+  --type-h2: 31px;
+  --type-h3: 26px;
+  --hero-height: 422.5px;
+  --icon-weight: 4px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media only screen and (min-width: 769px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --type-h1: 42px;
+    --type-h2: 36px;
+    --type-h3: 27px;
+    --hero-height: 650px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    background-color: #fff;
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: var(--tracking-body);
+    line-height: 1.4;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.1;
+    margin: 0 0 10px;
+  }
+
+  @media only screen and (min-width: 769px) {
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 15px;
+    }
+  }
+
+  h1 {
+    font-size: var(--type-h1);
+  }
+  h2 {
+    font-size: var(--type-h2);
+  }
+  h3 {
+    font-size: var(--type-h3);
+  }
+}
+
+@layer components {
+  /* .page-width — max-width:1500px; padding:0 17px */
+  .page-width {
+    margin: 0 auto;
+    max-width: 1500px;
+    padding: 0 17px;
+    width: 100%;
+  }
+
+  /* The theme's vertical rhythm between homepage sections. */
+  .index-section {
+    margin: 40px 0;
+  }
+
+  /* .section--divider — hairline above, 40px/75px of breathing room below it. */
+  .section--divider {
+    border-top: 1px solid var(--color-hairline);
+    padding-top: 40px;
+  }
+
+  @media only screen and (min-width: 769px) {
+    .section--divider {
+      padding-top: 75px;
+    }
+  }
+
+  .btn {
+    background: var(--color-ink);
+    border: 1px solid transparent;
+    border-radius: var(--radius-btn);
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: var(--tracking-caps);
+    line-height: 1.42;
+    min-width: 90px;
+    padding: 11px 20px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: background 0.2s ease;
+  }
+
+  .btn:hover {
+    background: var(--color-ink-light);
+  }
+
+  .btn--inverse {
+    background-color: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+  }
+
+  .btn--inverse:hover,
+  .btn--inverse:focus {
+    background-color: transparent;
+  }
+
+  /* The three text-with-icons glyphs are outlined, not filled: the theme applies
+     fill:none plus a 4px stroke to every icon-tcwi-* svg on a 100x100 viewBox. */
+  .impulse-icon path,
+  .impulse-icon circle,
+  .impulse-icon line,
+  .impulse-icon polygon,
+  .impulse-icon polyline,
+  .impulse-icon rect {
+    fill: none;
+    stroke: currentColor;
+    stroke-linejoin: miter;
+    stroke-width: var(--icon-weight);
+  }
+
+  /* .svg-mask--rounded-top — the arch-topped image in "Inside the journal". */
+  .arch-mask {
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    overflow: hidden;
+  }
+}
+
+/* The scroll reveal. The hidden state is applied only once JS has confirmed the
+   observer is running, so content is never stranded invisible without JS. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal="pending"] {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  [data-reveal="visible"] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s cubic-bezier(0.26, 0.54, 0.32, 1),
+      transform 0.7s cubic-bezier(0.26, 0.54, 0.32, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
 }
