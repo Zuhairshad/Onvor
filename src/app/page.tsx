@@ -1,10 +1,10 @@
 import { AnnouncementBar } from "@/components/theme/AnnouncementBar";
 import { FeaturedCollection } from "@/components/theme/FeaturedCollection";
+import { CategoryGrid } from "@/components/theme/CategoryGrid";
 import { FeaturedCollections } from "@/components/theme/FeaturedCollections";
 import { Footer } from "@/components/theme/Footer";
 import { Header } from "@/components/theme/Header";
 import { HeroVideo } from "@/components/theme/HeroVideo";
-import { ImageGrid } from "@/components/theme/ImageGrid";
 import { PromoGrid } from "@/components/theme/PromoGrid";
 import { ShoppableHero } from "@/components/theme/ShoppableHero";
 import { SlideshowHero } from "@/components/theme/SlideshowHero";
@@ -129,7 +129,7 @@ export default function Home() {
         <HeroVideo />
         <TextAndImage />
         <SlideshowHero />
-        <ImageGrid />
+        <CategoryGrid />
         <TextWithIcons />
       </main>
 

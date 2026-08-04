@@ -9,6 +9,8 @@ type RevealProps = {
   className?: string;
   /** Rendered element. Sections pass "section"; grid items pass "li". */
   as?: "div" | "section" | "li";
+  /** Merged with the stagger variable this component sets. */
+  style?: CSSProperties;
 };
 
 const STEP_MS = 120;
@@ -26,7 +28,7 @@ const STEP_MS = 120;
  * the initial HTML and stays visible if JS never runs. The stylesheet drops the
  * opacity/transform rules entirely under `prefers-reduced-motion: reduce`.
  */
-export function Reveal({ children, delay = 0, className, as = "div" }: RevealProps) {
+export function Reveal({ children, delay = 0, className, as = "div", style }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -74,7 +76,11 @@ export function Reveal({ children, delay = 0, className, as = "div" }: RevealPro
         ref.current = node;
       }}
       className={className}
-      style={delay ? ({ "--reveal-delay": `${delay * STEP_MS}ms` } as CSSProperties) : undefined}
+      style={
+        delay
+          ? ({ ...style, "--reveal-delay": `${delay * STEP_MS}ms` } as CSSProperties)
+          : style
+      }
     >
       {children}
     </Tag>

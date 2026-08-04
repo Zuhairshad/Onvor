@@ -13,6 +13,13 @@ const nextConfig: NextConfig = {
         hostname: "cdn.shopify.com",
         pathname: "/s/files/**",
       },
+      {
+        // Onvor's own store CDN, which the catalog snapshot in
+        // src/lib/content/catalog.ts points at instead of committing 60+ images.
+        protocol: "https",
+        hostname: "theonvor.com",
+        pathname: "/cdn/shop/**",
+      },
     ],
   },
 };

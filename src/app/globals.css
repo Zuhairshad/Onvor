@@ -165,6 +165,20 @@
     stroke-width: var(--icon-weight);
   }
 
+  /* image_grid items: two-up on mobile, --grid-cols-up from 769px. Grow is what
+     lets a trailing partial row stretch to fill, which is how the reference gets
+     4-then-2 on the homepage and 3-then-2 in the lookbook from one rule. */
+  .image-grid-item {
+    flex-basis: calc(50% - var(--grid-gap));
+    flex-grow: 1;
+  }
+
+  @media only screen and (min-width: 769px) {
+    .image-grid-item {
+      flex-basis: calc(100% / var(--grid-cols) - var(--grid-gap));
+    }
+  }
+
   /* Shoppable-hero hotspots. Percentage offsets within the media box, with
      separate mobile values, so a marker stays on its garment as the frame crops. */
   .hotspot {

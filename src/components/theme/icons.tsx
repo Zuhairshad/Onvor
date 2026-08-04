@@ -163,3 +163,12 @@ export function IconChevronRight({ className }: IconProps) {
     </svg>
   );
 }
+
+/** Collection filter trigger. */
+export function IconFilter({ className }: IconProps) {
+  return (
+    <svg {...base} className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+      <path d="M3 6h18M6 12h12M10 18h4" />
+    </svg>
+  );
+}
