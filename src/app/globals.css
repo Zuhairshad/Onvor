@@ -90,9 +90,20 @@
     width: 100%;
   }
 
-  /* The theme's vertical rhythm between homepage sections. */
+  /* The theme's vertical rhythm between homepage sections: 40px, 75px from 769px.
+     Consecutive sections collapse the top margin so dividers don't double up. */
   .index-section {
     margin: 40px 0;
+  }
+
+  .index-section + .index-section {
+    margin-top: 0;
+  }
+
+  @media only screen and (min-width: 769px) {
+    .index-section {
+      margin: 75px 0;
+    }
   }
 
   /* .section--divider — hairline above, 40px/75px of breathing room below it. */
@@ -152,6 +163,26 @@
     stroke: currentColor;
     stroke-linejoin: miter;
     stroke-width: var(--icon-weight);
+  }
+
+  /* .hero__text-shadow — a soft radial scrim behind hero copy, bleeding well past
+     the text box, so white type stays legible over a light photo or video frame.
+     Opacity is the theme's --colorImageOverlayTextShadow (0.2). */
+  .hero-text-shadow {
+    display: inline-block;
+    position: relative;
+  }
+
+  .hero-text-shadow::before {
+    background: radial-gradient(rgba(0, 0, 0, 0.2) 0%, transparent 60%);
+    bottom: 0;
+    content: "";
+    left: 0;
+    margin: -100px -200px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: -1;
   }
 
   /* .svg-mask--rounded-top — the arch-topped image in "Inside the journal". */
