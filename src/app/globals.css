@@ -165,6 +165,22 @@
     stroke-width: var(--icon-weight);
   }
 
+  /* Shoppable-hero hotspots. Percentage offsets within the media box, with
+     separate mobile values, so a marker stays on its garment as the frame crops. */
+  .hotspot {
+    left: var(--hotspot-left-mobile);
+    position: absolute;
+    top: var(--hotspot-top-mobile);
+    transform: translate(-50%, -50%);
+  }
+
+  @media only screen and (min-width: 769px) {
+    .hotspot {
+      left: var(--hotspot-left);
+      top: var(--hotspot-top);
+    }
+  }
+
   /* .hero__text-shadow — a soft radial scrim behind hero copy, bleeding well past
      the text box, so white type stays legible over a light photo or video frame.
      Opacity is the theme's --colorImageOverlayTextShadow (0.2). */

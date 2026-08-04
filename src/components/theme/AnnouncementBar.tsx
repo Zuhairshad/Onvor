@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 
+import { ANNOUNCEMENTS } from "@/lib/content/onvor";
+
 /**
- * Rotating announcement bar. Both messages are stacked absolutely inside a
- * fixed-height box so swapping them cannot shift the page.
+ * Rotating announcement bar carrying Onvor's live promotions. Both messages share
+ * one grid cell so swapping them cannot shift the page.
  */
-const MESSAGES = [
-  { bold: "Free shipping", rest: "On all orders over $100" },
-  { bold: "Hassle-free returns", rest: "30-day postage paid returns" },
-] as const;
+const MESSAGES = ANNOUNCEMENTS;
 
 const INTERVAL_MS = 5000;
 

@@ -1,48 +1,37 @@
-import { IconCotton, IconHeart, IconSparkle } from "@/components/theme/icons";
-import { Reveal } from "@/components/theme/Reveal";
+import Image from "next/image";
 
-const BLOCKS = [
-  {
-    Icon: IconSparkle,
-    title: "Quietly considered",
-    body: "Understated details that bring polish without asking for attention.",
-  },
-  {
-    Icon: IconCotton,
-    title: "Texture you can feel",
-    body: "From airy linen to soft knits, each fabric adds warmth, ease, and depth.",
-  },
-  {
-    Icon: IconHeart,
-    title: "Made for repeat wear",
-    body: "Simple pieces, thoughtful layers, and a wardrobe that feels natural to come back to.",
-  },
-] as const;
+import { Reveal } from "@/components/theme/Reveal";
+import { VALUE_PROPS } from "@/lib/content/onvor";
 
 /**
- * The three value props.
+ * Onvor's three value props.
  *
- * The glyphs carry `impulse-icon`, which strokes them at 4px with no fill — the
- * reference renders these outlined, so the heart is a hollow shape rather than a
- * solid one.
+ * The reference pairs each glyph with a heading and a body sentence; Onvor's live
+ * store runs these heading-only, so there is no paragraph to invent. Their icons
+ * are their own line drawings (93x93 PNGs), not the reference's stroked SVGs, so
+ * this section does not use the `impulse-icon` treatment.
  */
 export function TextWithIcons() {
   return (
     <section className="section--divider index-section">
       <div className="page-width">
         <div className="flex flex-col flex-wrap justify-center imp:-mx-[30px] imp:flex-row">
-          {BLOCKS.map(({ Icon, title, body }, i) => (
+          {VALUE_PROPS.map(({ title, icon }, i) => (
             <Reveal
               key={title}
               delay={(i + 1) as 1 | 2 | 3}
-              className="flex flex-none flex-col p-0 pb-[60px] text-left imp:w-1/3 imp:p-[30px]"
+              className="flex flex-none flex-col items-center p-0 pb-[40px] text-center imp:w-1/3 imp:p-[30px]"
             >
               <span className="mb-[10px] block">
-                {/* 60px on mobile, 70px from 769px. */}
-                <Icon className="impulse-icon text-accent h-[60px] w-[60px] imp:h-[70px] imp:w-[70px]" />
+                <Image
+                  src={icon}
+                  alt=""
+                  width={93}
+                  height={93}
+                  className="h-[60px] w-[60px] imp:h-[70px] imp:w-[70px]"
+                />
               </span>
-              <h3>{title}</h3>
-              <p>{body}</p>
+              <h3 className="m-0">{title}</h3>
             </Reveal>
           ))}
         </div>

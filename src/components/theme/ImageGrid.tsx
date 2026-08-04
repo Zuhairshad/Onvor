@@ -13,51 +13,53 @@ type Tile = {
 
 const TILES: Tile[] = [
   {
-    label: "The Linen Edit",
-    href: "/collections/2026-the-linen-edit",
-    src: "/images/tile-linen.jpg",
+    label: "Men",
+    href: "/collections/men",
+    src: "/onvor/tile-men.jpg",
     width: 1400,
-    height: 785,
+    height: 548,
   },
   {
-    label: "Soft Neutrals",
-    href: "/collections/2026-the-linen-edit",
-    src: "/images/tile-soft-neutrals.jpg",
+    label: "Women",
+    href: "/collections/women",
+    src: "/onvor/tile-women.jpg",
     width: 1400,
-    height: 785,
+    height: 548,
   },
   {
-    label: "Everyday Dresses",
-    href: "/collections/2026-everyday-dresses",
-    src: "/images/tile-dresses.jpg",
-    width: 1400,
-    height: 785,
+    label: "Loose Fit Tees",
+    href: "/collections/oversized-tees",
+    src: "/onvor/products/stamp-tee-white-1.jpg",
+    width: 1000,
+    height: 1500,
   },
   {
-    label: "Thoughtful Layers",
-    href: "/collections/2026-layers",
-    src: "/images/tile-layers.jpg",
-    width: 1400,
-    height: 785,
+    label: "Bottoms",
+    href: "/collections/bottoms",
+    src: "/onvor/products/signature-straight-fit-black-1.jpg",
+    width: 1000,
+    height: 1500,
   },
   {
-    label: "The Lookbook",
-    href: "/pages/the-lookbook",
-    src: "/images/tile-lookbook.jpg",
-    width: 1400,
-    height: 1032,
+    label: "Shorts",
+    href: "/collections/shorts",
+    src: "/onvor/products/signature-shorts-charcoal-1.jpg",
+    width: 1000,
+    height: 1500,
   },
   {
-    label: "Journal",
-    href: "/blogs/journal",
-    src: "/images/tile-journal.jpg",
-    width: 1400,
-    height: 785,
+    label: "Pleated Trousers",
+    href: "/collections/pleated-trousers",
+    src: "/onvor/products/signature-straight-fit-black-2.jpg",
+    width: 1000,
+    height: 1500,
   },
 ];
 
 /**
- * The collection tiles.
+ * Onvor's collection tiles: the two gender categories the live store leads with,
+ * then four fit-based collections to fill the grid. Their collections carry no
+ * collection images, so the fit tiles borrow representative product shots.
  *
  * Six flex items, each with `flex-grow: 1` and a quarter-width basis. Four land
  * on the first row and the remaining two stretch to fill the second — that is

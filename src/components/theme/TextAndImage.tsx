@@ -2,8 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Reveal } from "@/components/theme/Reveal";
+import { BRAND } from "@/lib/content/onvor";
 
-const HREF = "/blogs/journal";
+const HREF = "/collections/all-products";
 
 /**
  * "Inside the journal" — text beside two overlapping images.
@@ -29,15 +30,12 @@ export function TextAndImage() {
           {/* Text */}
           <div className="order-2 w-full px-[20px] pt-[30px] text-left imp:order-none imp:min-w-[43%] imp:flex-[0_1_43%] imp:p-0 imp:pr-[60px]">
             <Reveal>
-              <h2>Inside the journal</h2>
-              <p>
-                Explore styling ideas, seasonal notes, and content-rich stories that
-                bring our collections to life.
-              </p>
+              <h2>Clothing that simply works</h2>
+              <p>{BRAND.positioning}</p>
             </Reveal>
             <Reveal delay={1}>
               <Link href={HREF} className="btn mt-[15px]">
-                Read more
+                Shop all
               </Link>
             </Reveal>
           </div>
@@ -53,10 +51,10 @@ export function TextAndImage() {
                 >
                   <span className="relative block aspect-square overflow-hidden">
                     <Image
-                      src="/images/journal-square.jpg"
+                      src="/onvor/lifestyle-2.jpg"
                       alt=""
                       width={1000}
-                      height={1000}
+                      height={1500}
                       sizes="(min-width: 769px) calc(0.4 * 50vw), 40vw"
                       className="h-full w-full object-cover"
                     />
@@ -67,10 +65,10 @@ export function TextAndImage() {
                 <Link href={HREF} className="block w-[60%]">
                   <span className="arch-mask relative block aspect-[2/3]">
                     <Image
-                      src="/images/journal-arch.jpg"
+                      src="/onvor/lifestyle-3.jpg"
                       alt=""
-                      width={896}
-                      height={1344}
+                      width={1000}
+                      height={1500}
                       sizes="(min-width: 769px) calc(0.6 * 50vw), 60vw"
                       className="h-full w-full object-cover"
                     />
