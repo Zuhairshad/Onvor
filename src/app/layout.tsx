@@ -6,7 +6,8 @@ import "./globals.css";
 const hostGrotesk = Host_Grotesk({
   variable: "--font-host-grotesk",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  // Headings and nav links are all 500; 400 and 600 were downloaded unused.
+  weight: ["500"],
   display: "swap",
 });
 

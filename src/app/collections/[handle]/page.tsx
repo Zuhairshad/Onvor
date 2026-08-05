@@ -72,6 +72,28 @@ export async function generateMetadata({
   return { title, description: meta?.description };
 }
 
+/** Same geometry as the real grid, so streaming it in shifts nothing. */
+function GridSkeleton({ count }: { count: number }) {
+  return (
+    <>
+      <div className="border-hairline flex flex-wrap items-center justify-between gap-3 border-b py-4">
+        <div className="bg-body-dim rounded-btn h-[38px] w-[104px]" />
+        <div className="bg-body-dim hidden h-[21px] w-[84px] imp:block" />
+        <div className="bg-body-dim rounded-btn h-[38px] w-[150px]" />
+      </div>
+      <ul className="m-0 mt-8 flex list-none flex-wrap p-0" aria-hidden>
+        {Array.from({ length: count }).map((_, i) => (
+          <li key={i} className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/4">
+            <div className="bg-body-dim aspect-[2/3] w-full" />
+            <div className="bg-body-dim mt-3 h-[22px] w-3/4" />
+            <div className="bg-body-dim mt-1 h-[21px] w-1/3" />
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
 async function Grid({
   handle,
   searchParams,
@@ -106,7 +128,7 @@ async function Grid({
               delay={(Math.min(i, 3) + 1) as 1 | 2 | 3 | 4}
               className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/4"
             >
-              <ProductCard product={product} />
+              <ProductCard product={product} priority={i < 4} />
             </Reveal>
           ))}
         </ul>
@@ -157,11 +179,11 @@ export default async function CollectionPage({
         </section>
 
         <div className="page-width mt-8 imp:mt-[40px] pb-16">
-          {/* searchParams is runtime data, so the grid streams behind a fallback
-              and the rest of the page still prerenders. */}
-          <Suspense
-            fallback={<div className="border-hairline h-[68px] border-b" aria-hidden />}
-          >
+          {/* searchParams is runtime data, so the grid streams behind a fallback and
+              the rest of the page still prerenders. The fallback reserves the exact
+              grid height — the product count is static even though the ordering is
+              not — so the swap causes no layout shift. */}
+          <Suspense fallback={<GridSkeleton count={COLLECTION_PRODUCTS[handle].length} />}>
             <Grid handle={handle} searchParams={searchParams} />
           </Suspense>
         </div>

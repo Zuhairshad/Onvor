@@ -7,7 +7,15 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
 
   images: {
-    qualities: [75, 95],
+    // AVIF first: typically 20-30% smaller than WebP for photographic content,
+    // with WebP as the fallback for browsers that lack it.
+    formats: ["image/avif", "image/webp"],
+
+    // Any `quality` a component asks for has to be listed here, including the
+    // 75 default. 82 is the middle tier the hero uses — the campaign photography
+    // is only 1000px wide natively, so 95 spends bytes on detail the source
+    // does not contain.
+    qualities: [75, 82, 95],
     remotePatterns: [
       {
         protocol: "https",

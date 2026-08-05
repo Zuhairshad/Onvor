@@ -126,7 +126,10 @@ export function ShoppableHero() {
             width={1000}
             height={1500}
             sizes="100vw"
-            quality={95}
+            // The source is 1000x1500 natively, so 95 spends bytes encoding
+            // detail that isn't in the file — 82 is visually identical here at
+            // roughly a third of the weight.
+            quality={82}
             priority
             className="h-full w-full object-cover"
             style={{ objectPosition: "50% 35%" }}

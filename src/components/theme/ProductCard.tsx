@@ -8,7 +8,14 @@ import type { CatalogProduct } from "@/lib/content/catalog";
  * Grid product card: portrait image with a hover swap to the second shot, a Sale
  * tag when there's a compare-at price, then title and price.
  */
-export function ProductCard({ product }: { product: CatalogProduct }) {
+export function ProductCard({
+  product,
+  priority = false,
+}: {
+  product: CatalogProduct;
+  /** Set on the first row so the LCP candidate is not lazy-loaded. */
+  priority?: boolean;
+}) {
   const [image, hoverImage] = product.images;
   const onSale = Boolean(product.compareAt && product.compareAt !== product.price);
 
@@ -28,6 +35,7 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
             width={1000}
             height={1500}
             sizes="(min-width: 769px) 25vw, 50vw"
+            priority={priority}
             className="h-full w-full object-cover transition-opacity duration-500 imp:group-hover:opacity-0"
           />
           {hoverImage ? (

@@ -160,6 +160,7 @@ export function Header({ overlay = false }: HeaderProps) {
               href="/search"
               className="hidden px-[12px] py-[7.5px] imp:block"
               aria-label="Search"
+              prefetch={false}
             >
               <IconSearch className="h-5 w-5" />
             </Link>
@@ -198,6 +199,9 @@ export function Header({ overlay = false }: HeaderProps) {
                 alt={BRAND.wordmark}
                 width={BRAND.logo.width}
                 height={BRAND.logo.height}
+                // Without this the browser picks the largest srcset candidate for
+                // a 128px box.
+                sizes="128px"
                 priority
                 // The wordmark is solid black on transparent, so it inverts to
                 // white cleanly while the header rides over the hero.
@@ -223,6 +227,7 @@ export function Header({ overlay = false }: HeaderProps) {
               href="/account"
               className="px-[7.5px] py-[7.5px] imp:px-[12px]"
               aria-label="Account"
+              prefetch={false}
             >
               <IconUser className="h-5 w-5" />
             </Link>
@@ -230,6 +235,7 @@ export function Header({ overlay = false }: HeaderProps) {
               href="/cart"
               className="px-[7.5px] py-[7.5px] imp:px-[12px]"
               aria-label="Cart"
+              prefetch={false}
             >
               <IconBag className="h-5 w-5" />
             </Link>

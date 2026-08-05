@@ -30,7 +30,7 @@ export function Toolbar() {
           <ul className="m-0 flex list-none items-center gap-6">
             {UTILITY_LINKS.map((link) => (
               <li key={link.label}>
-                <Link href={link.href} className="text-white hover:underline">
+                <Link href={link.href} className="text-white hover:underline" prefetch={false}>
                   {link.label}
                 </Link>
               </li>

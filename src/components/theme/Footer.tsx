@@ -17,6 +17,10 @@ const TITLE_CLASS =
 /* .site-footer__linklist a — padding 4px 0; .footer__collapsible sets 14px. */
 const LINK_CLASS = "inline-block py-[4px] text-[14px] text-current hover:underline";
 
+/* Footer links sit below the fold and are low intent; prefetching all of them
+   costs a request each on first load for no benefit. */
+const NO_PREFETCH = { prefetch: false } as const;
+
 /**
  * Site footer. Three menus at 20% each plus the newsletter at 40% from 960px;
  * two columns between 769 and 959px; stacked below that, where the menus become
@@ -40,7 +44,7 @@ export function Footer() {
                 <ul className="m-0 list-none pb-4">
                   {menu.links.map((link) => (
                     <li key={link.label}>
-                      <Link href={link.href} className={LINK_CLASS}>
+                      <Link href={link.href} className={LINK_CLASS} {...NO_PREFETCH}>
                         {link.label}
                       </Link>
                     </li>
@@ -53,7 +57,7 @@ export function Footer() {
                 <ul className="m-0 list-none">
                   {menu.links.map((link) => (
                     <li key={`${menu.title}-${link.label}-${i}`}>
-                      <Link href={link.href} className={LINK_CLASS}>
+                      <Link href={link.href} className={LINK_CLASS} {...NO_PREFETCH}>
                         {link.label}
                       </Link>
                     </li>
