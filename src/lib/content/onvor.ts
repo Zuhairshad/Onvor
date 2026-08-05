@@ -100,6 +100,7 @@ export const NAV = [
       { label: "Pleated Trousers", href: "/collections/pleated-trousers" },
     ],
   },
+  { label: "Lookbook", href: "/pages/lookbook" },
   { label: "Size Guide", href: "/pages/size-guide" },
   { label: "Contact", href: "/pages/contact" },
 ] as const;
@@ -241,6 +242,7 @@ export const FOOTER_MENUS = [
     links: [
       { label: "Contact", href: "/pages/contact" },
       { label: "Size Guide", href: "/pages/size-guide" },
+      { label: "Lookbook", href: "/pages/lookbook" },
     ],
   },
 ] as const;
