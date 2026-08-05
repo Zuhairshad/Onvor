@@ -401,3 +401,62 @@ export const MEGA_MENUS: Record<string, MegaMenuContent> = {
     ],
   },
 };
+
+/** Contact details, verbatim from their contact-information policy page. */
+export const CONTACT = {
+  email: "theonvor@gmail.com",
+  whatsapp: "0333-176-6662",
+  customerService: "0333-4377774",
+  hours: "10am–6pm, Monday to Saturday",
+} as const;
+
+/**
+ * Their return policy, from the live store. Kept as structured points rather
+ * than one blob so the page can lay it out — the terms are specific and worth
+ * not paraphrasing.
+ */
+export const RETURN_POLICY = {
+  headline: "All sales are final. No refunds.",
+  points: [
+    "You can exchange your purchase within 15 days, accompanied by the original sales receipt and original Onvor packaging.",
+    "Merchandise can only be exchanged if it is unused, unaltered, unwashed, and undamaged, with all original tags intact.",
+    "Exchanges are applicable for the same item only.",
+    "Items purchased at full price are eligible for exchange. Sale and promotional items are not eligible for exchange.",
+  ],
+  howTo: `To initiate an exchange, email us at ${"theonvor@gmail.com"} with “Product Replacement” in the subject line and a description of the issue in the body. Alternatively, you can reach us on WhatsApp at 0333-176-6662 between 10am–6pm, Monday to Saturday.`,
+} as const;
+
+/**
+ * Size guide.
+ *
+ * Deliberately has no measurements. Their live size-guide page is unedited theme
+ * filler ("Reliable Music", "Soft Rhythm"), so there is nothing real to carry
+ * over, and inventing garment measurements would cause wrong orders and returns.
+ * The sizes and the how-to-measure guidance are real; the numbers have to come
+ * from Onvor's own spec sheet.
+ */
+export const SIZE_GUIDE = {
+  sizes: ["S", "M", "L", "XL"],
+  /** Columns to fill in once the measurements are supplied. */
+  measurements: ["Chest", "Length", "Shoulder", "Sleeve"],
+  bottomsMeasurements: ["Waist", "Hip", "Inseam", "Length"],
+  howToMeasure: [
+    {
+      title: "Chest",
+      body: "Measure across the garment one inch below the armhole, then double it.",
+    },
+    {
+      title: "Length",
+      body: "Measure from the highest point of the shoulder straight down to the hem.",
+    },
+    {
+      title: "Waist",
+      body: "Measure across the top of the waistband and double it.",
+    },
+    {
+      title: "Inseam",
+      body: "Measure from the crotch seam down the inside leg to the hem.",
+    },
+  ],
+  note: "Everything is cut for a loose, unisex fit — if you are between sizes, size down for a closer fit or stay put for the intended drape.",
+} as const;

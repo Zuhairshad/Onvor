@@ -8,6 +8,7 @@ import {
   addCartLines,
   createCart,
   getCart,
+  getProduct,
   removeCartLines,
   updateCartLines,
   type Cart,
@@ -43,7 +44,41 @@ async function resolveCartId(): Promise<string> {
   return cart.id;
 }
 
-export async function addToCart(merchandiseId: string, quantity = 1): Promise<Cart> {
+/**
+ * Adds a product to the cart by handle plus its chosen options.
+ *
+ * The product page works from the catalog snapshot, which has option names and
+ * values but not Shopify's per-variant ids, so the variant is resolved here
+ * against the live Storefront API. That also means the id is never stale.
+ */
+export async function addToCart(
+  handle: string,
+  options: Record<string, string>,
+  quantity = 1,
+): Promise<Cart> {
+  const product = await getProduct(handle);
+  if (!product) throw new Error(`Unknown product: ${handle}`);
+
+  const variant = product.variants.find((candidate) =>
+    candidate.selectedOptions.every((option) => options[option.name] === option.value),
+  );
+  if (!variant) {
+    throw new Error(
+      `No variant of ${handle} matches ${JSON.stringify(options)}`,
+    );
+  }
+
+  const cartId = await resolveCartId();
+  const cart = await addCartLines(cartId, [{ merchandiseId: variant.id, quantity }]);
+  revalidatePath("/cart");
+  return cart;
+}
+
+/** Adds a known variant id directly, for callers that already resolved one. */
+export async function addVariantToCart(
+  merchandiseId: string,
+  quantity = 1,
+): Promise<Cart> {
   const cartId = await resolveCartId();
   const cart = await addCartLines(cartId, [{ merchandiseId, quantity }]);
   revalidatePath("/cart");
