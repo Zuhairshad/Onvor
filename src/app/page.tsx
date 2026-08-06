@@ -4,9 +4,9 @@ import { CategoryGrid } from "@/components/theme/CategoryGrid";
 import { FeaturedCollections } from "@/components/theme/FeaturedCollections";
 import { Footer } from "@/components/theme/Footer";
 import { Header } from "@/components/theme/Header";
-import { HeroBanner } from "@/components/theme/HeroBanner";
 import { HeroVideo } from "@/components/theme/HeroVideo";
 import { PromoGrid } from "@/components/theme/PromoGrid";
+import { ShoppableHero } from "@/components/theme/ShoppableHero";
 import { SlideshowHero } from "@/components/theme/SlideshowHero";
 import { TextAndImage } from "@/components/theme/TextAndImage";
 import { TextWithIcons } from "@/components/theme/TextWithIcons";
@@ -95,26 +95,23 @@ const NEW_ARRIVALS = [
 ];
 
 /**
- * Homepage. Section order follows the reference theme's homepage: hero, collection
- * tiles, a product row, promo panels, a second product row, promo hero, brand
- * story, image hero, category grid, value props, footer.
+ * Homepage. Section order follows the reference theme's homepage: shoppable hero,
+ * collection tiles, a product row, promo panels, a second product row, promo hero,
+ * brand story, image hero, category grid, value props, footer.
  *
- * The hero itself is Onvor's own banner rail rather than the reference's
- * shoppable frame — their campaign art has the headline and CTA burnt into it,
- * so there is nothing to overlay and nowhere clean to hang a hotspot.
- *
- * That also rules out the reference's transparent header: the artwork carries an
- * ONVOR wordmark of its own near the top, and an overlaid header puts ours right
- * on it. Their live store keeps the header solid above the banner too.
+ * The toolbar and header ride over the shoppable hero, so both sit inside the
+ * hero's positioning context rather than in normal flow above it.
  */
 export default function Home() {
   return (
     <>
       <AnnouncementBar />
 
-      <Toolbar />
-      <Header />
-      <HeroBanner />
+      <div className="relative">
+        <Toolbar />
+        <Header overlay />
+        <ShoppableHero />
+      </div>
 
       <main id="MainContent" className="flex-1">
         <FeaturedCollections />

@@ -134,6 +134,11 @@ export function Header({ overlay = false }: HeaderProps) {
 
   // A white panel under a transparent header would look detached, so an open
   // mega menu forces the solid treatment.
+  //
+  // The transparency is desktop-only. Below 769px the hero shows the campaign
+  // art's portrait cut, which carries its own SUMMER'26 across the top — exactly
+  // where an overlaid header sits, wordmark on wordmark. On a phone the header
+  // stays solid and in flow, and the artwork starts beneath it.
   const isLight = overlay && !scrolled && !openMenu;
 
   return (
@@ -142,9 +147,14 @@ export function Header({ overlay = false }: HeaderProps) {
         "inset-x-0 z-30 transition-colors duration-200",
         // Absolute while riding the hero, fixed once scrolled. Both are out of
         // flow and render at the same spot at scroll 0, so the swap is seamless.
-        overlay ? (scrolled ? "fixed top-0" : "absolute top-[39px] imp:top-[45px]") : "sticky top-0",
+        // Sticky and in flow below 769px, where nothing is overlaid.
+        overlay
+          ? scrolled
+            ? "sticky top-0 imp:fixed imp:top-0"
+            : "sticky top-0 imp:absolute imp:top-[45px]"
+          : "sticky top-0",
         isLight
-          ? "bg-transparent text-white"
+          ? "text-ink bg-white shadow-[0_0_1px_rgba(0,0,0,0.2)] imp:bg-transparent imp:text-white imp:shadow-none"
           : "text-ink bg-white shadow-[0_0_1px_rgba(0,0,0,0.2)]",
       ].join(" ")}
     >
@@ -204,8 +214,9 @@ export function Header({ overlay = false }: HeaderProps) {
                 sizes="128px"
                 priority
                 // The wordmark is solid black on transparent, so it inverts to
-                // white cleanly while the header rides over the hero.
-                className={`h-auto w-[104px] wide:w-[128px] ${isLight ? "brightness-0 invert" : ""}`}
+                // white cleanly while the header rides over the hero — which it
+                // only does from 769px up, hence the breakpoint on the filter.
+                className={`h-auto w-[104px] wide:w-[128px] ${isLight ? "imp:brightness-0 imp:invert" : ""}`}
               />
             </Link>
 

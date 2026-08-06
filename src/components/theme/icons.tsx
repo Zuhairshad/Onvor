@@ -147,6 +147,23 @@ export function IconTikTok({ className }: IconProps) {
   );
 }
 
+/** Shoppable-hero hotspot marker, verbatim from the theme's icon-plus. */
+export function IconPlus({ className }: IconProps) {
+  return (
+    <svg {...base} className={className} viewBox="0 0 20 20" fill="currentColor">
+      <path d="M17.409 8.929h-6.695V2.258c0-.566-.506-1.029-1.071-1.029s-1.071.463-1.071 1.029v6.671H1.967C1.401 8.929.938 9.435.938 10s.463 1.071 1.029 1.071h6.605V17.7c0 .566.506 1.029 1.071 1.029s1.071-.463 1.071-1.029v-6.629h6.695c.566 0 1.029-.506 1.029-1.071s-.463-1.071-1.029-1.071z" />
+    </svg>
+  );
+}
+
+export function IconChevronRight({ className }: IconProps) {
+  return (
+    <svg {...base} className={className} viewBox="0 0 284.49 498.98" fill="currentColor">
+      <path d="M35 498.98a35 35 0 0 1-24.75-59.75l189.74-189.74L10.25 59.75a35.002 35.002 0 0 1 49.5-49.5l214.49 214.49a35 35 0 0 1 0 49.5L59.75 488.73A34.89 34.89 0 0 1 35 498.98Z" />
+    </svg>
+  );
+}
+
 /** Collection filter trigger. */
 export function IconFilter({ className }: IconProps) {
   return (
