@@ -37,7 +37,7 @@ export function MegaMenu({ content, open, id, onNavigate }: Props) {
     <div
       id={id}
       className={[
-        "absolute inset-x-0 top-full z-40 bg-white text-ink shadow-[0_10px_20px_#00000017]",
+        "absolute inset-x-0 top-full z-40 bg-announcement text-ink shadow-[0_10px_20px_#00000017]",
         "max-h-[calc(100vh-120px)] overflow-y-auto py-[39px]",
         open ? "block" : "hidden",
       ].join(" ")}

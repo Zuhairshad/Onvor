@@ -154,8 +154,8 @@ export function Header({ overlay = false }: HeaderProps) {
             : "sticky top-0 imp:absolute imp:top-[45px]"
           : "sticky top-0",
         isLight
-          ? "text-ink bg-white shadow-[0_0_1px_rgba(0,0,0,0.2)] imp:bg-transparent imp:text-white imp:shadow-none"
-          : "text-ink bg-white shadow-[0_0_1px_rgba(0,0,0,0.2)]",
+          ? "text-ink bg-announcement shadow-[0_0_1px_rgba(0,0,0,0.2)] imp:bg-transparent imp:text-white imp:shadow-none"
+          : "text-ink bg-announcement shadow-[0_0_1px_rgba(0,0,0,0.2)]",
       ].join(" ")}
     >
       <div
