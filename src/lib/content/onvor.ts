@@ -157,6 +157,45 @@ export const FIT_TILES = [
   { label: "Shorts", href: "/collections/shorts" },
 ] as const;
 
+/**
+ * The homepage hero: their own three-slide banner rail, in their order, with
+ * their links.
+ *
+ * Each slide ships as a pair — a 2490x945-ish landscape for desktop and a
+ * 1333x1833 portrait for phones — because the headline and "Shop now" are burnt
+ * into the artwork. Cropping one frame to serve both widths would cut the type,
+ * which is why there is no single source image here and no overlaid copy: the
+ * slide *is* the copy, so the whole slide is the link.
+ *
+ * The sale slide is dated (4th–14th August) and matches the announcement bar.
+ * When the promotion ends, drop that slide rather than leaving a stale offer at
+ * the top of the homepage.
+ */
+export const HERO_SLIDES = [
+  {
+    id: "sale",
+    href: "/collections/all-products",
+    /** Read out to screen readers, which cannot see the burnt-in type. */
+    alt: "Azadi Sale, 4th–14th August — flat 30% off. Shop all products.",
+    desktop: { src: "/onvor/hero/sale-desktop.jpg", width: 2400, height: 911 },
+    mobile: { src: "/onvor/hero/sale-mobile.jpg", width: 1000, height: 1374 },
+  },
+  {
+    id: "men",
+    href: "/collections/oversized-tees-men",
+    alt: "Summer '26 — shop men's loose fit tees.",
+    desktop: { src: "/onvor/hero/men-desktop.jpg", width: 2400, height: 939 },
+    mobile: { src: "/onvor/hero/men-mobile.jpg", width: 1000, height: 1375 },
+  },
+  {
+    id: "women",
+    href: "/collections/oversized-tees-women",
+    alt: "Summer '26 — shop women's loose fit tees.",
+    desktop: { src: "/onvor/hero/women-desktop.jpg", width: 2400, height: 939 },
+    mobile: { src: "/onvor/hero/women-mobile.jpg", width: 1000, height: 1375 },
+  },
+] as const;
+
 /** Editorial / lifestyle photography available for hero and feature rows. */
 export const IMAGERY = {
   heroBanner: { src: "/onvor/hero-banner.jpg", width: 1250, height: 1718 },
