@@ -59,7 +59,9 @@ async function Results({
             placeholder="Search for tees, trousers, shorts…"
             className="w-full bg-transparent py-3 text-[16px] outline-none"
           />
-          <button type="submit" className="tracking-caps px-2 text-[13px] uppercase">
+          {/* Matches the input's own py-3 so the submit is a full-height tap
+              target rather than an 18px strip of text. */}
+          <button type="submit" className="tracking-caps shrink-0 px-2 py-3 text-[13px] uppercase">
             Search
           </button>
         </div>

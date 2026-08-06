@@ -22,6 +22,12 @@ function Table({ label, columns }: { label: string; columns: readonly string[] }
   return (
     <div className="mt-8">
       <h3 className="text-[19px]">{label}</h3>
+      {/* A size chart is the one thing here that cannot reflow to 320px and stay
+          readable, so it scrolls sideways instead of squeezing. On a phone that
+          scroll has no visible affordance until you touch it, hence the hint. */}
+      <p className="mt-1 mb-0 text-[13px] opacity-60 imp:hidden">
+        Swipe the table sideways for every column.
+      </p>
       <div className="mt-3 overflow-x-auto">
         <table className="w-full min-w-[420px] border-collapse text-left text-[15px]">
           <thead>
