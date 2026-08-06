@@ -435,27 +435,89 @@ export const RETURN_POLICY = {
  * The sizes and the how-to-measure guidance are real; the numbers have to come
  * from Onvor's own spec sheet.
  */
+export const SIZE_SPECS = [
+  {
+    category: "Tops",
+    title: "Onvor Loose Fit Tee Specs",
+    note: "Note: All measurements are in inches.",
+    columns: ["Size", "Width", "Length", "Across Shoulder", "Sleeves"],
+    rows: [
+      { size: "Small", values: ["21", "27.5", "20", "10"] },
+      { size: "Medium", values: ["22", "28.25", "20.75", "10.25"] },
+      { size: "Large", values: ["23", "29", "21.25", "10.50"] },
+      { size: "Extra Large", values: ["24", "30", "22.25", "10.75"] },
+    ],
+  },
+  {
+    category: "Shorts",
+    title: "ONVOR SHORTS SPECS",
+    note: "Note: All measurements are in inches. There may be a 0.5–1 inch variation.",
+    columns: ["Size", "Waist (inches)", "Length (inches)", "Hip Round (inches)"],
+    rows: [
+      { size: "Small", values: ["27–30", "21", "21"] },
+      { size: "Medium", values: ["30–33", "21.5", "21.5"] },
+      { size: "Large", values: ["33–36", "22", "22"] },
+      { size: "X-Large", values: ["36–40", "22.5", "22.5"] },
+    ],
+  },
+  {
+    category: "Trousers",
+    title: "Onvor Straight Trouser Specs",
+    note: "Note: All measurements are in inches. There may be a 0.5–1 inch variation.",
+    columns: ["Size", "Waist (inches)", "Length (inches)", "Hip Round (inches)"],
+    rows: [
+      { size: "Small", values: ["27–30", "41", "39.5"] },
+      { size: "Medium", values: ["30–33", "41.5", "41"] },
+      { size: "Large", values: ["33–36", "42", "42.5"] },
+      { size: "X-Large", values: ["36–40", "42.5", "44"] },
+    ],
+  },
+  {
+    category: "Trousers",
+    title: "ONVOR PLEATED TROUSER SPECS",
+    note: "Note: All measurements are in inches. There may be a 0.5–1 inch variation.",
+    columns: ["Size", "Waist (inches)", "Length (inches)", "Hip Round (inches)"],
+    rows: [
+      { size: "Small", values: ["27–30", "39.5", "41"] },
+      { size: "Medium", values: ["30–33", "40", "42.5"] },
+      { size: "Large", values: ["33–36", "40.5", "44"] },
+      { size: "X-Large", values: ["36–40", "41", "45.5"] },
+    ],
+  },
+  {
+    category: "Bottoms",
+    title: "Onvor Baggy Bottom Specs",
+    note: "Note: All measurements are in inches. There may be a 0.5–1 inch variation.",
+    columns: ["Size", "Waist (inches)", "Length (inches)", "Hip Round (inches)"],
+    rows: [
+      { size: "Small", values: ["27–30", "40.5", "41"] },
+      { size: "Medium", values: ["30–33", "41", "42.5"] },
+      { size: "Large", values: ["33–36", "41.5", "44"] },
+      { size: "X-Large", values: ["36–40", "42", "45.5"] },
+    ],
+  },
+] as const;
+
 export const SIZE_GUIDE = {
   sizes: ["S", "M", "L", "XL"],
-  /** Columns to fill in once the measurements are supplied. */
   measurements: ["Chest", "Length", "Shoulder", "Sleeve"],
   bottomsMeasurements: ["Waist", "Hip", "Inseam", "Length"],
   howToMeasure: [
     {
-      title: "Chest",
-      body: "Measure across the garment one inch below the armhole, then double it.",
+      title: "Chest / Width",
+      body: "Measure across the garment flat one inch below the armhole.",
     },
     {
       title: "Length",
-      body: "Measure from the highest point of the shoulder straight down to the hem.",
+      body: "Measure from the highest point of the shoulder straight down to the bottom hem.",
     },
     {
       title: "Waist",
-      body: "Measure across the top of the waistband and double it.",
+      body: "Measure across the top of the waistband relaxed to stretched in inches.",
     },
     {
-      title: "Inseam",
-      body: "Measure from the crotch seam down the inside leg to the hem.",
+      title: "Hip Round",
+      body: "Measure flat across the widest point of the hips and double it.",
     },
   ],
   note: "Everything is cut for a loose, unisex fit — if you are between sizes, size down for a closer fit or stay put for the intended drape.",
