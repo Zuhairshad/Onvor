@@ -15,7 +15,11 @@ export function TextWithIcons() {
   return (
     <section className="section--divider index-section">
       <div className="page-width">
-        <div className="flex flex-col flex-wrap justify-center imp:-mx-[30px] imp:flex-row">
+        {/* The reference pulls this row out by 30px either side, but `.page-width`
+            only has 17px of padding to give back, so the row hangs 13px past the
+            viewport at every width below 1560px. Keeping the columns inside the
+            gutter costs 60px of width and behaves the same at every size. */}
+        <div className="flex flex-col flex-wrap justify-center imp:flex-row">
           {VALUE_PROPS.map(({ title, icon }, i) => (
             <Reveal
               key={title}

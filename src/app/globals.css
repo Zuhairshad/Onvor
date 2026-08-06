@@ -21,6 +21,10 @@
 
   /* Impulse switches layout at 769px, not Tailwind's 768px. */
   --breakpoint-imp: 769px;
+  /* The header's split nav needs more room than the rest of the layout: six
+     links either side of a 128px wordmark plus four icons do not fit at 769px.
+     It swaps to the drawer below this width instead. */
+  --breakpoint-wide: 1024px;
 }
 
 /* Sizes the theme sets in px and we reuse from raw CSS. */

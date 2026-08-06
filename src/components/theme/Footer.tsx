@@ -14,8 +14,11 @@ const SOCIAL_ICONS = {
 /* .footer__title / .h4 — 13px, 0.2em caps; margin-bottom 20px from 769px. */
 const TITLE_CLASS =
   "tracking-caps m-0 mb-4 text-[13px] uppercase text-white imp:mb-[20px]";
-/* .site-footer__linklist a — padding 4px 0; .footer__collapsible sets 14px. */
-const LINK_CLASS = "inline-block py-[4px] text-[14px] text-current hover:underline";
+/* .site-footer__linklist a — padding 4px 0; .footer__collapsible sets 14px.
+   4px leaves a 28px row, which is fine for a cursor but under the 40px a thumb
+   wants, so the padding opens up below the desktop breakpoint. */
+const LINK_CLASS =
+  "inline-block py-[9px] text-[14px] text-current hover:underline wide:py-[4px]";
 
 /* Footer links sit below the fold and are low intent; prefetching all of them
    costs a request each on first load for no benefit. */
@@ -99,7 +102,12 @@ export function Footer() {
                 const Icon = SOCIAL_ICONS[label as keyof typeof SOCIAL_ICONS];
                 return (
                   <li key={label} className="mr-[15px] mb-[15px] inline-block">
-                    <a href={href} target="_blank" rel="noopener" className="block text-white">
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener"
+                      className="block py-[9px] text-white wide:py-0"
+                    >
                       <Icon className="h-[22px] w-[22px] imp:h-[24px] imp:w-[24px]" />
                       <span className="sr-only">{label}</span>
                     </a>

@@ -154,11 +154,11 @@ export function Header({ overlay = false }: HeaderProps) {
       >
         {/* .site-header — padding 7px 0 mobile, 20px 0 from 769px. */}
         <div className="flex items-center justify-between gap-4 py-[7px] imp:py-[20px]">
-          {/* Left: search on desktop, drawer trigger on mobile. */}
-          <div className="-ml-[7.5px] flex flex-1 items-center imp:-ml-[12px] imp:flex-none">
+          {/* Left: search on desktop, drawer trigger below 1024px. */}
+          <div className="-ml-[7.5px] flex flex-1 items-center wide:-ml-[12px] wide:flex-none">
             <Link
               href="/search"
-              className="hidden px-[12px] py-[7.5px] imp:block"
+              className="hidden px-[12px] py-[7.5px] wide:block"
               aria-label="Search"
               prefetch={false}
             >
@@ -167,7 +167,7 @@ export function Header({ overlay = false }: HeaderProps) {
             <button
               ref={hamburger}
               type="button"
-              className="px-[7.5px] py-[7.5px] imp:hidden"
+              className="px-[7.5px] py-[10px] wide:hidden"
               aria-expanded={drawerOpen}
               aria-label="Site navigation"
               onClick={() => setDrawerOpen(true)}
@@ -177,8 +177,8 @@ export function Header({ overlay = false }: HeaderProps) {
           </div>
 
           {/* Centre: split nav around the logo on desktop; logo alone on mobile. */}
-          <nav aria-label="Primary" className="flex items-center justify-center imp:flex-1">
-            <ul className="hidden list-none items-center imp:flex imp:flex-1 imp:justify-end">
+          <nav aria-label="Primary" className="flex items-center justify-center wide:flex-1">
+            <ul className="hidden list-none items-center wide:flex wide:flex-1 wide:justify-end">
               {NAV_LEFT.map((item) => (
                 <NavLink
                   key={item.label}
@@ -191,7 +191,7 @@ export function Header({ overlay = false }: HeaderProps) {
 
             <Link
               href="/"
-              className="my-[10px] block shrink-0 imp:mx-[30px]"
+              className="my-[10px] block shrink-0 wide:mx-[30px]"
               aria-label={`${BRAND.name} — home`}
             >
               <Image
@@ -205,11 +205,11 @@ export function Header({ overlay = false }: HeaderProps) {
                 priority
                 // The wordmark is solid black on transparent, so it inverts to
                 // white cleanly while the header rides over the hero.
-                className={`h-auto w-[104px] imp:w-[128px] ${isLight ? "brightness-0 invert" : ""}`}
+                className={`h-auto w-[104px] wide:w-[128px] ${isLight ? "brightness-0 invert" : ""}`}
               />
             </Link>
 
-            <ul className="hidden list-none items-center imp:flex imp:flex-1">
+            <ul className="hidden list-none items-center wide:flex wide:flex-1">
               {NAV_RIGHT.map((item) => (
                 <NavLink
                   key={item.label}
@@ -222,10 +222,10 @@ export function Header({ overlay = false }: HeaderProps) {
           </nav>
 
           {/* Right: account and cart. */}
-          <div className="-mr-[7.5px] flex flex-1 items-center justify-end imp:-mr-[12px] imp:flex-none">
+          <div className="-mr-[7.5px] flex flex-1 items-center justify-end wide:-mr-[12px] wide:flex-none">
             <Link
               href="/account"
-              className="px-[7.5px] py-[7.5px] imp:px-[12px]"
+              className="px-[7.5px] py-[10px] wide:px-[12px]"
               aria-label="Account"
               prefetch={false}
             >
@@ -233,7 +233,7 @@ export function Header({ overlay = false }: HeaderProps) {
             </Link>
             <Link
               href="/cart"
-              className="px-[7.5px] py-[7.5px] imp:px-[12px]"
+              className="px-[7.5px] py-[10px] wide:px-[12px]"
               aria-label="Cart"
               prefetch={false}
             >
@@ -256,7 +256,7 @@ export function Header({ overlay = false }: HeaderProps) {
 
       {/* Mobile drawer */}
       {drawerOpen ? (
-        <div className="fixed inset-0 z-50 imp:hidden">
+        <div className="fixed inset-0 z-50 wide:hidden">
           <button
             type="button"
             className="absolute inset-0 h-full w-full bg-black/40"

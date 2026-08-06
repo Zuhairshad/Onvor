@@ -119,7 +119,12 @@ export function ShoppableHero() {
   return (
     <section className="relative w-full" aria-label="Easy by design">
       <div className="relative w-full overflow-hidden">
-        <div className="relative h-[680px] w-full imp:h-[calc(100vh-60px)] imp:max-h-[980px] imp:min-h-[780px]">
+        {/* The hero fills the fold. The floor used to be 780px, which is taller
+            than a 12" laptop's 720px viewport — the copy and the CTA sat below
+            the fold there and above it on a 14". Dropping the floor to 560px
+            lets every laptop show the same thing: the frame ending at the fold
+            with the copy inside it. */}
+        <div className="relative h-[680px] w-full imp:h-[calc(100vh-60px)] imp:max-h-[980px] imp:min-h-[560px]">
           <Image
             src="/onvor/lifestyle-2.jpg"
             alt="Model wearing an Onvor loose-fit printed tee with relaxed straight-fit trousers"
