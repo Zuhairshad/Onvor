@@ -118,14 +118,17 @@ export function ShoppableHero() {
               lines fit a 15" laptop and collide on a 12". Heading and button
               alone clear it at every width, which is the point. */}
           <div className="absolute inset-0 z-[3] hidden items-end imp:flex">
-            <div className="page-width pb-[24px]">
-              <Reveal className="hero-text-shadow max-w-[30rem] text-left text-white">
-                <h2 className="font-heading text-[27px] leading-[1.1] font-medium">
+            <div className="page-width pb-[48px] pl-[24px]">
+              <Reveal className="hero-text-shadow max-w-[32rem] text-left text-white">
+                <h2 className="font-heading text-[32px] leading-[1.15] font-medium tracking-tight">
                   {COPY.heading}
                 </h2>
+                <p className="mt-3 mb-6 text-[16px] leading-relaxed text-white/90 font-normal">
+                  {COPY.body}
+                </p>
                 <Link
                   href={COPY.href}
-                  className="btn border-announcement bg-announcement hover:bg-announcement mt-4 text-black"
+                  className="inline-block rounded-full bg-white px-8 py-3.5 text-[12px] font-bold tracking-[0.18em] text-black uppercase shadow-md transition-all hover:bg-white/90 hover:shadow-lg active:scale-95"
                 >
                   {COPY.cta}
                 </Link>
@@ -143,8 +146,11 @@ export function ShoppableHero() {
           <h2 className="font-heading text-[26px] leading-[1.1] font-medium">
             {COPY.heading}
           </h2>
-          <p className="mt-3 mb-5">{COPY.body}</p>
-          <Link href={COPY.href} className="btn">
+          <p className="mt-3 mb-5 text-[15px] leading-relaxed text-ink/80">{COPY.body}</p>
+          <Link
+            href={COPY.href}
+            className="inline-block rounded-full bg-ink px-8 py-3.5 text-[12px] font-bold tracking-[0.18em] text-white uppercase shadow transition-all hover:bg-ink-light active:scale-95"
+          >
             {COPY.cta}
           </Link>
         </Reveal>

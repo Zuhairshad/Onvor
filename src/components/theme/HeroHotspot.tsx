@@ -56,9 +56,9 @@ export function HeroHotspot({ spot }: { spot: Hotspot }) {
         aria-label={spot.title}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="bg-announcement flex h-9 w-9 items-center justify-center rounded-full text-black shadow-[0_2px_10px_rgba(0,0,0,0.25)] transition-transform hover:scale-110"
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black shadow-[0_3px_12px_rgba(0,0,0,0.22)] transition-transform duration-200 hover:scale-110 active:scale-95 cursor-pointer"
       >
-        <IconPlus className="h-3 w-3" />
+        <IconPlus className="h-3.5 w-3.5" />
       </button>
 
       {open ? (
