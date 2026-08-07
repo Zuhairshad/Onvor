@@ -98,6 +98,10 @@ function GridSkeleton({ count }: { count: number }) {
         <div className="bg-body-dim hidden h-[21px] w-[84px] imp:block" />
         <div className="bg-body-dim rounded-btn h-[38px] w-[150px]" />
       </div>
+      {/* A collection the snapshot has no products for still renders something —
+          the empty-state line — so reserve its height rather than nothing, or it
+          drops in and shifts the page. */}
+      {count === 0 ? <div className="h-[104px]" aria-hidden /> : null}
       <ul className="m-0 mt-8 flex list-none flex-wrap p-0" aria-hidden>
         {Array.from({ length: count }).map((_, i) => (
           <li key={i} className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/4">

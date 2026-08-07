@@ -39,12 +39,18 @@ export function ProductCard({
             className="h-full w-full object-cover transition-opacity duration-500 imp:group-hover:opacity-0"
           />
           {hoverImage ? (
+            /* Decorative and only ever seen on a pointer device. `hidden` below
+               769px keeps it out of the layout, which also keeps a lazy image
+               from ever being fetched there — no phone pays for a hover state it
+               cannot trigger. On desktop it is fetched at low priority so it
+               never competes with the visible shot above it. */
             <Image
               src={hoverImage}
               alt=""
               width={1000}
               height={1500}
               sizes="(min-width: 769px) 25vw, 50vw"
+              fetchPriority="low"
               className="absolute inset-0 hidden h-full w-full object-cover opacity-0 transition-opacity duration-500 imp:block imp:group-hover:opacity-100"
             />
           ) : null}

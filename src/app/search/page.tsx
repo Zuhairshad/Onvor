@@ -100,12 +100,42 @@ async function Results({
   );
 }
 
+/**
+ * Reserves the space the results will occupy.
+ *
+ * The old fallback was 60px tall. Results are a search box, a count and a grid of
+ * up to 35 cards, so the footer sat just under the fold on first paint and was
+ * shoved down the moment they streamed in — a 0.48 layout shift, well into
+ * Google's "poor" band. The result count is not knowable before the query is
+ * read, so this reserves a viewport instead: enough that the footer starts off
+ * screen and whatever arrives grows the page below the fold, where a shift costs
+ * nothing.
+ */
+function ResultsSkeleton() {
+  return (
+    <div className="min-h-screen" aria-hidden>
+      <div className="border-hairline mx-auto max-w-[520px] border-b-2">
+        <div className="bg-body-dim my-3 h-[24px] w-2/3" />
+      </div>
+      <ul className="m-0 mt-10 flex list-none flex-wrap p-0">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <li key={i} className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/4">
+            <div className="bg-body-dim aspect-[2/3] w-full" />
+            <div className="bg-body-dim mt-3 h-[22px] w-3/4" />
+            <div className="bg-body-dim mt-1 h-[21px] w-1/3" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function SearchPage({ searchParams }: PageProps<"/search">) {
   return (
     <PageShell>
       <PageHeader title="Search" />
       <div className="page-width pt-8 pb-16">
-        <Suspense fallback={<div className="h-[60px]" aria-hidden />}>
+        <Suspense fallback={<ResultsSkeleton />}>
           <Results searchParams={searchParams} />
         </Suspense>
       </div>
