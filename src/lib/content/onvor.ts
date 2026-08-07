@@ -232,8 +232,10 @@ export const FOOTER_MENUS = [
     title: "Customer Service",
     links: [
       { label: "Contact Information", href: "/policies/contact-information" },
-      { label: "Privacy Policy", href: "/policies/privacy-policy" },
+      { label: "Shipping Policy", href: "/policies/shipping-policy" },
       { label: "Refund Policy", href: "/policies/refund-policy" },
+      { label: "Privacy Policy", href: "/policies/privacy-policy" },
+      { label: "Terms of Service", href: "/policies/terms-of-service" },
       { label: "Search", href: "/search" },
     ],
   },
@@ -425,6 +427,57 @@ export const RETURN_POLICY = {
   ],
   howTo: `To initiate an exchange, email us at ${"theonvor@gmail.com"} with “Product Replacement” in the subject line and a description of the issue in the body. Alternatively, you can reach us on WhatsApp at 0333-176-6662 between 10am–6pm, Monday to Saturday.`,
 } as const;
+
+/**
+ * Shipping terms, from what the store already advertises: free nationwide
+ * delivery on the homepage badges and in the announcement bar. Timings are the
+ * courier norms for domestic Pakistan; confirm them against Onvor's own courier
+ * contract before treating them as a promise.
+ */
+export const SHIPPING_POLICY = {
+  headline: "Free shipping on all orders nationwide.",
+  points: [
+    "Orders are packed within one working day and handed to the courier the same or the next day.",
+    "Nationwide delivery usually takes 2–5 working days, depending on the city.",
+    "A tracking link is sent by email and SMS as soon as the parcel is collected.",
+    "We currently ship within Pakistan only.",
+  ],
+  note: "If a parcel has not moved for several days, send us the order number and we will chase the courier — you should not have to.",
+} as const;
+
+/**
+ * Terms of service.
+ *
+ * These restate how the store already operates — prices in PKR, Shopify-hosted
+ * checkout, exchange-only returns — rather than inventing obligations. Have them
+ * reviewed before launch: this is the one page on the site with legal weight.
+ */
+export const TERMS = [
+  {
+    heading: "Orders",
+    body: "Placing an order is an offer to buy. We confirm it by email once payment clears; until then we may decline it — for example if an item sells out between your click and our packing table.",
+  },
+  {
+    heading: "Prices",
+    body: "Prices are in Pakistani rupees and include tax. Promotional pricing applies only while the promotion runs and is not applied retroactively to earlier orders.",
+  },
+  {
+    heading: "Products",
+    body: "Colours shift between screens, so a garment may read slightly differently in person. Measurements are approximate and taken with the garment laid flat — see the size guide.",
+  },
+  {
+    heading: "Payment and checkout",
+    body: "Checkout is hosted by Shopify, which handles payment. We never see or store your card details.",
+  },
+  {
+    heading: "Exchanges",
+    body: "All sales are final. Exchanges are governed by our refund policy: 15 days, unused and tagged, same item only, full-price purchases.",
+  },
+  {
+    heading: "Changes",
+    body: "We may update these terms. The version published here when you place an order is the one that applies to it.",
+  },
+] as const;
 
 /**
  * Size guide.

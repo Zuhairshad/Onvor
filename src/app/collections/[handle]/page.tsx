@@ -14,8 +14,25 @@ import {
   productsInCollection,
   type CatalogProduct,
 } from "@/lib/content/catalog";
+import {
+  applyFilters,
+  countActive,
+  facetsFor,
+  parseFilters,
+} from "@/lib/content/filters";
 import { ANNOUNCEMENTS, COLLECTIONS } from "@/lib/content/onvor";
 import { isSortValue, type SortValue } from "@/lib/content/sort";
+
+/**
+ * Every collection the store has, whether or not the snapshot caught products
+ * for it. `pleated-trousers` is the case in point: it is in the nav and in two
+ * mega menus, the store has two products in it, and the snapshot has none — so
+ * gating the route on the snapshot 404'd a link that sits on every page.
+ */
+const KNOWN = new Set([
+  ...Object.keys(COLLECTION_PRODUCTS),
+  ...COLLECTIONS.map((collection) => collection.handle),
+]);
 
 /** Titles and standfirsts for the collections that have products. */
 const META: Record<string, { title: string; description?: string }> = {
@@ -105,19 +122,40 @@ async function Grid({
   const raw = typeof resolved.sort === "string" ? resolved.sort : "featured";
   const sort: SortValue = isSortValue(raw) ? raw : "featured";
 
-  const products = sortProducts(productsInCollection(handle), sort);
+  const all = productsInCollection(handle);
+  const facets = facetsFor(all);
+  const filters = parseFilters(resolved, facets);
+  const products = sortProducts(applyFilters(all, filters), sort);
 
   return (
     <>
-      <CollectionToolbar count={products.length} sort={sort} />
+      <CollectionToolbar
+        count={products.length}
+        total={all.length}
+        sort={sort}
+        facets={facets}
+        filters={filters}
+      />
 
       {products.length === 0 ? (
         <p className="py-16 text-center">
-          Nothing in this collection yet.{" "}
-          <Link href="/collections/all-products" className="underline">
-            Browse everything
-          </Link>
-          .
+          {countActive(filters) > 0 ? (
+            <>
+              Nothing matches those filters.{" "}
+              <Link href={`/collections/${handle}`} className="underline">
+                Clear them
+              </Link>
+              .
+            </>
+          ) : (
+            <>
+              Nothing in this collection yet.{" "}
+              <Link href="/collections/all-products" className="underline">
+                Browse everything
+              </Link>
+              .
+            </>
+          )}
         </p>
       ) : (
         <ul className="m-0 mt-8 flex list-none flex-wrap p-0">
@@ -142,7 +180,7 @@ export default async function CollectionPage({
   searchParams,
 }: PageProps<"/collections/[handle]">) {
   const { handle } = await params;
-  if (!(handle in COLLECTION_PRODUCTS)) notFound();
+  if (!KNOWN.has(handle)) notFound();
 
   const meta = META[handle];
   const known = COLLECTIONS.find((c) => c.handle === handle);
@@ -183,7 +221,7 @@ export default async function CollectionPage({
               the rest of the page still prerenders. The fallback reserves the exact
               grid height — the product count is static even though the ordering is
               not — so the swap causes no layout shift. */}
-          <Suspense fallback={<GridSkeleton count={COLLECTION_PRODUCTS[handle].length} />}>
+          <Suspense fallback={<GridSkeleton count={COLLECTION_PRODUCTS[handle]?.length ?? 0} />}>
             <Grid handle={handle} searchParams={searchParams} />
           </Suspense>
         </div>

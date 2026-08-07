@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ProductJsonLd } from "@/components/theme/JsonLd";
 import { PageShell } from "@/components/theme/PageShell";
 import { ProductCard } from "@/components/theme/ProductCard";
 import { ProductForm } from "@/components/theme/ProductForm";
@@ -51,6 +52,10 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
 
   return (
     <PageShell>
+      <ProductJsonLd
+        product={product}
+        collection={{ handle: collectionHref.replace("/collections/", ""), title: typeLabel }}
+      />
       <div className="page-width pt-8 imp:pt-[40px]">
         {/* Breadcrumb — the theme keeps it small and quiet above the title. */}
         <nav aria-label="Breadcrumb" className="mb-6 text-[14px]">

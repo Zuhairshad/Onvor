@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { IconEmail, IconFacebook, IconInstagram } from "@/components/theme/icons";
+import { IconFacebook, IconInstagram } from "@/components/theme/icons";
+import { NewsletterForm } from "@/components/theme/NewsletterForm";
 import { Reveal } from "@/components/theme/Reveal";
 import { BRAND, FOOTER_MENUS, NEWSLETTER, SOCIALS } from "@/lib/content/onvor";
 
@@ -75,27 +76,7 @@ export function Footer() {
             <h2 className={TITLE_CLASS}>{NEWSLETTER.footerHeading}</h2>
             <p className="mb-4 max-w-[34rem]">{BRAND.positioning}</p>
 
-            <form className="relative inline-block w-full max-w-[300px]" action="/contact">
-              <label htmlFor="newsletter-email" className="sr-only">
-                Enter your email
-              </label>
-              <input
-                id="newsletter-email"
-                type="email"
-                name="email"
-                required
-                autoComplete="email"
-                placeholder={NEWSLETTER.placeholder}
-                className="bg-ink w-full rounded-none border-0 border-b-2 border-white py-[10px] pr-[45px] pl-0 text-white placeholder:text-white placeholder:opacity-100 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="absolute top-1/2 right-0 -translate-y-1/2 p-1 text-white"
-              >
-                <IconEmail className="h-[24px] w-[26px]" />
-                <span className="sr-only">Subscribe</span>
-              </button>
-            </form>
+            <NewsletterForm />
 
             <ul className="m-0 mt-[30px] flex list-none flex-wrap items-center">
               {SOCIALS.map(({ label, href }) => {

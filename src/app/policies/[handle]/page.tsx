@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { PageHeader, PageShell } from "@/components/theme/PageShell";
-import { CONTACT, RETURN_POLICY } from "@/lib/content/onvor";
+import { CONTACT, RETURN_POLICY, SHIPPING_POLICY, TERMS } from "@/lib/content/onvor";
 
 /**
  * Store policies.
@@ -13,12 +13,20 @@ import { CONTACT, RETURN_POLICY } from "@/lib/content/onvor";
  * policy and the authoritative copy lives on the store, so this links out rather
  * than shipping a stale duplicate of a legal document.
  */
-const POLICIES = ["refund-policy", "privacy-policy", "contact-information"] as const;
+const POLICIES = [
+  "refund-policy",
+  "shipping-policy",
+  "privacy-policy",
+  "terms-of-service",
+  "contact-information",
+] as const;
 type PolicyHandle = (typeof POLICIES)[number];
 
 const TITLES: Record<PolicyHandle, string> = {
   "refund-policy": "Return & Refund",
+  "shipping-policy": "Shipping Policy",
   "privacy-policy": "Privacy Policy",
+  "terms-of-service": "Terms of Service",
   "contact-information": "Contact Information",
 };
 
@@ -55,6 +63,37 @@ export default async function PolicyPage({ params }: PageProps<"/policies/[handl
               </ul>
               <h2 className="mt-8 text-[21px]">Starting an exchange</h2>
               <p className="mt-2">{RETURN_POLICY.howTo}</p>
+            </>
+          ) : null}
+
+          {policy === "shipping-policy" ? (
+            <>
+              <p className="font-bold">{SHIPPING_POLICY.headline}</p>
+              <ul className="mt-4 list-disc space-y-3 pl-5">
+                {SHIPPING_POLICY.points.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+              <h2 className="mt-8 text-[21px]">If a parcel goes astray</h2>
+              <p className="mt-2">{SHIPPING_POLICY.note}</p>
+            </>
+          ) : null}
+
+          {policy === "terms-of-service" ? (
+            <>
+              {TERMS.map((section) => (
+                <section key={section.heading} className="mb-7">
+                  <h2 className="text-[21px]">{section.heading}</h2>
+                  <p className="mt-2">{section.body}</p>
+                </section>
+              ))}
+              <p className="mt-8 text-[14px] opacity-70">
+                Questions about these terms:{" "}
+                <a href={`mailto:${CONTACT.email}`} className="underline">
+                  {CONTACT.email}
+                </a>
+                .
+              </p>
             </>
           ) : null}
 

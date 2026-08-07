@@ -292,38 +292,99 @@ export function Header({ overlay = false }: HeaderProps) {
                 Close
               </button>
             </div>
-            <ul className="list-none px-5 py-4">
-              {ITEMS.map((item) => (
-                <li key={item.label} className="py-1">
+            {/* The drawer carries what the desktop mega menus carry, as
+                accordions: a flat list dropped every second-level link, so
+                Bottoms and Pleated Trousers were desktop-only. Sections start
+                closed so the six top-level destinations stay one screen. */}
+            <ul className="m-0 list-none p-0">
+              {ITEMS.map((item) => {
+                const mega = MEGA_MENUS[item.label];
+                const groups = mega
+                  ? mega.columns.map((column) => ({
+                      heading: column.heading,
+                      links: column.links,
+                    }))
+                  : item.children
+                    ? [{ heading: null, links: [...item.children] }]
+                    : [];
+
+                if (groups.length === 0) {
+                  return (
+                    <li key={item.label} className="border-hairline border-b">
+                      <Link
+                        href={item.href}
+                        className="block px-5 py-[14px] text-[16px]"
+                        onClick={closeDrawer}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                }
+
+                return (
+                  <li key={item.label} className="border-hairline border-b">
+                    <details className="group">
+                      <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-[14px] text-[16px]">
+                        {item.label}
+                        <IconChevronDown className="h-[6px] w-[10px] transition-transform group-open:rotate-180" />
+                      </summary>
+
+                      <div className="bg-body-dim/60 px-5 pt-1 pb-4">
+                        <Link
+                          href={item.href}
+                          className="block py-2 text-[15px] underline"
+                          onClick={closeDrawer}
+                        >
+                          All {item.label}
+                        </Link>
+                        {groups.map((group, i) => (
+                          <div key={group.heading ?? i} className="mt-2">
+                            {group.heading ? (
+                              <p className="tracking-caps m-0 mt-3 mb-1 text-[11px] uppercase opacity-55">
+                                {group.heading}
+                              </p>
+                            ) : null}
+                            <ul className="m-0 list-none p-0">
+                              {group.links.map((child) => (
+                                <li key={`${group.heading}-${child.label}`}>
+                                  <Link
+                                    href={child.href}
+                                    className="block py-2 text-[15px]"
+                                    onClick={closeDrawer}
+                                  >
+                                    {child.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* The utility bar is desktop-only, so its links live here instead. */}
+            <ul className="m-0 list-none px-5 py-4">
+              {[
+                { label: "Search", href: "/search" },
+                { label: "Your bag", href: "/cart" },
+                { label: "Account", href: "/account" },
+                { label: "Shipping & Returns", href: "/policies/shipping-policy" },
+              ].map((link) => (
+                <li key={link.href}>
                   <Link
-                    href={item.href}
-                    className="block py-2 text-[16px]"
+                    href={link.href}
+                    className="block py-2 text-[15px]"
                     onClick={closeDrawer}
                   >
-                    {item.label}
+                    {link.label}
                   </Link>
-                  {item.children ? (
-                    <ul className="border-hairline mb-2 list-none border-l pl-4">
-                      {item.children.map((child) => (
-                        <li key={child.label}>
-                          <Link
-                            href={child.href}
-                            className="text-ink/80 block py-1.5 text-[14px]"
-                            onClick={closeDrawer}
-                          >
-                            {child.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
                 </li>
               ))}
-              <li className="border-hairline mt-2 border-t pt-3">
-                <Link href="/search" className="block py-2 text-[16px]" onClick={closeDrawer}>
-                  Search
-                </Link>
-              </li>
             </ul>
           </div>
         </div>
