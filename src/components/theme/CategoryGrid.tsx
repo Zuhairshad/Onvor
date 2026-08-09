@@ -3,16 +3,22 @@ import { ImageGrid, type ImageGridTile } from "@/components/theme/ImageGrid";
 /**
  * The homepage's category tiles: the two gender categories the live store leads
  * with, then four fit-based collections to fill the grid. Their collections carry
- * no collection images, so the fit tiles borrow representative product shots.
+ * no collection images, so the tiles borrow representative product shots.
  */
 const TILES: ImageGridTile[] = [
-  { label: "Men", href: "/collections/men", src: "/onvor/tile-men.jpg", width: 1400, height: 548 },
+  {
+    label: "Men",
+    href: "/collections/men",
+    src: "/onvor/products/refined-loose-fit-tee-black-1.jpg",
+    width: 1000,
+    height: 1500,
+  },
   {
     label: "Women",
     href: "/collections/women",
-    src: "/onvor/tile-women.jpg",
-    width: 1400,
-    height: 548,
+    src: "/onvor/products/category-women-studio.jpg",
+    width: 1024,
+    height: 1536,
   },
   {
     label: "Loose Fit Tees",
