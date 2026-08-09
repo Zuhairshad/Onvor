@@ -124,17 +124,25 @@ type TileProps = {
   className?: string;
 };
 
+/* Delay the fan-out until the section actually scrolls into view. `once: true`
+   means it plays exactly once per visit; `amount: 0.35` waits until roughly a
+   third of the stack is on screen so the movement reads properly on phones. */
+const IN_VIEW = { once: true, amount: 0.35 } as const;
+
 function Tile({ src, alt, variants, origin, z, priority, className = "" }: TileProps) {
   return (
     <motion.div
       className={`absolute aspect-square w-[48%] overflow-hidden rounded-2xl shadow-[0_18px_40px_-14px_rgba(0,0,0,0.35)] ${origin} ${className}`}
       variants={variants}
-      /* Explicit initial + animate so the child definitely enters the fan-out
-         even though it also owns `whileHover` - framer-motion's inherited
-         variant name isn't reliably applied when a child sets whileHover. */
+      /* Each tile owns its own whileInView because a parent-level animate prop
+         does not reliably propagate to children that also set whileHover /
+         whileTap. `whileTap` reuses the hover variant so a mobile tap produces
+         the same nudge as a desktop pointer hover. */
       initial="initial"
-      animate="animate"
+      whileInView="animate"
+      viewport={IN_VIEW}
       whileHover="hover"
+      whileTap="hover"
       style={{ zIndex: z }}
     >
       <Image
@@ -161,12 +169,7 @@ export function ImageReveal({ leftImage, middleImage, rightImage, alt = "" }: Pr
     <>
       {/* Mobile: two tiles only. A third tile at this width would clip against
           the copy above and eat the tap targets on the button row. */}
-      <motion.div
-        className="relative mx-auto flex aspect-[4/3] w-full max-w-[720px] items-center justify-center imp:hidden"
-        variants={container}
-        initial="initial"
-        animate="animate"
-      >
+      <div className="relative mx-auto flex aspect-[4/3] w-full max-w-[720px] items-center justify-center imp:hidden">
         <Tile src={leftImage} alt="" variants={leftMobile} origin="origin-bottom-right" z={20} />
         <Tile
           src={middleImage}
@@ -176,19 +179,14 @@ export function ImageReveal({ leftImage, middleImage, rightImage, alt = "" }: Pr
           z={10}
           priority
         />
-      </motion.div>
+      </div>
 
       {/* Desktop: full three-tile fan-out. */}
-      <motion.div
-        className="relative mx-auto hidden aspect-[4/3] w-full max-w-[720px] items-center justify-center imp:flex"
-        variants={container}
-        initial="initial"
-        animate="animate"
-      >
+      <div className="relative mx-auto hidden aspect-[4/3] w-full max-w-[720px] items-center justify-center imp:flex">
         <Tile src={leftImage} alt="" variants={left} origin="origin-bottom-right" z={30} />
         <Tile src={middleImage} alt={alt} variants={middle} origin="origin-bottom" z={20} priority />
         <Tile src={rightImage} alt="" variants={right} origin="origin-bottom-left" z={10} />
-      </motion.div>
+      </div>
     </>
   );
 }
