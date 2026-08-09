@@ -11,11 +11,6 @@ type Slide = {
 const SLIDES: readonly Slide[] = [
   { lines: ["Azadi", "Sale"], size: "xl" },
   { lines: ["Flat 30%", "Off"], size: "xl" },
-  {
-    lines: ["Get 10% Off", "Your First Order"],
-    size: "lg",
-    footnote: "USE CODE WEARONVOR AT CHECKOUT",
-  },
 ] as const;
 
 const SLIDE_MS = 2400;

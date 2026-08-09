@@ -1,19 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { Reveal } from "@/components/theme/Reveal";
-import { NEWSLETTER } from "@/lib/content/onvor";
-
 export function HeroVideo() {
   return (
     <section
       className="relative w-full overflow-hidden bg-[#1d2a2e]"
       style={{ height: "var(--hero-height)" }}
-      aria-label={NEWSLETTER.heading}
+      aria-label="Azadi Sale - 4th to 14th August - Flat 30% off"
     >
       <Image
         src="/onvor/azadi-promo-model.png"
-        alt=""
+        alt="Azadi Sale - 4th to 14th August - Flat 30% off"
         width={1672}
         height={941}
         sizes="100vw"
@@ -21,26 +18,22 @@ export function HeroVideo() {
         style={{ objectPosition: "70% 0%" }}
       />
 
-      <div className="absolute inset-0 z-[3] flex items-center">
-        <div className="page-width">
-          <Reveal className="flex justify-center py-[15px] text-center imp:justify-start imp:text-left">
-            <div className="hero-text-shadow max-w-[36rem] text-white">
-              <h2 className="font-heading text-[30px] leading-[1.1] font-medium imp:text-[54px]">
-                {NEWSLETTER.heading}
-              </h2>
-              <p className="mt-[15px] mb-[30px] text-[18px] imp:text-[21px]">
-                Subscribe and use code{" "}
-                <span className="tracking-caps font-bold uppercase">{NEWSLETTER.code}</span>{" "}
-                at checkout. Comfort for everyone.
-              </p>
-              <Link
-                href="/collections/all-products"
-                className="btn border-announcement bg-announcement hover:bg-announcement text-black"
-              >
-                Shop all
-              </Link>
-            </div>
-          </Reveal>
+      <div className="absolute inset-0 z-[3] flex items-end imp:items-center">
+        <div className="page-width w-full">
+          <div className="hero-text-shadow flex flex-col items-center pb-[28px] text-center text-white imp:items-start imp:pb-0 imp:pl-[24px] imp:text-left">
+            <h2 className="font-heading max-w-[28rem] text-[36px] leading-[1.05] font-semibold imp:text-[64px]">
+              Independence in every stitch.
+            </h2>
+            <p className="mt-4 max-w-[28rem] text-[15px] leading-relaxed opacity-90 imp:text-[19px]">
+              Loose-fit tees and easy trousers. Pure cotton, cut to move.
+            </p>
+            <Link
+              href="/collections/all-products"
+              className="mt-6 inline-block rounded-full bg-white px-9 py-3.5 text-[12px] font-bold tracking-[0.18em] text-black uppercase shadow-md transition-all hover:bg-white/90 hover:shadow-lg active:scale-95"
+            >
+              Shop the sale
+            </Link>
+          </div>
         </div>
       </div>
     </section>
