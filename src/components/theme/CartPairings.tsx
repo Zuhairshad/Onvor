@@ -121,7 +121,7 @@ function PairingCard({ product }: { product: Product }) {
                 onChange={(event) => setValue(event.target.value)}
                 disabled={pending}
                 aria-label={picker.name}
-                className="border-hairline text-ink hover:border-ink focus-visible:border-ink focus-visible:outline-none w-auto appearance-none rounded-btn border bg-white px-2 py-1.5 text-[13px]"
+                className="border-hairline text-ink hover:border-ink focus-visible:border-ink focus-visible:outline-none w-auto min-w-[44px] appearance-none rounded-btn border bg-white px-3 py-1.5 text-center text-[13px]"
               >
                 {picker.values.map((option) => (
                   <option key={option} value={option}>
