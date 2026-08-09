@@ -4,17 +4,6 @@ import Link from "next/link";
 import { Reveal } from "@/components/theme/Reveal";
 import { NEWSLETTER } from "@/lib/content/onvor";
 
-/**
- * Promotional hero carrying Onvor's first-order offer.
- *
- * The reference runs a background video here. Onvor has no brand video, so this
- * uses their own campaign banner as a still frame rather than shipping a
- * placeholder video - the layout, height and light button treatment are the
- * reference's.
- *
- * No flat overlay on this section; legibility comes from `hero-text-shadow`, the
- * soft radial scrim the reference uses for the same job.
- */
 export function HeroVideo() {
   return (
     <section
@@ -23,23 +12,23 @@ export function HeroVideo() {
       aria-label={NEWSLETTER.heading}
     >
       <Image
-        src="/onvor/hero-banner.jpg"
+        src="/onvor/azadi-promo-model.png"
         alt=""
-        width={1250}
-        height={1718}
+        width={1672}
+        height={941}
         sizes="100vw"
         className="absolute inset-0 h-full w-full object-cover"
-        style={{ objectPosition: "50% 35%" }}
+        style={{ objectPosition: "70% 0%" }}
       />
 
-      <div className="absolute inset-0 z-[3] flex items-center justify-center">
+      <div className="absolute inset-0 z-[3] flex items-center">
         <div className="page-width">
-          <Reveal className="flex justify-center py-[15px] text-center">
-            <div className="hero-text-shadow max-w-[46rem] text-white">
-              <h2 className="font-heading text-[30px] leading-[1.1] font-medium imp:text-[60px]">
+          <Reveal className="flex justify-center py-[15px] text-center imp:justify-start imp:text-left">
+            <div className="hero-text-shadow max-w-[36rem] text-white">
+              <h2 className="font-heading text-[30px] leading-[1.1] font-medium imp:text-[54px]">
                 {NEWSLETTER.heading}
               </h2>
-              <p className="mt-[15px] mb-[30px] text-[21px]">
+              <p className="mt-[15px] mb-[30px] text-[18px] imp:text-[21px]">
                 Subscribe and use code{" "}
                 <span className="tracking-caps font-bold uppercase">{NEWSLETTER.code}</span>{" "}
                 at checkout. Comfort for everyone.

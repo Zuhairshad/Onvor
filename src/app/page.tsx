@@ -3,12 +3,12 @@ import { Suspense } from "react";
 import { AnnouncementBar } from "@/components/theme/AnnouncementBar";
 import { FeaturedCollection } from "@/components/theme/FeaturedCollection";
 import { CategoryGrid } from "@/components/theme/CategoryGrid";
+import { CommunityVideos } from "@/components/theme/CommunityVideos";
 import { CustomerReviews } from "@/components/theme/CustomerReviews";
 import { FeaturedCollections } from "@/components/theme/FeaturedCollections";
 import { Footer } from "@/components/theme/Footer";
 import { Header } from "@/components/theme/Header";
 import { HeroVideo } from "@/components/theme/HeroVideo";
-import { PromoGrid } from "@/components/theme/PromoGrid";
 import { ShoppableHero } from "@/components/theme/ShoppableHero";
 import { SlideshowHero } from "@/components/theme/SlideshowHero";
 import { TextAndImage } from "@/components/theme/TextAndImage";
@@ -82,7 +82,7 @@ export default function Home() {
         <Suspense fallback={<FeaturedRowSkeleton />}>
           <BestSellingRow />
         </Suspense>
-        <PromoGrid />
+        <CommunityVideos />
         <Suspense fallback={<FeaturedRowSkeleton />}>
           <NewArrivalsRow />
         </Suspense>

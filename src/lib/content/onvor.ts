@@ -222,7 +222,7 @@ export const FIT_TILES = [
 
 /** Editorial / lifestyle photography available for hero and feature rows. */
 export const IMAGERY = {
-  heroBanner: { src: "/onvor/hero-banner.jpg", width: 1250, height: 1718 },
+  heroBanner: { src: "/onvor/azadi-promo-model.png", width: 1672, height: 941 },
   lifestyle: [
     { src: "/onvor/lifestyle-1.jpg", width: 1000, height: 1500 },
     { src: "/onvor/lifestyle-2.jpg", width: 1000, height: 1500 },
