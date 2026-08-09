@@ -114,17 +114,18 @@ function PairingCard({ product }: { product: Product }) {
 
         <div className="mt-2 flex items-center gap-2">
           {picker ? (
-            <label className="min-w-0 flex-1">
+            <label className="shrink-0">
               <span className="sr-only">{picker.name}</span>
               <select
                 value={value}
                 onChange={(event) => setValue(event.target.value)}
                 disabled={pending}
-                className="border-hairline text-ink hover:border-ink focus-visible:border-ink focus-visible:outline-none w-full appearance-none rounded-btn border bg-white px-2 py-1.5 text-[13px]"
+                aria-label={picker.name}
+                className="border-hairline text-ink hover:border-ink focus-visible:border-ink focus-visible:outline-none w-auto appearance-none rounded-btn border bg-white px-2 py-1.5 text-[13px]"
               >
                 {picker.values.map((option) => (
                   <option key={option} value={option}>
-                    {picker.name === "Size" ? option : `${picker.name}: ${option}`}
+                    {option}
                   </option>
                 ))}
               </select>
@@ -135,9 +136,9 @@ function PairingCard({ product }: { product: Product }) {
             type="button"
             onClick={onAdd}
             disabled={pending || soldOut || !selectedVariant}
-            className="bg-ink rounded-btn px-3 py-1.5 text-[12px] uppercase tracking-caps text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="bg-ink tracking-caps min-w-0 flex-1 rounded-btn px-3 py-1.5 text-center text-[12px] uppercase text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {pending ? "Adding" : soldOut ? "Sold out" : "Add"}
+            {pending ? "Adding" : soldOut ? "Sold out" : "Add to bag"}
           </button>
         </div>
 
