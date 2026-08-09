@@ -35,13 +35,13 @@ const left: Variants = {
   initial: { rotate: 0, x: "0%", y: 0 },
   animate: {
     rotate: -8,
-    x: "-55%",
+    x: "-80%",
     y: 10,
     transition: { type: "spring", stiffness: 120, damping: 12 },
   },
   hover: {
     rotate: -4,
-    x: "-60%",
+    x: "-85%",
     y: 0,
     transition: { type: "spring", stiffness: 200, damping: 15 },
   },
@@ -67,13 +67,13 @@ const right: Variants = {
   initial: { rotate: 0, x: "0%", y: 0 },
   animate: {
     rotate: -6,
-    x: "55%",
+    x: "80%",
     y: 18,
     transition: { type: "spring", stiffness: 120, damping: 12 },
   },
   hover: {
     rotate: -2,
-    x: "60%",
+    x: "85%",
     y: 8,
     transition: { type: "spring", stiffness: 200, damping: 15 },
   },

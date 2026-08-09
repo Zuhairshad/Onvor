@@ -17,7 +17,7 @@ export function TextAndImage() {
   return (
     <section className="index-section">
       <div className="page-width overflow-hidden">
-        <div className="mx-0 grid grid-cols-1 items-center gap-10 imp:grid-cols-2 imp:gap-[60px] min-[1050px]:mx-[6%]">
+        <div className="mx-0 grid grid-cols-1 items-center gap-10 imp:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] imp:gap-[80px] min-[1050px]:mx-[6%]">
           {/* Text */}
           <div className="order-2 min-w-0 px-[20px] text-left imp:order-none imp:p-0">
             <Reveal>
