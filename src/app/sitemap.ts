@@ -16,7 +16,14 @@ const POLICIES = [
   "contact-information",
 ];
 
-const PAGES = ["/pages/lookbook", "/pages/size-guide", "/pages/contact"];
+const PAGES = [
+  "/pages/lookbook",
+  "/pages/size-guide",
+  "/pages/contact",
+  "/pages/sustainability",
+  "/pages/garment-care",
+  "/pages/customer-care",
+];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://theonvor.com").replace(/\/$/, "");

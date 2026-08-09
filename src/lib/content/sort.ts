@@ -9,11 +9,11 @@
  */
 export const SORT_OPTIONS = [
   { value: "featured", label: "Featured" },
-  { value: "best-selling", label: "Best selling" },
-  { value: "title-asc", label: "Alphabetically, A-Z" },
-  { value: "title-desc", label: "Alphabetically, Z-A" },
+  { value: "best-selling", label: "Best sellers" },
   { value: "price-asc", label: "Price, low to high" },
   { value: "price-desc", label: "Price, high to low" },
+  { value: "title-asc", label: "A-Z" },
+  { value: "title-desc", label: "Z-A" },
 ] as const;
 
 export type SortValue = (typeof SORT_OPTIONS)[number]["value"];

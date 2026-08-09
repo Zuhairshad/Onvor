@@ -10,6 +10,7 @@ import { ProductDetails } from "@/components/theme/ProductDetails";
 import { ProductForm } from "@/components/theme/ProductForm";
 import { ProductGallery } from "@/components/theme/ProductGallery";
 import { Reveal } from "@/components/theme/Reveal";
+import { SizeGuideDrawer } from "@/components/theme/SizeGuideDrawer";
 import { WishlistButton } from "@/components/theme/WishlistButton";
 import { CONTACT, RETURN_POLICY } from "@/lib/content/onvor";
 import {
@@ -186,11 +187,7 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
               contact={`Email ${CONTACT.email} or WhatsApp ${CONTACT.whatsapp}, ${CONTACT.hours}.`}
             />
 
-            <p className="mt-6 text-[14px]">
-              <Link href="/pages/size-guide" className="underline">
-                Size guide
-              </Link>
-            </p>
+            <SizeGuideDrawer productType={product.productType} />
           </div>
         </div>
       </div>

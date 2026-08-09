@@ -9,9 +9,9 @@ const SOCIAL_ICONS = {
 } as const;
 
 const UTILITY_LINKS = [
-  { label: "Size Guide", href: "/pages/size-guide" },
-  { label: "Shipping & Returns", href: "/policies/refund-policy" },
-  { label: "Contact", href: "/pages/contact" },
+  { label: "Sustainability", href: "/pages/sustainability" },
+  { label: "Garment Care", href: "/pages/garment-care" },
+  { label: "Customer Care", href: "/pages/customer-care" },
 ] as const;
 
 /**

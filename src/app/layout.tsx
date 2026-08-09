@@ -1,6 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import { Fustat, Host_Grotesk } from "next/font/google";
+import { Cormorant_Garamond, Fustat, Host_Grotesk } from "next/font/google";
 
 import { CartDrawer } from "@/components/theme/CartDrawer";
 import { CartProvider } from "@/components/theme/CartContext";
@@ -10,11 +10,19 @@ import { WishlistProvider } from "@/components/theme/WishlistContext";
 import { BRAND } from "@/lib/content/onvor";
 import "./globals.css";
 
-/* The Impulse theme's own pairing: Host Grotesk 500 for headings, Fustat 400 body. */
+/* Fonts. Cormorant Garamond drives display headings (H1/H2) for the boutique
+   fashion feel of the reference theme; Host Grotesk stays as the utility
+   caps-style face for nav, buttons and labels; Fustat is the body. */
+const cormorant = Cormorant_Garamond({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
 const hostGrotesk = Host_Grotesk({
   variable: "--font-host-grotesk",
   subsets: ["latin"],
-  // Headings and nav links are all 500; 400 and 600 were downloaded unused.
   weight: ["500"],
   display: "swap",
 });
@@ -51,7 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${hostGrotesk.variable} ${fustat.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${hostGrotesk.variable} ${fustat.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden">
         <CartProvider>

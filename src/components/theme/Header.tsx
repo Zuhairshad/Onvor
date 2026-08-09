@@ -10,7 +10,6 @@ import {
   IconHamburger,
   IconHeart,
   IconSearch,
-  IconUser,
 } from "@/components/theme/icons";
 import { useCart } from "@/components/theme/CartContext";
 import { useWishlist } from "@/components/theme/WishlistContext";
@@ -29,13 +28,13 @@ const NAV_LEFT = ITEMS.slice(0, SPLIT);
 const NAV_RIGHT = ITEMS.slice(SPLIT);
 
 /**
- * .site-nav__link - padding 7.5px 15px. Note the font: the reference header opts
- * into `site-header--heading-style`, so nav links are set in the heading face
- * (Host Grotesk 500 / line-height 1.1), not the body face.
+ * .site-nav__link - padding 7.5px 15px. The reference nav is set in Host Grotesk
+ * 500 / line-height 1.1 (its `site-header--heading-style` variant), not in the
+ * new Cormorant display face we use for H1/H2/H3.
  */
 const LINK_CLASS =
   "relative inline-flex items-center gap-1.5 whitespace-nowrap px-[15px] py-[7.5px] " +
-  "font-heading text-[14px] leading-[1.1] font-medium " +
+  "font-caps text-[13px] leading-[1.1] font-medium tracking-caps uppercase " +
   "after:absolute after:inset-x-[15px] after:bottom-[3px] after:h-px after:origin-left " +
   "after:scale-x-0 after:bg-current after:transition-transform hover:after:scale-x-100";
 
@@ -237,16 +236,10 @@ export function Header({ overlay = false }: HeaderProps) {
             </ul>
           </nav>
 
-          {/* Right: account and cart. */}
+          {/* Right: wishlist and cart. Account is intentionally hidden until
+              the Customer Account API is wired up - there is nothing behind the
+              icon that a shopper can use today. */}
           <div className="-mr-[7.5px] flex flex-1 items-center justify-end wide:-mr-[12px] wide:flex-none">
-            <Link
-              href="/account"
-              className="px-[7.5px] py-[10px] wide:px-[12px]"
-              aria-label="Account"
-              prefetch={false}
-            >
-              <IconUser className="h-5 w-5" />
-            </Link>
             {/* Wishlist link - count comes from the client-side WishlistContext
                 so the badge updates the instant a shopper hits Add to wishlist. */}
             <Link
@@ -257,11 +250,11 @@ export function Header({ overlay = false }: HeaderProps) {
               }
               prefetch={false}
             >
-              <IconHeart className="h-5 w-5" />
+              <IconHeart className="h-5 w-5" filled={wishlistCount > 0} />
               {wishlistCount > 0 ? (
                 <span
                   aria-hidden
-                  className="bg-ink absolute right-0 top-1 grid h-[16px] min-w-[16px] place-items-center rounded-full px-1 font-heading text-[10px] font-medium leading-none text-white wide:right-[2px]"
+                  className="bg-ink absolute right-0 top-1 grid h-[16px] min-w-[16px] place-items-center rounded-full px-1 font-caps text-[10px] font-medium leading-none text-white wide:right-[2px]"
                 >
                   {wishlistCount > 99 ? "99+" : wishlistCount}
                 </span>
@@ -279,7 +272,7 @@ export function Header({ overlay = false }: HeaderProps) {
               {count > 0 ? (
                 <span
                   aria-hidden
-                  className="bg-ink absolute right-0 top-1 grid h-[16px] min-w-[16px] place-items-center rounded-full px-1 font-heading text-[10px] font-medium leading-none text-white wide:right-[2px]"
+                  className="bg-ink absolute right-0 top-1 grid h-[16px] min-w-[16px] place-items-center rounded-full px-1 font-caps text-[10px] font-medium leading-none text-white wide:right-[2px]"
                 >
                   {count > 99 ? "99+" : count}
                 </span>
@@ -407,7 +400,6 @@ export function Header({ overlay = false }: HeaderProps) {
               {[
                 { label: "Search", href: "/search" },
                 { label: "Your bag", href: "/cart" },
-                { label: "Account", href: "/account" },
                 { label: "Shipping & Returns", href: "/policies/shipping-policy" },
               ].map((link) => (
                 <li key={link.href}>

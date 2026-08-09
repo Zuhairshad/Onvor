@@ -88,9 +88,17 @@ export function IconCotton({ className }: IconProps) {
   );
 }
 
-export function IconHeart({ className }: IconProps) {
+export function IconHeart({ className, filled = false }: IconProps & { filled?: boolean }) {
   return (
-    <svg {...base} className={className} viewBox="0 0 100 100">
+    <svg
+      {...base}
+      className={className}
+      viewBox="0 0 100 100"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth={6}
+      strokeLinejoin="round"
+    >
       <path d="M79.7 25.248c-7.057-6.991-18.504-6.991-25.562 0l-4.144 4.106-4.145-4.106c-7.057-6.998-18.498-6.998-25.556 0a17.79 17.79 0 0 0 0 25.323l4.145 4.106L50 80l25.562-25.323 4.145-4.106a17.79 17.79 0 0 0 0-25.323H79.7Z" />
     </svg>
   );

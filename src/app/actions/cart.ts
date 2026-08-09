@@ -14,9 +14,8 @@ import {
   removeCartLines,
   updateCartLines,
   type Cart,
+  type Product,
 } from "@/lib/shopify";
-import { toFeaturedProduct } from "@/lib/shopify/adapters";
-import type { FeaturedProduct } from "@/components/theme/FeaturedCollection";
 
 const CART_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // Shopify carts last ~10 days idle; 30d cookie is harmless.
 
@@ -123,13 +122,19 @@ export async function getCartSummary(): Promise<Cart | null> {
 }
 
 /**
- * Best-sellers row shown at the bottom of the drawer. Kept small (4 cards) so
- * the drawer stays scannable on a laptop viewport.
+ * Best-sellers used as pairings on the /cart review page. Excludes anything
+ * already in the bag and keeps enough variant detail for an inline size picker
+ * plus one-click add. Returns an empty list if the catalog can't be reached.
  */
-export async function getBagRecommendations(): Promise<FeaturedProduct[]> {
+export async function getCartPairings(
+  excludeHandles: string[] = [],
+  first = 2,
+): Promise<Product[]> {
   try {
-    const { items } = await getProducts({ first: 4, sortKey: "BEST_SELLING" });
-    return items.map(toFeaturedProduct);
+    const { items } = await getProducts({ first: first + excludeHandles.length + 2, sortKey: "BEST_SELLING" });
+    return items
+      .filter((product) => !excludeHandles.includes(product.handle))
+      .slice(0, first);
   } catch {
     return [];
   }

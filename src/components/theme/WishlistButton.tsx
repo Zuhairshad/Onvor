@@ -24,7 +24,7 @@ export function WishlistButton({ item }: { item: WishlistItem }) {
           : "border-ink text-ink hover:bg-ink hover:text-white",
       ].join(" ")}
     >
-      <IconHeart className="h-4 w-4" />
+      <IconHeart className="h-4 w-4" filled={active} />
       {active ? "Saved to wishlist" : "Add to wishlist"}
     </button>
   );

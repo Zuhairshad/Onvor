@@ -2,37 +2,21 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useTransition } from "react";
 
-import {
-  getBagRecommendations,
-  removeFromCart,
-  updateCartLineQuantity,
-} from "@/app/actions/cart";
+import { removeFromCart, updateCartLineQuantity } from "@/app/actions/cart";
 import { useCart } from "@/components/theme/CartContext";
-import { formatMoney, formatPkr } from "@/lib/money";
-import type { FeaturedProduct } from "@/components/theme/FeaturedCollection";
+import { formatMoney } from "@/lib/money";
 
 /**
  * Mini-cart drawer. Slides in from the right, listing the current bag with
- * per-line quantity controls, a "Review order" CTA that goes to /cart, and a
- * small "You may also like" strip that pulls the store's best-sellers.
- *
- * Mounted once at the root so a state update inside any product page can open
- * it without prop-drilling. The drawer keeps its own copy of recommendations
- * so opening the drawer twice does not re-fetch.
+ * per-line quantity controls and a Review order CTA that hands off to /cart -
+ * the review page is where "You may also like" pairings live, so the drawer
+ * stays focused on what the shopper just added.
  */
 export function CartDrawer() {
   const { cart, drawerOpen, closeDrawer, setCart } = useCart();
-  const [recs, setRecs] = useState<FeaturedProduct[] | null>(null);
   const [pending, startTransition] = useTransition();
-
-  // Fetch recs lazily on first open. Cheap enough that a single fetch per
-  // session is fine - nothing about them is user-specific.
-  useEffect(() => {
-    if (!drawerOpen || recs !== null) return;
-    void getBagRecommendations().then(setRecs);
-  }, [drawerOpen, recs]);
 
   // Lock page scroll + close on Escape while open.
   useEffect(() => {
@@ -202,42 +186,6 @@ export function CartDrawer() {
             </ul>
           )}
 
-          {/* You may also like - kept below the lines so the shopper sees their
-              own bag first, but inside the scroll container so long bags don't
-              hide it. */}
-          {recs && recs.length > 0 ? (
-            <div className="border-hairline border-t px-5 pt-5 pb-8">
-              <h3 className="tracking-caps m-0 mb-4 text-[12px] uppercase opacity-70">
-                You may also like
-              </h3>
-              <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0">
-                {recs.map((product) => (
-                  <li key={product.handle}>
-                    <Link
-                      href={`/products/${product.handle}`}
-                      className="block"
-                      onClick={closeDrawer}
-                    >
-                      <span className="bg-body-dim relative block aspect-[2/3] w-full overflow-hidden">
-                        <Image
-                          src={product.image}
-                          alt={product.title}
-                          width={600}
-                          height={900}
-                          sizes="(min-width: 440px) 200px, 45vw"
-                          className="h-full w-full object-cover"
-                        />
-                      </span>
-                      <span className="mt-2 block text-[13px]">{product.title}</span>
-                      <span className="mt-0.5 block text-[12px] opacity-70">
-                        {formatPkr(product.price)}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
         </div>
 
         {cart && !empty ? (

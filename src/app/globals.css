@@ -12,7 +12,8 @@
   --color-accent: #ffd5c1; /* text-with-icons icon colour */
   --color-body-dim: #f2f2f2; /* --colorBodyDim */
 
-  --font-heading: var(--font-host-grotesk), sans-serif; /* --typeHeaderPrimary */
+  --font-heading: var(--font-serif), "Cormorant Garamond", serif; /* Display serif for product/collection titles. */
+  --font-caps: var(--font-host-grotesk), sans-serif; /* Utility caps face for nav, buttons, small labels. */
   --font-body: var(--font-fustat), sans-serif; /* --typeBasePrimary */
 
   --radius-btn: 50px; /* --buttonRadius */
@@ -61,8 +62,8 @@
   h3 {
     font-family: var(--font-heading);
     font-weight: 500;
-    letter-spacing: 0;
-    line-height: 1.1;
+    letter-spacing: -0.005em;
+    line-height: 1.08;
     margin: 0 0 10px;
   }
 

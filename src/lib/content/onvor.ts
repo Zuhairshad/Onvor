@@ -88,6 +88,36 @@ export const REVIEWS = [
     meta: "Rawalpindi · Signature Shorts · Sand",
     body: "Worth every rupee. I bought the shorts for the studio and I've worn them out for coffee twice since - that says everything. They pair with almost anything and never look like they're trying too hard.",
   },
+  {
+    name: "Hassan T.",
+    meta: "Karachi · Straight Fit Trouser · Black",
+    body: "The cut is exactly what I wanted from a trouser - straight through the leg without being slim, and heavy enough to hang properly. I've replaced two pairs from other labels since the first wash. Nothing sits like these.",
+  },
+  {
+    name: "Zara I.",
+    meta: "Lahore · Oversized Tee · Off White",
+    body: "The weight of the cotton is what surprised me. It doesn't cling, it doesn't ride up, it just falls the way a tee is supposed to. I've bought three in different colours and none of them have pilled after months of wear.",
+  },
+  {
+    name: "Bilal S.",
+    meta: "Islamabad · Baggy Trouser · Charcoal",
+    body: "I'm 6'2\" and finding baggies that don't turn into flood pants is a fight. These fit through the seat and drape all the way down. First trouser I've bought online without regretting the gamble.",
+  },
+  {
+    name: "Mahnoor Q.",
+    meta: "Karachi · Loose Fit Tee · Charcoal",
+    body: "Ordered on a Tuesday, wearing it by Friday, and it's already the tee I reach for. The neckline sits properly and doesn't stretch out after a wash. Small things but they're the ones that make a difference.",
+  },
+  {
+    name: "Ali R.",
+    meta: "Lahore · Signature Shorts · Charcoal",
+    body: "These are the summer shorts I keep meaning to buy from other brands and never quite get around to. Length is right, waistband stays put, and the fabric doesn't turn stiff after the wash. Bought a second pair the week after.",
+  },
+  {
+    name: "Iman D.",
+    meta: "Karachi · Pleated Trouser · Sand",
+    body: "The pleats hold their line and the fabric moves - I wore them to a wedding and to the market the same weekend and both times they looked right. That's rare. Onvor understood the assignment on this one.",
+  },
 ] as const;
 
 /** Trust badges from their homepage. */
@@ -275,8 +305,9 @@ export const FOOTER_MENUS = [
   {
     title: "Help",
     links: [
-      { label: "Contact", href: "/pages/contact" },
       { label: "Size Guide", href: "/pages/size-guide" },
+      { label: "Shipping & Returns", href: "/policies/refund-policy" },
+      { label: "Contact", href: "/pages/contact" },
       { label: "Lookbook", href: "/pages/lookbook" },
     ],
   },

@@ -12,16 +12,6 @@ export const metadata: Metadata = {
     "Onvor's campaign photography - unisex cotton basics shot in neon, cut for an easy fit.",
 };
 
-/**
- * The reference lookbook is a rich-text header followed by two `image_grid`
- * sections, both full-bleed, three columns, 2:3 portrait, 40px gaps and no
- * overlay or captions. Five images per grid means each lays out three across then
- * lets the remaining two stretch to fill the second row.
- *
- * Onvor has six editorial frames. They are split across the two grids with
- * product shots filling the rest, since the reference's ten-image lookbook is
- * more photography than their campaign produced.
- */
 const EDITORIAL = "Onvor campaign photography";
 
 const FIRST_GRID: ImageGridTile[] = [
@@ -33,7 +23,13 @@ const FIRST_GRID: ImageGridTile[] = [
 ];
 
 const SECOND_GRID: ImageGridTile[] = [
-  { src: "/onvor/lifestyle-6.jpg", width: 1000, height: 1500, alt: EDITORIAL },
+  {
+    src: "/onvor/products/stamp-tee-white-1.jpg",
+    width: 1000,
+    height: 1500,
+    alt: "Stamp Tee in white",
+    href: "/products/stamp-tee-white",
+  },
   {
     src: "/onvor/products/stamp-rainbow-tee-1.jpg",
     width: 1000,

@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { getCartPairings } from "@/app/actions/cart";
 import { CartLines } from "@/components/theme/CartLines";
+import { CartPairings } from "@/components/theme/CartPairings";
 import { PageHeader, PageShell } from "@/components/theme/PageShell";
 import { getCurrentCart } from "@/lib/shopify";
 import { formatMoney } from "@/lib/money";
@@ -41,6 +43,9 @@ async function CartBody() {
 
   if (!cart || cart.lines.length === 0) return <Empty />;
 
+  const inBag = cart.lines.map((line) => line.merchandise.product.handle);
+  const pairings = await getCartPairings(inBag, 2);
+
   return (
     <div className="grid grid-cols-1 gap-10 imp:grid-cols-[minmax(0,1fr)_minmax(280px,380px)] imp:gap-[60px]">
       <div className="min-w-0">
@@ -48,6 +53,7 @@ async function CartBody() {
       </div>
 
       <aside className="min-w-0">
+        <CartPairings products={pairings} />
         <div className="bg-body-dim p-6">
           <h2 className="m-0 text-[21px]">Summary</h2>
           <dl className="mt-4 space-y-2 text-[15px]">

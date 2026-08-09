@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { AnnouncementBar } from "@/components/theme/AnnouncementBar";
+import { CollectionFilters } from "@/components/theme/CollectionFilters";
 import { CollectionToolbar } from "@/components/theme/CollectionToolbar";
 import { Footer } from "@/components/theme/Footer";
 import { Header } from "@/components/theme/Header";
@@ -15,7 +16,7 @@ import {
   facetsFor,
   parseFilters,
 } from "@/lib/content/filters";
-import { ANNOUNCEMENTS, COLLECTIONS } from "@/lib/content/onvor";
+import { COLLECTIONS } from "@/lib/content/onvor";
 import { isSortValue, type SortValue } from "@/lib/content/sort";
 import { getCollection, getCollectionHandles } from "@/lib/shopify";
 import { toCatalogProducts } from "@/lib/shopify/adapters";
@@ -77,19 +78,25 @@ function GridSkeleton() {
   return (
     <>
       <div className="border-hairline flex flex-wrap items-center justify-between gap-3 border-b py-4">
-        <div className="bg-body-dim rounded-btn h-[38px] w-[104px]" />
-        <div className="bg-body-dim hidden h-[21px] w-[84px] imp:block" />
-        <div className="bg-body-dim rounded-btn h-[38px] w-[150px]" />
+        <div className="bg-body-dim h-[14px] w-[80px]" />
+        <div className="bg-body-dim h-[14px] w-[260px]" />
       </div>
-      <ul className="m-0 mt-8 flex list-none flex-wrap p-0" aria-hidden>
-        {Array.from({ length: 12 }).map((_, i) => (
-          <li key={i} className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/4">
-            <div className="bg-body-dim aspect-[2/3] w-full" />
-            <div className="bg-body-dim mt-3 h-[22px] w-3/4" />
-            <div className="bg-body-dim mt-1 h-[21px] w-1/3" />
-          </li>
-        ))}
-      </ul>
+      <div className="mt-8 flex flex-col gap-8 imp:flex-row imp:gap-10">
+        <div className="hidden imp:block w-[200px] shrink-0">
+          <div className="bg-body-dim h-[14px] w-[60px]" />
+          <div className="bg-body-dim mt-6 h-[120px] w-full" />
+          <div className="bg-body-dim mt-4 h-[80px] w-full" />
+        </div>
+        <ul className="m-0 flex flex-1 list-none flex-wrap p-0" aria-hidden>
+          {Array.from({ length: 9 }).map((_, i) => (
+            <li key={i} className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/3">
+              <div className="bg-body-dim aspect-[2/3] w-full" />
+              <div className="bg-body-dim mt-3 h-[22px] w-3/4" />
+              <div className="bg-body-dim mt-1 h-[21px] w-1/3" />
+            </li>
+          ))}
+        </ul>
+      </div>
     </>
   );
 }
@@ -114,48 +121,48 @@ async function Grid({
 
   return (
     <>
-      <CollectionToolbar
-        count={products.length}
-        total={all.length}
-        sort={sort}
-        facets={facets}
-        filters={filters}
-      />
+      <CollectionToolbar count={products.length} sort={sort} filters={filters} />
 
-      {products.length === 0 ? (
-        <p className="py-16 text-center">
-          {countActive(filters) > 0 ? (
-            <>
-              Nothing matches those filters.{" "}
-              <Link href={`/collections/${handle}`} className="underline">
-                Clear them
-              </Link>
-              .
-            </>
+      <div className="mt-8 flex flex-col gap-8 imp:flex-row imp:gap-10">
+        <CollectionFilters facets={facets} filters={filters} />
+
+        <div className="min-w-0 flex-1">
+          {products.length === 0 ? (
+            <p className="py-16 text-center">
+              {countActive(filters) > 0 ? (
+                <>
+                  Nothing matches those filters.{" "}
+                  <Link href={`/collections/${handle}`} className="underline">
+                    Clear them
+                  </Link>
+                  .
+                </>
+              ) : (
+                <>
+                  Nothing in this collection yet.{" "}
+                  <Link href="/collections/all-products" className="underline">
+                    Browse everything
+                  </Link>
+                  .
+                </>
+              )}
+            </p>
           ) : (
-            <>
-              Nothing in this collection yet.{" "}
-              <Link href="/collections/all-products" className="underline">
-                Browse everything
-              </Link>
-              .
-            </>
+            <ul className="m-0 flex list-none flex-wrap p-0">
+              {products.map((product, i) => (
+                <Reveal
+                  key={product.handle}
+                  as="li"
+                  delay={(Math.min(i, 3) + 1) as 1 | 2 | 3 | 4}
+                  className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/3"
+                >
+                  <ProductCard product={product} priority={i < 4} />
+                </Reveal>
+              ))}
+            </ul>
           )}
-        </p>
-      ) : (
-        <ul className="m-0 mt-8 flex list-none flex-wrap p-0">
-          {products.map((product, i) => (
-            <Reveal
-              key={product.handle}
-              as="li"
-              delay={(Math.min(i, 3) + 1) as 1 | 2 | 3 | 4}
-              className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/4"
-            >
-              <ProductCard product={product} priority={i < 4} />
-            </Reveal>
-          ))}
-        </ul>
-      )}
+        </div>
+      </div>
     </>
   );
 }
@@ -175,7 +182,7 @@ export default async function CollectionPage({
   const override = META[handle];
   const title = override?.title ?? collection?.title ?? handle;
   const description = override?.description ?? collection?.description ?? undefined;
-  const promo = ANNOUNCEMENTS[0];
+  const crumbLabel = title.toUpperCase();
 
   return (
     <>
@@ -183,24 +190,20 @@ export default async function CollectionPage({
       <Header />
 
       <main id="MainContent" className="flex-1">
-        <section className="page-width pt-10 imp:pt-[50px]">
-          <Reveal className="text-center">
-            <h1 className="m-0">{title}</h1>
-            {description ? (
-              <p className="mx-auto mt-3 max-w-[42rem]">{description}</p>
-            ) : null}
-          </Reveal>
-        </section>
+        <section className="page-width pt-8 imp:pt-[40px]">
+          <nav aria-label="Breadcrumb" className="tracking-caps text-[11px] uppercase opacity-60">
+            <Link href="/" className="hover:opacity-100">Home</Link>
+            <span className="mx-2">/</span>
+            <Link href="/collections/all-products" className="hover:opacity-100">Shop</Link>
+            <span className="mx-2">/</span>
+            <span className="opacity-100">{crumbLabel}</span>
+          </nav>
 
-        <section className="page-width mt-8 imp:mt-[40px]">
-          <Reveal className="bg-body-dim px-6 py-10 text-center">
-            <h2 className="m-0">{promo.bold}</h2>
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-4">
-              <p className="m-0">{promo.rest}</p>
-              <Link href="/collections/all-products" className="btn">
-                Shop now
-              </Link>
-            </div>
+          <Reveal>
+            <h1 className="mt-6 mb-0 text-[40px] leading-[1.05] imp:text-[56px]">{title}</h1>
+            {description ? (
+              <p className="mt-3 max-w-[48rem] text-[15px] opacity-80">{description}</p>
+            ) : null}
           </Reveal>
         </section>
 
