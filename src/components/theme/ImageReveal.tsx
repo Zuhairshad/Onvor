@@ -19,14 +19,6 @@ type Props = {
   alt?: string;
 };
 
-const container: Variants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: 1,
-    transition: { delay: 0.2, staggerChildren: 0.2 },
-  },
-};
-
 /* Offsets are percentages of each tile's own width, so the fan-out scales with
    the container. Three tiles at w-[42%] with ±85% x-shifts land at roughly the
    left third / centre / right third of the container with a comfortable

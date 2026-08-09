@@ -48,10 +48,10 @@ export function SearchClient({ initialQuery, initialResults }: Props) {
     const qs = next.toString();
     router.replace(qs ? `?${qs}` : "?", { scroll: false });
 
-    if (!q) {
-      setResults([]);
-      return;
-    }
+    // Empty query renders nothing via the derived visibleResults below - no
+    // setState needed here (which the react-hooks/set-state-in-effect rule
+    // flags as a cascading render).
+    if (!q) return;
 
     timer.current = setTimeout(() => {
       const mine = ++seq.current;
@@ -69,7 +69,9 @@ export function SearchClient({ initialQuery, initialResults }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  const showEmpty = query.trim().length > 0 && !pending && results.length === 0;
+  const trimmedQuery = query.trim();
+  const visibleResults = trimmedQuery.length > 0 ? results : [];
+  const showEmpty = trimmedQuery.length > 0 && !pending && visibleResults.length === 0;
 
   return (
     <>
@@ -136,11 +138,11 @@ export function SearchClient({ initialQuery, initialResults }: Props) {
         </div>
       ) : null}
 
-      {results.length > 0 ? (
+      {visibleResults.length > 0 ? (
         <ul
           className={`m-0 mt-8 flex list-none flex-wrap p-0 transition-opacity ${pending ? "opacity-60" : "opacity-100"}`}
         >
-          {results.map((product, i) => (
+          {visibleResults.map((product, i) => (
             <li
               key={product.handle}
               className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/4"

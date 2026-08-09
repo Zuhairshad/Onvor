@@ -4,9 +4,8 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 
@@ -39,47 +38,75 @@ type State = {
 const WishlistCtx = createContext<State | null>(null);
 
 const STORAGE_KEY = "onvor-wishlist";
+const EMPTY: WishlistItem[] = [];
 
-function readFromStorage(): WishlistItem[] {
-  if (typeof window === "undefined") return [];
+function parseStorage(): WishlistItem[] {
+  if (typeof window === "undefined") return EMPTY;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
+    if (!raw) return EMPTY;
     const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
+    if (!Array.isArray(parsed)) return EMPTY;
+    const cleaned = parsed.filter(
       (item): item is WishlistItem =>
         !!item &&
         typeof item === "object" &&
         typeof (item as WishlistItem).handle === "string",
     );
+    return cleaned.length === 0 ? EMPTY : cleaned;
   } catch {
-    return [];
+    return EMPTY;
   }
 }
 
-export function WishlistProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<WishlistItem[]>([]);
-  const [hydrated, setHydrated] = useState(false);
+// External store, so we can drive the component via useSyncExternalStore
+// instead of a setState-in-effect hydration dance (which the
+// react-hooks/set-state-in-effect rule flags).
+let cache: WishlistItem[] | null = null;
+const subscribers = new Set<() => void>();
 
-  // Hydrate from localStorage on mount. Kept out of initial state so SSR and
-  // the first client render match - the empty [] before hydration matches what
-  // the server produced.
-  useEffect(() => {
-    setItems(readFromStorage());
-    setHydrated(true);
-  }, []);
+function getSnapshot(): WishlistItem[] {
+  if (cache === null) cache = parseStorage();
+  return cache;
+}
 
-  // Persist any change once hydrated. The gate stops the first render from
-  // clobbering a real stored list with an empty one.
-  useEffect(() => {
-    if (!hydrated) return;
+function getServerSnapshot(): WishlistItem[] {
+  return EMPTY;
+}
+
+function subscribe(listener: () => void): () => void {
+  subscribers.add(listener);
+  // Sync across tabs.
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== STORAGE_KEY) return;
+    cache = parseStorage();
+    subscribers.forEach((fn) => fn());
+  };
+  if (subscribers.size === 1 && typeof window !== "undefined") {
+    window.addEventListener("storage", onStorage);
+  }
+  return () => {
+    subscribers.delete(listener);
+    if (subscribers.size === 0 && typeof window !== "undefined") {
+      window.removeEventListener("storage", onStorage);
+    }
+  };
+}
+
+function write(next: WishlistItem[]) {
+  cache = next.length === 0 ? EMPTY : next;
+  if (typeof window !== "undefined") {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
     } catch {
       // Storage full or blocked - the in-memory list still works for the tab.
     }
-  }, [items, hydrated]);
+  }
+  subscribers.forEach((fn) => fn());
+}
+
+export function WishlistProvider({ children }: { children: ReactNode }) {
+  const items = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const has = useCallback(
     (handle: string) => items.some((item) => item.handle === handle),
@@ -87,26 +114,26 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   );
 
   const add = useCallback((item: WishlistItem) => {
-    setItems((prev) =>
-      prev.some((existing) => existing.handle === item.handle)
-        ? prev
-        : [...prev, item],
-    );
+    const current = getSnapshot();
+    if (current.some((existing) => existing.handle === item.handle)) return;
+    write([...current, item]);
   }, []);
 
   const remove = useCallback((handle: string) => {
-    setItems((prev) => prev.filter((item) => item.handle !== handle));
+    write(getSnapshot().filter((item) => item.handle !== handle));
   }, []);
 
   const toggle = useCallback((item: WishlistItem) => {
-    setItems((prev) =>
-      prev.some((existing) => existing.handle === item.handle)
-        ? prev.filter((existing) => existing.handle !== item.handle)
-        : [...prev, item],
+    const current = getSnapshot();
+    const exists = current.some((existing) => existing.handle === item.handle);
+    write(
+      exists
+        ? current.filter((existing) => existing.handle !== item.handle)
+        : [...current, item],
     );
   }, []);
 
-  const clear = useCallback(() => setItems([]), []);
+  const clear = useCallback(() => write(EMPTY), []);
 
   const value = useMemo<State>(
     () => ({ items, count: items.length, has, add, remove, toggle, clear }),
