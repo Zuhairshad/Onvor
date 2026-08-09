@@ -1,54 +1,28 @@
-import { getImageProps } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
-import { HeroHotspot, type Hotspot } from "@/components/theme/HeroHotspot";
 import { Reveal } from "@/components/theme/Reveal";
 
 /**
- * The homepage's top section: a full-bleed campaign frame with the header riding
- * transparently over it, copy bottom-left and a `+` hotspot on the garment.
+ * The homepage's top section: a full-bleed campaign video with the header
+ * riding transparently over it and copy bottom-left.
  *
- * The frame is Onvor's own SUMMER'26 banner. That art already carries a headline
- * and a "Shop now", so the copy overlaid here is a second set - a deliberate
- * choice, not an oversight. Everything below is arranged around keeping the two
- * out of each other's way:
+ * The media is a 12s cut from the SUMMER'26 campaign. Two encodes are shipped
+ * so each viewport gets a purpose-cut frame rather than a distorted crop:
+ *  - hero-portrait.mp4 (1080x1920) plays whole below 769px
+ *  - hero-landscape.mp4 (1920x1004) is a pan-and-scan crop of the same take
+ *    that keeps the face, cap and tee inside a 1.917:1 frame from 769px up
  *
- *  - The desktop crop is tuned, not centred. Measured against the artwork, its
- *    type runs x 12–49% and the model x 69–82%; the window keeps both and throws
- *    away only the empty wall at either end.
- *  - The copy sits low enough to clear the baked "Shop now", which bottoms out at
- *    73% of the frame height.
- *  - Below 769px the copy stacks under the media, as the reference does, so the
- *    portrait art shows whole with nothing over it.
- *
- * Desktop and mobile are separate frames, cut for 2.556:1 and 0.727:1. One
- * cropped two ways cannot work: the landscape is 150px tall on a phone and its
- * type is unreadable, and cropping it to portrait cuts that type off. They go
- * through `getImageProps` into a `<picture>` so the browser downloads one and not
- * both - a `display: none` image is still fetched.
+ * Each viewport also gets its own poster still, painted eagerly so the LCP is
+ * an image and the shopper never sees a black waiting box while the video
+ * buffers on a slow connection.
  */
-const DESKTOP = { src: "/onvor/hero/men-desktop.jpg", width: 2400, height: 939 };
-const MOBILE = { src: "/onvor/hero/men-mobile.jpg", width: 1000, height: 1375 };
+const PORTRAIT_VIDEO = "/onvor/hero/hero-portrait.mp4";
+const LANDSCAPE_VIDEO = "/onvor/hero/hero-landscape.mp4";
+const PORTRAIT_POSTER = "/onvor/hero/hero-poster.jpg";
+const LANDSCAPE_POSTER = "/onvor/hero/hero-poster-landscape.jpg";
 
 const ALT = "Onvor Summer '26 - model in an olive loose-fit tee under neon tubes";
-
-/**
- * The garment in the frame, matched to the catalog by the shoot: the product's
- * own photography is the same model, cap and tee in the same room.
- */
-const HOTSPOTS: Hotspot[] = [
-  {
-    handle: "olive-green-beach-escape-tee",
-    title: "Olive Green Beach Escape Tee",
-    price: "1749.30",
-    // Centre of the tee. Desktop percentages are of the *cropped* window rather
-    // than the source: the crop keeps x 10–85%, so the tee's 76% lands at 88%.
-    top: 45,
-    left: 88,
-    topMobile: 42,
-    leftMobile: 50,
-  },
-];
 
 const COPY = {
   heading: "Easy by design",
@@ -57,66 +31,72 @@ const COPY = {
   cta: "Shop all",
 } as const;
 
-function HeroPicture() {
-  const common = { alt: ALT, sizes: "100vw", quality: 82 } as const;
-  const {
-    props: { srcSet: desktopSrcSet },
-  } = getImageProps({ ...common, ...DESKTOP });
-  const {
-    props: { srcSet: mobileSrcSet, ...rest },
-  } = getImageProps({ ...common, ...MOBILE });
-
-  return (
-    <picture>
-      <source media="(min-width: 769px)" srcSet={desktopSrcSet} />
-      <source srcSet={mobileSrcSet} />
-      <img
-        {...rest}
-        // `rest` already carries this; naming it keeps the lint rule able to see it.
-        alt={ALT}
-        loading="eager"
-        fetchPriority="high"
-        className="h-full w-full object-cover object-[40%_50%]"
-      />
-    </picture>
-  );
-}
-
 export function ShoppableHero() {
   return (
     <section className="relative w-full" aria-label={COPY.heading}>
       <div className="relative w-full overflow-hidden">
-        {/* Portrait below 769px, a 1.917:1 landscape above it. That ratio is what
-            keeps the artwork's type and the model both inside the frame once the
-            empty wall at either end is cropped away. Being a ratio rather than a
-            height, the hero is the same shape on a 12" laptop as on a 16" one,
-            and it reserves its space before the image decodes. */}
-        <div className="relative aspect-[1333/1833] w-full imp:aspect-[1.917/1]">
-          <HeroPicture />
+        {/* Portrait below 769px (1333:1833), a 1.917:1 landscape above it,
+            plus a 20px min-height bump so the hero reads a touch taller than
+            the image treatment it replaced. */}
+        <div className="relative aspect-[1333/1833] min-h-[calc(100vw*1833/1333+20px)] w-full imp:aspect-[1.917/1] imp:min-h-[calc(100vw/1.917+20px)]">
+          {/* Mobile poster (LCP). Hidden on desktop so only one file is
+              downloaded per viewport. */}
+          <Image
+            src={PORTRAIT_POSTER}
+            alt={ALT}
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            className="object-cover imp:hidden"
+          />
+          {/* Desktop poster (LCP). */}
+          <Image
+            src={LANDSCAPE_POSTER}
+            alt={ALT}
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            className="hidden object-cover imp:block"
+          />
 
-          {/* --kit-color-mix-tint-overlay: 10% */}
+          {/* Mobile video - portrait fills portrait frame. */}
+          <video
+            src={PORTRAIT_VIDEO}
+            poster={PORTRAIT_POSTER}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-label={ALT}
+            className="absolute inset-0 h-full w-full object-cover imp:hidden"
+          />
+          {/* Desktop video - pan-and-scan landscape crop of the same take. */}
+          <video
+            src={LANDSCAPE_VIDEO}
+            poster={LANDSCAPE_POSTER}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-label={ALT}
+            className="absolute inset-0 hidden h-full w-full object-cover imp:block"
+          />
+
+          {/* Kept subtle so the neon reads at its own contrast. */}
           <div className="absolute inset-0 bg-black/10" aria-hidden />
 
-          {/* A scrim under the overlaid header, as the reference has. Needed here
-              rather than optional: a neon tube crosses the top-right of the frame
-              and the nav sat white-on-white over it. Desktop only - the header is
-              solid below 769px. */}
+          {/* Scrim under the overlaid header. Neon tubes crossing the top of
+              the frame would otherwise render the white nav unreadable. */}
           <div
             className="pointer-events-none absolute inset-x-0 top-0 hidden h-[190px] bg-gradient-to-b from-black/50 via-black/20 to-transparent imp:block"
             aria-hidden
           />
 
-          {HOTSPOTS.map((spot) => (
-            <HeroHotspot key={spot.handle} spot={spot} />
-          ))}
-
-          {/* Content sits bottom-left on desktop (--com-place: end start).
-              No standfirst here, unlike the stacked mobile version below. The
-              artwork's own "Shop now" bottoms out at 73% of the frame, leaving
-              27% for our copy - and 27% of the frame is a shrinking number of
-              pixels as the viewport narrows, while a block of text is not. Two
-              lines fit a 15" laptop and collide on a 12". Heading and button
-              alone clear it at every width, which is the point. */}
+          {/* Copy sits bottom-left on desktop. */}
           <div className="absolute inset-0 z-[3] hidden items-end imp:flex">
             <div className="page-width pb-[48px] pl-[24px]">
               <Reveal className="hero-text-shadow max-w-[32rem] text-left text-white">
@@ -138,9 +118,8 @@ export function ShoppableHero() {
         </div>
       </div>
 
-      {/* Below 769px the reference stacks the copy under the media instead of
-          overlaying it (--com-layout: stack-below), which also leaves the portrait
-          artwork's own type unobstructed. */}
+      {/* Below 769px the copy stacks under the media so the portrait video
+          plays whole with nothing over it. */}
       <div className="page-width py-8 imp:hidden">
         <Reveal className="text-left">
           <h2 className="font-heading text-[26px] leading-[1.1] font-medium">
