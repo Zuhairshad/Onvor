@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Customer Care",
   description:
     "How to reach Onvor, place an order, exchange a piece and get help with shipping.",
+  alternates: { canonical: "/pages/customer-care" },
 };
 
 /**

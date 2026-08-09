@@ -70,7 +70,11 @@ export async function generateMetadata({
   const collection = await getCollection(handle, { first: 1 });
   const title = override?.title ?? collection?.title ?? handle;
   const description = override?.description ?? collection?.description ?? undefined;
-  return { title, description };
+  return {
+    title,
+    description,
+    alternates: { canonical: `/collections/${handle}` },
+  };
 }
 
 /** Same geometry as the real grid, so streaming it in shifts nothing. */

@@ -39,7 +39,10 @@ export async function generateMetadata({
 }: PageProps<"/policies/[handle]">): Promise<Metadata> {
   const { handle } = await params;
   if (!POLICIES.includes(handle as PolicyHandle)) return {};
-  return { title: TITLES[handle as PolicyHandle] };
+  return {
+    title: TITLES[handle as PolicyHandle],
+    alternates: { canonical: `/policies/${handle}` },
+  };
 }
 
 export default async function PolicyPage({ params }: PageProps<"/policies/[handle]">) {

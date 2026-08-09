@@ -40,6 +40,7 @@ export async function generateMetadata({
       product.seo.description ??
       `${product.title} - ${product.productType || "cotton basics"} cut for a loose unisex fit.`,
     openGraph: image ? { images: [image] } : undefined,
+    alternates: { canonical: `/products/${handle}` },
   };
 }
 

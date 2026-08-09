@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Garment Care",
   description:
     "How to wash, dry and store your Onvor pieces so they hold their shape and colour.",
+  alternates: { canonical: "/pages/garment-care" },
 };
 
 /**

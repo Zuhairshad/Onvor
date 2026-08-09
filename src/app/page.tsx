@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { AnnouncementBar } from "@/components/theme/AnnouncementBar";
@@ -16,6 +17,14 @@ import { Toolbar } from "@/components/theme/Toolbar";
 import { SECTION_HEADINGS } from "@/lib/content/onvor";
 import { getProducts } from "@/lib/shopify";
 import { toFeaturedProduct } from "@/lib/shopify/adapters";
+import { BRAND } from "@/lib/content/onvor";
+
+// The visible hero is a rotating promo ticker (Azadi Sale / Flat 30% Off) with
+// no static primary heading, so the H1 is visually hidden and carries the
+// page's page-identity phrase for SEO and screen readers.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 function FeaturedRowSkeleton() {
   return (
@@ -78,6 +87,7 @@ export default function Home() {
       </div>
 
       <main id="MainContent" className="flex-1">
+        <h1 className="sr-only">{`${BRAND.name} — unisex cotton basics`}</h1>
         <FeaturedCollections />
         <Suspense fallback={<FeaturedRowSkeleton />}>
           <BestSellingRow />

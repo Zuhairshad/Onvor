@@ -7,6 +7,7 @@ import { CONTACT } from "@/lib/content/onvor";
 export const metadata: Metadata = {
   title: "Contact",
   description: "Reach Onvor by email or WhatsApp, 10am–6pm Monday to Saturday.",
+  alternates: { canonical: "/pages/contact" },
 };
 
 export default function ContactPage() {

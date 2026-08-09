@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "The Lookbook",
   description:
     "Onvor's campaign photography - unisex cotton basics shot in neon, cut for an easy fit.",
+  alternates: { canonical: "/pages/lookbook" },
 };
 
 const EDITORIAL = "Onvor campaign photography";

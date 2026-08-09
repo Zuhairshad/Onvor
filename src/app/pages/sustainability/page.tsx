@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Sustainability",
   description:
     "How Onvor sources cotton, cuts waste on the pattern table and packs orders without single-use plastic.",
+  alternates: { canonical: "/pages/sustainability" },
 };
 
 /**

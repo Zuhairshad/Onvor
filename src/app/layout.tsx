@@ -50,9 +50,6 @@ export const metadata: Metadata = {
     description: BRAND.statement,
   },
   twitter: { card: "summary_large_image" },
-  // Shopify's own domain serves the same catalog; without this both can be
-  // indexed and split the ranking between them.
-  alternates: { canonical: "/" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

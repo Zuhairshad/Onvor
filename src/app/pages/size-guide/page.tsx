@@ -7,6 +7,7 @@ import { SIZE_GUIDE, SIZE_SPECS } from "@/lib/content/onvor";
 export const metadata: Metadata = {
   title: "Size Guide",
   description: "Official Onvor size charts and spec measurements for loose fit tees, trousers, and shorts.",
+  alternates: { canonical: "/pages/size-guide" },
 };
 
 type SpecTable = (typeof SIZE_SPECS)[number];
