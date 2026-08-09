@@ -172,3 +172,83 @@ export function IconFilter({ className }: IconProps) {
     </svg>
   );
 }
+
+/* ------------------------- care-and-instruction glyphs ---------------------- */
+/* Minimal outline pictograms for the PDP care panel — the shopper only needs
+   to recognise the symbol, so a single 1.5px stroke is enough. */
+
+const careProps = {
+  ...base,
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.5,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
+export function IconWash({ className }: IconProps) {
+  return (
+    <svg {...careProps} className={className} viewBox="0 0 24 24">
+      <path d="M3 5h18l-1.5 14a2 2 0 0 1-2 1.8H6.5a2 2 0 0 1-2-1.8L3 5Z" />
+      <path d="M4 10c2 1 4 1 6-.5 2-1.5 6-1.5 8 0 1 .8 2 1 3 .5" />
+    </svg>
+  );
+}
+
+export function IconDoNotBleach({ className }: IconProps) {
+  return (
+    <svg {...careProps} className={className} viewBox="0 0 24 24">
+      <path d="M4 20 12 4l8 16H4Z" />
+      <path d="M5 5l14 14" />
+    </svg>
+  );
+}
+
+export function IconTumbleDry({ className }: IconProps) {
+  return (
+    <svg {...careProps} className={className} viewBox="0 0 24 24">
+      <rect x="3.5" y="4" width="17" height="16" rx="1.5" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function IconDoNotIron({ className }: IconProps) {
+  return (
+    <svg {...careProps} className={className} viewBox="0 0 24 24">
+      <path d="M3 16h18l-2-4a4 4 0 0 0-3.6-2.3H8.6A4 4 0 0 0 5 12l-2 4Z" />
+      <path d="M3 19h18" />
+      <path d="M5 5l14 14" />
+    </svg>
+  );
+}
+
+export function IconDoNotDryClean({ className }: IconProps) {
+  return (
+    <svg {...careProps} className={className} viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8" />
+      <path d="M6.3 6.3l11.4 11.4" />
+    </svg>
+  );
+}
+
+export function IconLikeColors({ className }: IconProps) {
+  return (
+    <svg {...careProps} className={className} viewBox="0 0 24 24">
+      <circle cx="8.5" cy="12" r="4.5" />
+      <circle cx="15.5" cy="12" r="4.5" />
+    </svg>
+  );
+}
+
+/* ------------------------- fabric-and-feel glyphs --------------------------- */
+
+export function IconThread({ className }: IconProps) {
+  return (
+    <svg {...careProps} className={className} viewBox="0 0 24 24">
+      <path d="M4 20c3-3 5-6 8-6s5 3 8 6" />
+      <path d="M4 14c3-3 5-6 8-6s5 3 8 6" />
+    </svg>
+  );
+}

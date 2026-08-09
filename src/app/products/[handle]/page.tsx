@@ -6,9 +6,11 @@ import { Suspense } from "react";
 import { ProductJsonLd } from "@/components/theme/JsonLd";
 import { PageShell } from "@/components/theme/PageShell";
 import { ProductCard } from "@/components/theme/ProductCard";
+import { ProductDetails } from "@/components/theme/ProductDetails";
 import { ProductForm } from "@/components/theme/ProductForm";
 import { ProductGallery } from "@/components/theme/ProductGallery";
 import { Reveal } from "@/components/theme/Reveal";
+import { WishlistButton } from "@/components/theme/WishlistButton";
 import { CONTACT, RETURN_POLICY } from "@/lib/content/onvor";
 import {
   getProduct,
@@ -164,34 +166,25 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
             </p>
 
             <ProductForm product={catalog} />
+            <WishlistButton
+              item={{
+                handle: catalog.handle,
+                title: product.title,
+                price: catalog.price,
+                compareAt: catalog.compareAt,
+                image: catalog.images[0] ?? null,
+              }}
+            />
 
-            {/* Collapsible detail, as the theme's product accordion does. */}
-            <div className="mt-10">
-              {[
-                {
-                  title: "Details",
-                  body:
-                    product.description?.trim() ||
-                    `${product.title} in 100% cotton, cut for a loose unisex fit.`,
-                },
-                {
-                  title: "Exchanges",
-                  body: `${RETURN_POLICY.headline} ${RETURN_POLICY.points[0]}`,
-                },
-                {
-                  title: "Questions",
-                  body: `Email ${CONTACT.email} or WhatsApp ${CONTACT.whatsapp}, ${CONTACT.hours}.`,
-                },
-              ].map((row) => (
-                <details key={row.title} className="border-hairline border-t">
-                  <summary className="tracking-caps cursor-pointer list-none py-4 text-[13px] uppercase">
-                    {row.title}
-                  </summary>
-                  <p className="pb-4 text-[15px]">{row.body}</p>
-                </details>
-              ))}
-              <div className="border-hairline border-t" />
-            </div>
+            <ProductDetails
+              description={
+                product.description?.trim() ??
+                `${product.title} in 100% cotton, cut for a loose unisex fit.`
+              }
+              fallbackTitle={product.title}
+              exchanges={`${RETURN_POLICY.headline} ${RETURN_POLICY.points[0]}`}
+              contact={`Email ${CONTACT.email} or WhatsApp ${CONTACT.whatsapp}, ${CONTACT.hours}.`}
+            />
 
             <p className="mt-6 text-[14px]">
               <Link href="/pages/size-guide" className="underline">

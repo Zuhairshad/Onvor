@@ -8,10 +8,12 @@ import {
   IconBag,
   IconChevronDown,
   IconHamburger,
+  IconHeart,
   IconSearch,
   IconUser,
 } from "@/components/theme/icons";
 import { useCart } from "@/components/theme/CartContext";
+import { useWishlist } from "@/components/theme/WishlistContext";
 import { MegaMenu } from "@/components/theme/MegaMenu";
 import { BRAND, MEGA_MENUS, NAV } from "@/lib/content/onvor";
 
@@ -92,6 +94,7 @@ export function Header({ overlay = false }: HeaderProps) {
   const closeButton = useRef<HTMLButtonElement | null>(null);
   const hamburger = useRef<HTMLButtonElement | null>(null);
   const { count, openDrawer: openCart } = useCart();
+  const { count: wishlistCount } = useWishlist();
 
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
@@ -243,6 +246,26 @@ export function Header({ overlay = false }: HeaderProps) {
               prefetch={false}
             >
               <IconUser className="h-5 w-5" />
+            </Link>
+            {/* Wishlist link — count comes from the client-side WishlistContext
+                so the badge updates the instant a shopper hits Add to wishlist. */}
+            <Link
+              href="/wishlist"
+              className="relative px-[7.5px] py-[10px] wide:px-[12px]"
+              aria-label={
+                wishlistCount > 0 ? `Wishlist (${wishlistCount} items)` : "Wishlist"
+              }
+              prefetch={false}
+            >
+              <IconHeart className="h-5 w-5" />
+              {wishlistCount > 0 ? (
+                <span
+                  aria-hidden
+                  className="bg-ink absolute right-0 top-1 grid h-[16px] min-w-[16px] place-items-center rounded-full px-1 font-heading text-[10px] font-medium leading-none text-white wide:right-[2px]"
+                >
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                </span>
+              ) : null}
             </Link>
             {/* Bag opens the mini-cart drawer. A badge with the live count
                 (from CartContext) appears once there's anything in the bag. */}

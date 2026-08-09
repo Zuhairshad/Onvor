@@ -6,6 +6,7 @@ import { CartDrawer } from "@/components/theme/CartDrawer";
 import { CartProvider } from "@/components/theme/CartContext";
 import { CookieNotice } from "@/components/theme/CookieNotice";
 import { SiteJsonLd } from "@/components/theme/JsonLd";
+import { WishlistProvider } from "@/components/theme/WishlistContext";
 import { BRAND } from "@/lib/content/onvor";
 import "./globals.css";
 
@@ -54,10 +55,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col overflow-x-hidden">
         <CartProvider>
-          {children}
-          <CartDrawer />
-          <SiteJsonLd />
-          <CookieNotice />
+          <WishlistProvider>
+            {children}
+            <CartDrawer />
+            <SiteJsonLd />
+            <CookieNotice />
+          </WishlistProvider>
         </CartProvider>
         <Analytics />
       </body>
