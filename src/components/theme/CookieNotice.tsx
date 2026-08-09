@@ -42,7 +42,7 @@ export function CookieNotice() {
     <div
       role="region"
       aria-label="Cookie notice"
-      className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-[520px] rounded-lg border border-hairline bg-body p-4 text-[13px] shadow-lg imp:inset-x-auto imp:right-4 imp:left-auto"
+      className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-[520px] rounded-lg bg-ink p-4 text-[13px] text-white shadow-lg imp:inset-x-auto imp:right-4 imp:left-auto"
     >
       <p className="m-0">
         We use a single cart cookie to remember your bag between visits. No
@@ -52,7 +52,7 @@ export function CookieNotice() {
         <button
           type="button"
           onClick={dismiss}
-          className="tracking-caps rounded-btn border border-ink px-4 py-2 text-[11px] uppercase"
+          className="tracking-caps rounded-btn border border-white/70 px-4 py-2 text-[11px] uppercase text-white hover:bg-white hover:text-ink"
         >
           Got it
         </button>
