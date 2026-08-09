@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { AnnouncementBar } from "@/components/theme/AnnouncementBar";
 import { FeaturedCollection } from "@/components/theme/FeaturedCollection";
 import { CategoryGrid } from "@/components/theme/CategoryGrid";
+import { CustomerReviews } from "@/components/theme/CustomerReviews";
 import { FeaturedCollections } from "@/components/theme/FeaturedCollections";
 import { Footer } from "@/components/theme/Footer";
 import { Header } from "@/components/theme/Header";
@@ -11,7 +12,6 @@ import { PromoGrid } from "@/components/theme/PromoGrid";
 import { ShoppableHero } from "@/components/theme/ShoppableHero";
 import { SlideshowHero } from "@/components/theme/SlideshowHero";
 import { TextAndImage } from "@/components/theme/TextAndImage";
-import { TextWithIcons } from "@/components/theme/TextWithIcons";
 import { Toolbar } from "@/components/theme/Toolbar";
 import { SECTION_HEADINGS } from "@/lib/content/onvor";
 import { getProducts } from "@/lib/shopify";
@@ -90,7 +90,7 @@ export default function Home() {
         <TextAndImage />
         <SlideshowHero />
         <CategoryGrid />
-        <TextWithIcons />
+        <CustomerReviews />
       </main>
 
       <Footer />

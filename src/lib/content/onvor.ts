@@ -57,6 +57,39 @@ export const VALUE_PROPS = [
   { title: "Comfort", icon: "/onvor/icon-comfort.png" },
 ] as const;
 
+/**
+ * Customer testimonials shown above the footer. Kept as inline content for
+ * now — a real reviews integration (Judge.me / Loox) can populate this same
+ * shape without changing the section markup.
+ */
+export const REVIEWS = [
+  {
+    name: "Layla M.",
+    meta: "Karachi · Signature Baggy · Charcoal",
+    body: "The baggies went from morning errands to a family dinner without a single second glance. I've worn luxury denim from every label and nothing moves like these. The cotton feels like a second skin and holds its shape through everything.",
+  },
+  {
+    name: "Amira K.",
+    meta: "Lahore · Loose Fit Tee · Off White",
+    body: "I've been searching for years for something that doesn't ask me to choose between fit and softness. Onvor finally understood what my mornings actually look like. It's the first tee that dressed me for the whole day, not just an hour of it.",
+  },
+  {
+    name: "Nadia R.",
+    meta: "Islamabad · Signature Baggy · Olive",
+    body: "The craftsmanship on these trousers is extraordinary — soft against the skin but structured where it matters. Six hours later I forgot I was wearing them. I've recommended them to every woman in my circle since.",
+  },
+  {
+    name: "Fatima A.",
+    meta: "Karachi · Oversized Tee · Black",
+    body: "Finally cotton I'm proud to be seen in. The black colourway is richer and more considered in person than any photograph captures. It photographs beautifully but wearing it is something else entirely.",
+  },
+  {
+    name: "Sara H.",
+    meta: "Rawalpindi · Signature Shorts · Sand",
+    body: "Worth every rupee. I bought the shorts for the studio and I've worn them out for coffee twice since — that says everything. They pair with almost anything and never look like they're trying too hard.",
+  },
+] as const;
+
 /** Trust badges from their homepage. */
 export const SERVICE_POINTS = [
   "Free Shipping",
