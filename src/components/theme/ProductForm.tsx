@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 
 import { addToCart } from "@/app/actions/cart";
+import { useCart } from "@/components/theme/CartContext";
 import type { CatalogProduct } from "@/lib/content/catalog";
 import { formatPkr } from "@/lib/money";
 
@@ -37,6 +38,7 @@ export function ProductForm({ product }: Props) {
   const [quantity, setQuantity] = useState(1);
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
+  const { setCart, openDrawer } = useCart();
 
   const onSale = Boolean(product.compareAt && product.compareAt !== product.price);
 
@@ -44,12 +46,13 @@ export function ProductForm({ product }: Props) {
     setMessage(null);
     startTransition(async () => {
       try {
-        await addToCart(product.handle, selected, quantity);
-        setMessage("Added to your bag.");
+        const cart = await addToCart(product.handle, selected, quantity);
+        // Feed the mirror so the header badge updates immediately, then open
+        // the mini-cart so the shopper sees what they just added.
+        setCart(cart);
+        openDrawer();
       } catch {
-        setMessage(
-          "Cart needs the Shopify Storefront API. Add SHOPIFY_STOREFRONT_ACCESS_TOKEN to .env.local.",
-        );
+        setMessage("Couldn't add to bag. Try again.");
       }
     });
   };

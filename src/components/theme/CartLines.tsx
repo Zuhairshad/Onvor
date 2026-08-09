@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useTransition } from "react";
 
 import { removeFromCart, updateCartLineQuantity } from "@/app/actions/cart";
+import { useCart } from "@/components/theme/CartContext";
 import type { Cart } from "@/lib/shopify";
 import { formatMoney } from "@/lib/money";
 
 /** Quantity stepper and remove control for a cart line. */
 export function CartLines({ cart }: { cart: Cart }) {
   const [pending, startTransition] = useTransition();
+  const { setCart } = useCart();
 
   return (
     <ul className={`m-0 list-none p-0 ${pending ? "opacity-60" : ""}`}>
@@ -53,7 +55,8 @@ export function CartLines({ cart }: { cart: Cart }) {
                   className="px-3 py-1.5 leading-none"
                   onClick={() =>
                     startTransition(async () => {
-                      await updateCartLineQuantity(line.id, line.quantity - 1);
+                      const next = await updateCartLineQuantity(line.id, line.quantity - 1);
+                      setCart(next);
                     })
                   }
                 >
@@ -66,7 +69,8 @@ export function CartLines({ cart }: { cart: Cart }) {
                   className="px-3 py-1.5 leading-none"
                   onClick={() =>
                     startTransition(async () => {
-                      await updateCartLineQuantity(line.id, line.quantity + 1);
+                      const next = await updateCartLineQuantity(line.id, line.quantity + 1);
+                      setCart(next);
                     })
                   }
                 >
@@ -79,7 +83,8 @@ export function CartLines({ cart }: { cart: Cart }) {
                 className="text-[14px] underline opacity-70 hover:opacity-100"
                 onClick={() =>
                   startTransition(async () => {
-                    await removeFromCart(line.id);
+                    const next = await removeFromCart(line.id);
+                    setCart(next);
                   })
                 }
               >

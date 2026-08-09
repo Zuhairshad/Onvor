@@ -6,9 +6,15 @@ export {
   getCollections,
   getProduct,
   getProductHandles,
+  getProductRecommendations,
   getProducts,
 } from "./catalog";
-export type { CollectionOptions, Paginated, ProductListOptions } from "./catalog";
+export type {
+  CollectionOptions,
+  Paginated,
+  ProductListOptions,
+  ProductRecommendationIntent,
+} from "./catalog";
 export {
   CART_COOKIE,
   addCartLines,

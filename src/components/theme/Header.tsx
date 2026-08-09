@@ -11,6 +11,7 @@ import {
   IconSearch,
   IconUser,
 } from "@/components/theme/icons";
+import { useCart } from "@/components/theme/CartContext";
 import { MegaMenu } from "@/components/theme/MegaMenu";
 import { BRAND, MEGA_MENUS, NAV } from "@/lib/content/onvor";
 
@@ -90,6 +91,7 @@ export function Header({ overlay = false }: HeaderProps) {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const closeButton = useRef<HTMLButtonElement | null>(null);
   const hamburger = useRef<HTMLButtonElement | null>(null);
+  const { count, openDrawer: openCart } = useCart();
 
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
@@ -242,14 +244,24 @@ export function Header({ overlay = false }: HeaderProps) {
             >
               <IconUser className="h-5 w-5" />
             </Link>
-            <Link
-              href="/cart"
-              className="px-[7.5px] py-[10px] wide:px-[12px]"
-              aria-label="Cart"
-              prefetch={false}
+            {/* Bag opens the mini-cart drawer. A badge with the live count
+                (from CartContext) appears once there's anything in the bag. */}
+            <button
+              type="button"
+              onClick={openCart}
+              aria-label={count > 0 ? `Cart (${count} items)` : "Cart"}
+              className="relative px-[7.5px] py-[10px] wide:px-[12px]"
             >
               <IconBag className="h-5 w-5" />
-            </Link>
+              {count > 0 ? (
+                <span
+                  aria-hidden
+                  className="bg-ink absolute right-0 top-1 grid h-[16px] min-w-[16px] place-items-center rounded-full px-1 font-heading text-[10px] font-medium leading-none text-white wide:right-[2px]"
+                >
+                  {count > 99 ? "99+" : count}
+                </span>
+              ) : null}
+            </button>
           </div>
         </div>
         {/* Mega-menu panels live outside the header row so each spans the full

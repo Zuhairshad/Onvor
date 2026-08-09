@@ -10,25 +10,31 @@ import { useState } from "react";
  */
 export function ProductGallery({ images, title }: { images: string[]; title: string }) {
   const [active, setActive] = useState(0);
+  const src = images[active];
 
   return (
-    <div>
+    <div className="min-w-0">
       <div className="relative block aspect-[2/3] w-full overflow-hidden bg-body-dim">
-        <Image
-          src={images[active]}
-          alt={title}
-          width={1000}
-          height={1500}
-          sizes="(min-width: 769px) 50vw, 100vw"
-          priority
-          className="h-full w-full object-cover"
-        />
+        {src ? (
+          <Image
+            src={src}
+            alt={title}
+            width={1000}
+            height={1500}
+            /* Media track is 100vw stacked, ~1fr of a max-1500 grid from 769px
+               up (capped near 900px), so 55vw is the honest upper bound and
+               keeps mobile from downloading the desktop crop. */
+            sizes="(min-width: 1500px) 900px, (min-width: 769px) 55vw, 100vw"
+            priority
+            className="h-full w-full object-cover"
+          />
+        ) : null}
       </div>
 
       {images.length > 1 ? (
-        <ul className="m-0 mt-3 flex list-none gap-3 p-0">
-          {images.map((src, i) => (
-            <li key={src} className="w-[84px]">
+        <ul className="m-0 mt-3 flex list-none flex-wrap gap-3 p-0">
+          {images.map((thumb, i) => (
+            <li key={thumb} className="w-[72px] shrink-0 imp:w-[84px]">
               <button
                 type="button"
                 onClick={() => setActive(i)}
@@ -40,7 +46,7 @@ export function ProductGallery({ images, title }: { images: string[]; title: str
                 ].join(" ")}
               >
                 <Image
-                  src={src}
+                  src={thumb}
                   alt=""
                   width={1000}
                   height={1500}

@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { AnnouncementBar } from "@/components/theme/AnnouncementBar";
 import { FeaturedCollection } from "@/components/theme/FeaturedCollection";
 import { CategoryGrid } from "@/components/theme/CategoryGrid";
@@ -12,87 +14,49 @@ import { TextAndImage } from "@/components/theme/TextAndImage";
 import { TextWithIcons } from "@/components/theme/TextWithIcons";
 import { Toolbar } from "@/components/theme/Toolbar";
 import { SECTION_HEADINGS } from "@/lib/content/onvor";
+import { getProducts } from "@/lib/shopify";
+import { toFeaturedProduct } from "@/lib/shopify/adapters";
 
-/**
- * Onvor's best sellers, in the order their live store features them. These stay
- * inline until the Storefront API is wired; then they come from
- * `getCollection("frontpage")` and prices become live.
- */
-const BEST_SELLING = [
-  {
-    handle: "signature-straight-fit-black",
-    title: "Signature Straight Fit - Black",
-    price: "2379.30",
-    image: "/onvor/products/signature-straight-fit-black-1.jpg",
-    hoverImage: "/onvor/products/signature-straight-fit-black-2.jpg",
-  },
-  {
-    handle: "urdu-calligraphy-tee-white",
-    title: "Urdu Calligraphy Tee - White",
-    price: "1679.30",
-    image: "/onvor/products/urdu-calligraphy-tee-white-1.jpg",
-    hoverImage: "/onvor/products/urdu-calligraphy-tee-white-2.jpg",
-  },
-  {
-    handle: "stamp-shorts-grey",
-    title: "Stamp Shorts - Grey",
-    price: "1959.30",
-    image: "/onvor/products/stamp-shorts-grey-1.jpg",
-    hoverImage: "/onvor/products/stamp-shorts-grey-2.jpg",
-  },
-  {
-    handle: "signature-tee-steel-grey",
-    title: "Signature Tee - Steel Grey",
-    price: "1679.30",
-    image: "/onvor/products/signature-tee-steel-grey-1.jpg",
-    hoverImage: "/onvor/products/signature-tee-steel-grey-2.jpg",
-  },
-  {
-    handle: "stamp-rainbow-tee",
-    title: "Stamp Rainbow Tee",
-    price: "1679.30",
-    image: "/onvor/products/stamp-rainbow-tee-1.jpg",
-    hoverImage: "/onvor/products/stamp-rainbow-tee-2.jpg",
-  },
-];
+function FeaturedRowSkeleton() {
+  return (
+    <section className="index-section">
+      <div className="page-width">
+        <div className="bg-body-dim mb-6 h-[32px] w-[220px] imp:mb-8" />
+        <ul className="m-0 flex list-none flex-wrap p-0" aria-hidden>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <li key={i} className="w-1/2 px-[8.5px] pb-[25px] imp:w-1/5">
+              <div className="bg-body-dim aspect-[2/3] w-full" />
+              <div className="bg-body-dim mt-3 h-[22px] w-3/4" />
+              <div className="bg-body-dim mt-1 h-[21px] w-1/3" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
 
-const NEW_ARRIVALS = [
-  {
-    handle: "refined-loose-fit-tee-black",
-    title: "Refined Loose Fit Tee - Black",
-    price: "1749.30",
-    image: "/onvor/products/refined-loose-fit-tee-black-1.jpg",
-    hoverImage: "/onvor/products/refined-loose-fit-tee-black-2.jpg",
-  },
-  {
-    handle: "stamp-tee-white",
-    title: "Stamp Tee - White",
-    price: "1679.30",
-    image: "/onvor/products/stamp-tee-white-1.jpg",
-    hoverImage: "/onvor/products/stamp-tee-white-2.jpg",
-  },
-  {
-    handle: "urdu-calligraphy-tee-charcoal",
-    title: "Urdu Calligraphy Tee - Charcoal",
-    price: "1679.30",
-    image: "/onvor/products/urdu-calligraphy-tee-charcoal-1.jpg",
-    hoverImage: "/onvor/products/urdu-calligraphy-tee-charcoal-2.jpg",
-  },
-  {
-    handle: "signature-shorts-black",
-    title: "Signature Shorts - Black",
-    price: "1959.30",
-    image: "/onvor/products/signature-shorts-black-1.jpg",
-    hoverImage: "/onvor/products/signature-shorts-black-2.jpg",
-  },
-  {
-    handle: "signature-shorts-charcoal",
-    title: "Signature Shorts - Charcoal",
-    price: "1959.30",
-    image: "/onvor/products/signature-shorts-charcoal-1.jpg",
-    hoverImage: "/onvor/products/signature-shorts-charcoal-2.jpg",
-  },
-];
+async function BestSellingRow() {
+  const { items } = await getProducts({ first: 5, sortKey: "BEST_SELLING" });
+  return (
+    <FeaturedCollection
+      heading={SECTION_HEADINGS.bestSelling}
+      products={items.map(toFeaturedProduct)}
+      viewAllHref="/collections/all-products"
+    />
+  );
+}
+
+async function NewArrivalsRow() {
+  const { items } = await getProducts({ first: 5, sortKey: "CREATED_AT", reverse: true });
+  return (
+    <FeaturedCollection
+      heading={SECTION_HEADINGS.newArrivals}
+      products={items.map(toFeaturedProduct)}
+      viewAllHref="/collections/all-products"
+    />
+  );
+}
 
 /**
  * Homepage. Section order follows the reference theme's homepage: shoppable hero,
@@ -115,17 +79,13 @@ export default function Home() {
 
       <main id="MainContent" className="flex-1">
         <FeaturedCollections />
-        <FeaturedCollection
-          heading={SECTION_HEADINGS.bestSelling}
-          products={BEST_SELLING}
-          viewAllHref="/collections/all-products"
-        />
+        <Suspense fallback={<FeaturedRowSkeleton />}>
+          <BestSellingRow />
+        </Suspense>
         <PromoGrid />
-        <FeaturedCollection
-          heading={SECTION_HEADINGS.newArrivals}
-          products={NEW_ARRIVALS}
-          viewAllHref="/collections/all-products"
-        />
+        <Suspense fallback={<FeaturedRowSkeleton />}>
+          <NewArrivalsRow />
+        </Suspense>
         <HeroVideo />
         <TextAndImage />
         <SlideshowHero />

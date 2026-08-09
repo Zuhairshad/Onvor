@@ -8,11 +8,15 @@ import {
   addCartLines,
   createCart,
   getCart,
+  getCurrentCart,
   getProduct,
+  getProducts,
   removeCartLines,
   updateCartLines,
   type Cart,
 } from "@/lib/shopify";
+import { toFeaturedProduct } from "@/lib/shopify/adapters";
+import type { FeaturedProduct } from "@/components/theme/FeaturedCollection";
 
 const CART_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // Shopify carts last ~10 days idle; 30d cookie is harmless.
 
@@ -103,4 +107,30 @@ export async function removeFromCart(lineId: string): Promise<Cart> {
   const cart = await removeCartLines(cartId, [lineId]);
   revalidatePath("/cart");
   return cart;
+}
+
+/**
+ * Client-safe cart read for the header badge and drawer. Swallows read errors
+ * (missing token, stale cookie) into `null` so a rendering failure never
+ * disables the whole shell.
+ */
+export async function getCartSummary(): Promise<Cart | null> {
+  try {
+    return await getCurrentCart();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Best-sellers row shown at the bottom of the drawer. Kept small (4 cards) so
+ * the drawer stays scannable on a laptop viewport.
+ */
+export async function getBagRecommendations(): Promise<FeaturedProduct[]> {
+  try {
+    const { items } = await getProducts({ first: 4, sortKey: "BEST_SELLING" });
+    return items.map(toFeaturedProduct);
+  } catch {
+    return [];
+  }
 }

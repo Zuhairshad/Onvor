@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useId, useState } from "react";
 
-import { IconFilter } from "@/components/theme/icons";
+import { IconChevronDown, IconFilter } from "@/components/theme/icons";
 import { countActive, type Facet, type Filters } from "@/lib/content/filters";
 import { SORT_OPTIONS, type SortValue } from "@/lib/content/sort";
 
@@ -87,7 +87,10 @@ export function CollectionToolbar({ count, total, sort, facets, filters }: Props
             : `${count} of ${total} products`}
         </p>
 
-        <div className="flex min-w-0 items-center gap-2">
+        {/* Native <select> renders OS-specific chrome (rounded on macOS, boxy on
+            Windows). `appearance-none` on the select strips it and we overlay
+            our own chevron so the control matches the Filter pill next to it. */}
+        <div className="relative inline-flex items-center">
           <label htmlFor={selectId} className="sr-only">
             Sort by
           </label>
@@ -95,7 +98,7 @@ export function CollectionToolbar({ count, total, sort, facets, filters }: Props
             id={selectId}
             value={sort}
             onChange={(event) => onSort(event.target.value)}
-            className="border-hairline text-ink rounded-btn min-w-0 max-w-full border bg-white px-3 py-2 text-[14px] imp:px-4 imp:text-[15px]"
+            className="border-hairline text-ink rounded-btn hover:border-ink focus-visible:border-ink focus-visible:outline-none min-w-[132px] cursor-pointer appearance-none border bg-white pl-4 pr-9 py-2 text-[12px] tracking-caps uppercase transition-colors"
           >
             {SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -103,6 +106,9 @@ export function CollectionToolbar({ count, total, sort, facets, filters }: Props
               </option>
             ))}
           </select>
+          <IconChevronDown
+            className="pointer-events-none absolute right-3 top-1/2 h-[6px] w-[10px] -translate-y-1/2"
+          />
         </div>
       </div>
 

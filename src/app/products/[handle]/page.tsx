@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { ProductJsonLd } from "@/components/theme/JsonLd";
 import { PageShell } from "@/components/theme/PageShell";
@@ -8,53 +9,117 @@ import { ProductCard } from "@/components/theme/ProductCard";
 import { ProductForm } from "@/components/theme/ProductForm";
 import { ProductGallery } from "@/components/theme/ProductGallery";
 import { Reveal } from "@/components/theme/Reveal";
-import { PRODUCTS, type CatalogProduct } from "@/lib/content/catalog";
 import { CONTACT, RETURN_POLICY } from "@/lib/content/onvor";
+import {
+  getProduct,
+  getProductHandles,
+  getProductRecommendations,
+  getProducts,
+} from "@/lib/shopify";
+import { toCatalogProduct, toCatalogProducts } from "@/lib/shopify/adapters";
 
-/** Prerender every product in the catalog snapshot. */
-export function generateStaticParams() {
-  return Object.keys(PRODUCTS).map((handle) => ({ handle }));
+/** Prerender every product Shopify currently has. */
+export async function generateStaticParams() {
+  const handles = await getProductHandles();
+  return handles.map(({ handle }) => ({ handle }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<"/products/[handle]">): Promise<Metadata> {
   const { handle } = await params;
-  const product = PRODUCTS[handle];
+  const product = await getProduct(handle);
   if (!product) return {};
+  const image = product.featuredImage?.url ?? product.images[0]?.url;
   return {
-    title: product.title,
-    description: `${product.title} — ${product.type} in 100% cotton, cut for a loose unisex fit.`,
-    openGraph: { images: product.images.slice(0, 1) },
+    title: product.seo.title ?? product.title,
+    description:
+      product.seo.description ??
+      `${product.title} — ${product.productType || "cotton basics"} cut for a loose unisex fit.`,
+    openGraph: image ? { images: [image] } : undefined,
   };
 }
 
-/** Same type, excluding the product being viewed. */
-function related(product: CatalogProduct): CatalogProduct[] {
-  return Object.values(PRODUCTS)
-    .filter((p) => p.handle !== product.handle && p.type === product.type)
-    .slice(0, 5);
+function collectionHrefFor(type: string): { href: string; title: string } {
+  const t = type.toLowerCase();
+  if (t.includes("short")) return { href: "/collections/shorts", title: "Shorts" };
+  if (t.includes("tee") || t.includes("t-shirt"))
+    return { href: "/collections/oversized-tees", title: "Loose Fit Tees" };
+  if (t.includes("trouser") || t.includes("bottom") || t.includes("pant"))
+    return { href: "/collections/bottoms", title: "Bottoms" };
+  return { href: "/collections/all-products", title: "All Products" };
+}
+
+async function Related({
+  productId,
+  productType,
+  currentHandle,
+}: {
+  productId: string;
+  productType: string;
+  currentHandle: string;
+}) {
+  const recs = await getProductRecommendations(productId, "RELATED");
+  let items = recs.filter((p) => p.handle !== currentHandle);
+
+  if (items.length < 4 && productType) {
+    const fallback = await getProducts({
+      first: 8,
+      query: `product_type:"${productType}"`,
+    });
+    const seen = new Set(items.map((p) => p.handle).concat(currentHandle));
+    for (const candidate of fallback.items) {
+      if (!seen.has(candidate.handle)) {
+        items.push(candidate);
+        seen.add(candidate.handle);
+      }
+    }
+  }
+
+  items = items.slice(0, 5);
+  if (items.length === 0) return null;
+
+  const cards = toCatalogProducts(items);
+
+  return (
+    <section className="index-section">
+      <div className="page-width">
+        <h2 className="mb-6 imp:mb-8">You might also like</h2>
+        <ul className="m-0 flex list-none flex-wrap p-0">
+          {cards.map((item, i) => (
+            <Reveal
+              key={item.handle}
+              as="li"
+              delay={(Math.min(i, 3) + 1) as 1 | 2 | 3 | 4}
+              className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/5"
+            >
+              <ProductCard product={item} />
+            </Reveal>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
 }
 
 export default async function ProductPage({ params }: PageProps<"/products/[handle]">) {
   const { handle } = await params;
-  const product = PRODUCTS[handle];
+  const product = await getProduct(handle);
   if (!product) notFound();
 
-  const recommendations = related(product);
-  const typeLabel = product.type.charAt(0).toUpperCase() + product.type.slice(1);
-  const collectionHref =
-    product.type === "shorts"
-      ? "/collections/shorts"
-      : product.type === "Oversized T-shirt"
-        ? "/collections/oversized-tees"
-        : "/collections/bottoms";
+  const catalog = toCatalogProduct(product);
+  const typeLabel =
+    product.productType.charAt(0).toUpperCase() + product.productType.slice(1) ||
+    "Product";
+  const { href: collectionHref, title: collectionTitle } = collectionHrefFor(
+    product.productType,
+  );
 
   return (
     <PageShell>
       <ProductJsonLd
-        product={product}
-        collection={{ handle: collectionHref.replace("/collections/", ""), title: typeLabel }}
+        product={catalog}
+        collection={{ handle: collectionHref.replace("/collections/", ""), title: collectionTitle }}
       />
       <div className="page-width pt-8 imp:pt-[40px]">
         {/* Breadcrumb — the theme keeps it small and quiet above the title. */}
@@ -70,7 +135,7 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
             </li>
             <li>
               <Link href={collectionHref} className="hover:underline">
-                {typeLabel}
+                {collectionTitle}
               </Link>
             </li>
             <li aria-hidden className="opacity-40">
@@ -80,25 +145,34 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
           </ol>
         </nav>
 
-        <div className="flex flex-col gap-10 imp:flex-row imp:gap-[60px]">
-          <div className="w-full imp:flex-[0_1_55%]">
-            <ProductGallery images={product.images} title={product.title} />
+        {/* Two-column PDP.
+            `minmax(0, ...)` on both tracks is load-bearing: without it, flex/grid
+            children default to `min-width: auto` and size to their intrinsic
+            content — the gallery Image renders at 1000px natively, which would
+            blow the media track past 55% and push the info column off-screen.
+            The right track is capped at 520px so the copy stays readable at
+            ultrawide (~2048px+) viewports without ballooning line length. */}
+        <div className="grid grid-cols-1 gap-10 imp:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] imp:gap-10 wide:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] wide:gap-[60px]">
+          <div className="min-w-0">
+            <ProductGallery images={catalog.images} title={product.title} />
           </div>
 
-          <div className="w-full imp:flex-[0_1_45%]">
-            <h1 className="m-0">{product.title}</h1>
+          <div className="min-w-0">
+            <h1 className="m-0 break-words">{product.title}</h1>
             <p className="tracking-caps mt-2 text-[13px] uppercase opacity-60">
               {typeLabel}
             </p>
 
-            <ProductForm product={product} />
+            <ProductForm product={catalog} />
 
             {/* Collapsible detail, as the theme's product accordion does. */}
             <div className="mt-10">
               {[
                 {
                   title: "Details",
-                  body: `${product.title} in 100% cotton, cut for a loose unisex fit. Sizes ${Object.values(product.options).flat().filter((v) => ["S", "M", "L", "XL"].includes(v)).join(", ") || "S–XL"}.`,
+                  body:
+                    product.description?.trim() ||
+                    `${product.title} in 100% cotton, cut for a loose unisex fit.`,
                 },
                 {
                   title: "Exchanges",
@@ -128,25 +202,13 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
         </div>
       </div>
 
-      {recommendations.length > 0 ? (
-        <section className="index-section">
-          <div className="page-width">
-            <h2 className="mb-6 imp:mb-8">You might also like</h2>
-            <ul className="m-0 flex list-none flex-wrap p-0">
-              {recommendations.map((item, i) => (
-                <Reveal
-                  key={item.handle}
-                  as="li"
-                  delay={(Math.min(i, 3) + 1) as 1 | 2 | 3 | 4}
-                  className="w-1/2 px-[8.5px] pb-[30px] imp:w-1/5"
-                >
-                  <ProductCard product={item} />
-                </Reveal>
-              ))}
-            </ul>
-          </div>
-        </section>
-      ) : null}
+      <Suspense fallback={null}>
+        <Related
+          productId={product.id}
+          productType={product.productType}
+          currentHandle={product.handle}
+        />
+      </Suspense>
 
       <div className="page-width pb-16 text-center">
         <Link href={collectionHref} className="btn">

@@ -1,6 +1,10 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Fustat, Host_Grotesk } from "next/font/google";
 
+import { CartDrawer } from "@/components/theme/CartDrawer";
+import { CartProvider } from "@/components/theme/CartContext";
+import { CookieNotice } from "@/components/theme/CookieNotice";
 import { SiteJsonLd } from "@/components/theme/JsonLd";
 import { BRAND } from "@/lib/content/onvor";
 import "./globals.css";
@@ -49,8 +53,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${hostGrotesk.variable} ${fustat.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden">
-        {children}
-        <SiteJsonLd />
+        <CartProvider>
+          {children}
+          <CartDrawer />
+          <SiteJsonLd />
+          <CookieNotice />
+        </CartProvider>
+        <Analytics />
       </body>
     </html>
   );

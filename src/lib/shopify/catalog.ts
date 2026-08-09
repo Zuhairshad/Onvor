@@ -8,6 +8,7 @@ import {
   GET_PRODUCTS_QUERY,
   GET_PRODUCT_HANDLES_QUERY,
   GET_PRODUCT_QUERY,
+  GET_PRODUCT_RECOMMENDATIONS_QUERY,
 } from "./queries";
 import { collectionTag, productTag, TAGS } from "./tags";
 import type {
@@ -129,6 +130,32 @@ export async function getCollections(first = 50): Promise<Collection[]> {
   });
 
   return flatten(data.collections);
+}
+
+export type ProductRecommendationIntent = "RELATED" | "COMPLEMENTARY";
+
+/**
+ * Shopify's own recommendations. Requires a product id, not a handle. Returns
+ * empty for stores without purchase data or manual complements set; callers
+ * should top up with a product-type fallback.
+ */
+export async function getProductRecommendations(
+  productId: string,
+  intent: ProductRecommendationIntent = "RELATED",
+): Promise<Product[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(TAGS.products);
+
+  const data = await storefront<
+    { productRecommendations: RawProduct[] | null },
+    { productId: string; intent: ProductRecommendationIntent }
+  >({
+    query: GET_PRODUCT_RECOMMENDATIONS_QUERY,
+    variables: { productId, intent },
+  });
+
+  return (data.productRecommendations ?? []).map(normalizeProduct);
 }
 
 type HandleNode = { handle: string; updatedAt: string };

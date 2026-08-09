@@ -40,7 +40,7 @@ export async function storefront<T, V = Record<string, unknown>>({
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": accessToken,
+      "Shopify-Storefront-Private-Token": accessToken,
       ...headers,
     },
     body: JSON.stringify({ query, variables }),

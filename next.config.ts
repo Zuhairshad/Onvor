@@ -31,6 +31,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  // Shopify's live sitemap listed `/blogs/news` (the default Shopify blog); the
+  // headless build has no blog, so redirect the one legacy URL search engines
+  // may have indexed to the homepage. `/pages/*` and `/policies/*` structures
+  // match 1:1 with the Next routes and need no rewrite.
+  async redirects() {
+    return [
+      { source: "/blogs/news", destination: "/", permanent: true },
+      { source: "/blogs/:path*", destination: "/", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

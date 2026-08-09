@@ -1,42 +1,46 @@
 import type { MetadataRoute } from "next";
 
-import { COLLECTION_PRODUCTS, PRODUCTS } from "@/lib/content/catalog";
-import { COLLECTIONS } from "@/lib/content/onvor";
+import { getCollectionHandles, getProductHandles } from "@/lib/shopify";
 
 /**
  * Sitemap.
  *
- * Sixty-one products and fourteen collections are only reachable through the nav
- * and the grids, which is a lot of depth for a crawler to find on its own — the
- * sitemap is what gets them indexed in the first place.
- *
- * `lastModified` is deliberately absent. The catalog is a dated snapshot, so any
- * date here would be a guess, and a wrong `lastmod` is worse than none: crawlers
- * that learn a site lies about it stop reading the field. Add real dates when
- * the Storefront API supplies `updatedAt`.
+ * Sourced from live Shopify handles so newly-added products appear the moment
+ * webhooks invalidate the cache. `lastModified` uses each node's `updatedAt`.
  */
-const POLICIES = ["refund-policy", "shipping-policy", "privacy-policy", "terms-of-service", "contact-information"];
+const POLICIES = [
+  "refund-policy",
+  "shipping-policy",
+  "privacy-policy",
+  "terms-of-service",
+  "contact-information",
+];
 
 const PAGES = ["/pages/lookbook", "/pages/size-guide", "/pages/contact"];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://theonvor.com").replace(/\/$/, "");
+
+  const [products, collections] = await Promise.all([
+    getProductHandles(),
+    getCollectionHandles(),
+  ]);
 
   // `frontpage` is Shopify's internal home-page collection: a duplicate of what
   // the homepage already shows, so indexing it competes with the homepage.
-  const collections = COLLECTIONS.filter((collection) => collection.handle !== "frontpage").filter(
-    (collection) => collection.handle in COLLECTION_PRODUCTS || collection.count > 0,
-  );
+  const publicCollections = collections.filter((collection) => collection.handle !== "frontpage");
 
   return [
     { url: `${base}/`, changeFrequency: "daily", priority: 1 },
-    ...collections.map((collection) => ({
+    ...publicCollections.map((collection) => ({
       url: `${base}/collections/${collection.handle}`,
+      lastModified: new Date(collection.updatedAt),
       changeFrequency: "daily" as const,
       priority: 0.8,
     })),
-    ...Object.keys(PRODUCTS).map((handle) => ({
-      url: `${base}/products/${handle}`,
+    ...products.map((product) => ({
+      url: `${base}/products/${product.handle}`,
+      lastModified: new Date(product.updatedAt),
       changeFrequency: "weekly" as const,
       priority: 0.7,
     })),

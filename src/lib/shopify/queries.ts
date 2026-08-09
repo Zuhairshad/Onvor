@@ -113,6 +113,19 @@ export const GET_CART_QUERY = withFragments(
   MONEY_FRAGMENT,
 );
 
+export const GET_PRODUCT_RECOMMENDATIONS_QUERY = withFragments(
+  /* GraphQL */ `
+    query getProductRecommendations($productId: ID!, $intent: ProductRecommendationIntent) {
+      productRecommendations(productId: $productId, intent: $intent) {
+        ...ProductFields
+      }
+    }
+  `,
+  PRODUCT_FRAGMENT,
+  IMAGE_FRAGMENT,
+  MONEY_FRAGMENT,
+);
+
 /** Handles only — for generateStaticParams and sitemaps. */
 export const GET_PRODUCT_HANDLES_QUERY = /* GraphQL */ `
   query getProductHandles($first: Int!, $after: String) {

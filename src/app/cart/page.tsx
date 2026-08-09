@@ -35,19 +35,19 @@ async function CartBody() {
     cart = await getCurrentCart();
   } catch {
     return (
-      <Empty reason="Cart needs the Shopify Storefront API — add SHOPIFY_STOREFRONT_ACCESS_TOKEN to .env.local." />
+      <Empty reason="We couldn't load your bag. Please refresh or try again in a moment." />
     );
   }
 
   if (!cart || cart.lines.length === 0) return <Empty />;
 
   return (
-    <div className="flex flex-col gap-10 imp:flex-row imp:gap-[60px]">
-      <div className="imp:flex-[0_1_62%]">
+    <div className="grid grid-cols-1 gap-10 imp:grid-cols-[minmax(0,1fr)_minmax(280px,380px)] imp:gap-[60px]">
+      <div className="min-w-0">
         <CartLines cart={cart} />
       </div>
 
-      <aside className="imp:flex-[0_1_38%]">
+      <aside className="min-w-0">
         <div className="bg-body-dim p-6">
           <h2 className="m-0 text-[21px]">Summary</h2>
           <dl className="mt-4 space-y-2 text-[15px]">
