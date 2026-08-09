@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { HeroVideos } from "@/components/theme/HeroVideos";
 import { Reveal } from "@/components/theme/Reveal";
 
 /**
@@ -61,29 +62,14 @@ export function ShoppableHero() {
             className="hidden object-cover imp:block"
           />
 
-          {/* Mobile video - portrait fills portrait frame. */}
-          <video
-            src={PORTRAIT_VIDEO}
-            poster={PORTRAIT_POSTER}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            aria-label={ALT}
-            className="absolute inset-0 h-full w-full object-cover imp:hidden"
-          />
-          {/* Desktop video - pan-and-scan landscape crop of the same take. */}
-          <video
-            src={LANDSCAPE_VIDEO}
-            poster={LANDSCAPE_POSTER}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            aria-label={ALT}
-            className="absolute inset-0 hidden h-full w-full object-cover imp:block"
+          {/* Both viewports get their own encode; HeroVideos also pauses them
+              when the hero scrolls out of view. */}
+          <HeroVideos
+            portraitSrc={PORTRAIT_VIDEO}
+            landscapeSrc={LANDSCAPE_VIDEO}
+            portraitPoster={PORTRAIT_POSTER}
+            landscapePoster={LANDSCAPE_POSTER}
+            alt={ALT}
           />
 
           {/* Kept subtle so the neon reads at its own contrast. */}
