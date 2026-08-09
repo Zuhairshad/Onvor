@@ -32,7 +32,7 @@ const NO_PREFETCH = { prefetch: false } as const;
  */
 export function Footer() {
   return (
-    <footer className="bg-ink pb-0 text-white imp:pt-[60px] imp:pb-[60px]">
+    <footer className="bg-ink pt-8 pb-8 text-white imp:pt-[60px] imp:pb-[60px]">
       <div className="page-width">
         <Reveal className="flex flex-wrap">
           {MENUS.map((menu, i) => (
@@ -72,7 +72,7 @@ export function Footer() {
           ))}
 
           {/* Newsletter */}
-          <div className="w-full pt-10 imp:w-1/2 imp:pr-[60px] min-[960px]:w-2/5 min-[960px]:pt-0">
+          <div className="w-full pt-8 imp:w-1/2 imp:pt-10 imp:pr-[60px] min-[960px]:w-2/5 min-[960px]:pt-0">
             <h2 className={TITLE_CLASS}>{NEWSLETTER.footerHeading}</h2>
             <p className="mb-4 max-w-[34rem]">{BRAND.positioning}</p>
 
@@ -99,11 +99,11 @@ export function Footer() {
           </div>
         </Reveal>
 
-        <Reveal className="border-t border-white/12 pt-6">
-          <p className="m-0 mx-auto max-w-[46rem] text-center text-[14px] text-white/80">
+        <Reveal className="mt-8 border-t border-white/12 pt-6 imp:mt-10">
+          <p className="m-0 mx-auto max-w-[46rem] px-2 text-center text-[13px] leading-relaxed text-white/80 imp:text-[14px]">
             {BRAND.statement} {BRAND.origin}
           </p>
-          <p className="m-0 py-[7.5px] pt-[15px] text-center text-[12px]">
+          <p className="m-0 mt-3 text-center text-[12px] text-white/70">
             {BRAND.copyright}
           </p>
         </Reveal>

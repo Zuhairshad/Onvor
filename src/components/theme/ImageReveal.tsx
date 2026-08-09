@@ -47,6 +47,41 @@ const left: Variants = {
   },
 };
 
+/* Two-tile mobile arrangement: the left tile fans a shorter distance because
+   there is no third tile to balance it - keeping the same -80% shift as desktop
+   would leave the middle tile stranded on the right of the frame. */
+const leftMobile: Variants = {
+  initial: { rotate: 0, x: "0%", y: 0 },
+  animate: {
+    rotate: -6,
+    x: "-55%",
+    y: 6,
+    transition: { type: "spring", stiffness: 120, damping: 12 },
+  },
+  hover: {
+    rotate: -3,
+    x: "-58%",
+    y: 0,
+    transition: { type: "spring", stiffness: 200, damping: 15 },
+  },
+};
+
+const middleMobile: Variants = {
+  initial: { rotate: 0, x: "0%", y: 0 },
+  animate: {
+    rotate: 4,
+    x: "25%",
+    y: 0,
+    transition: { type: "spring", stiffness: 120, damping: 12 },
+  },
+  hover: {
+    rotate: 0,
+    x: "25%",
+    y: -8,
+    transition: { type: "spring", stiffness: 200, damping: 15 },
+  },
+};
+
 const middle: Variants = {
   initial: { rotate: 0, x: 0, y: 0 },
   animate: {
@@ -86,12 +121,13 @@ type TileProps = {
   origin: string;
   z: number;
   priority?: boolean;
+  className?: string;
 };
 
-function Tile({ src, alt, variants, origin, z, priority }: TileProps) {
+function Tile({ src, alt, variants, origin, z, priority, className = "" }: TileProps) {
   return (
     <motion.div
-      className={`absolute aspect-square w-[48%] overflow-hidden rounded-2xl shadow-[0_18px_40px_-14px_rgba(0,0,0,0.35)] ${origin}`}
+      className={`absolute aspect-square w-[48%] overflow-hidden rounded-2xl shadow-[0_18px_40px_-14px_rgba(0,0,0,0.35)] ${origin} ${className}`}
       variants={variants}
       /* Explicit initial + animate so the child definitely enters the fan-out
          even though it also owns `whileHover` - framer-motion's inherited
@@ -122,15 +158,37 @@ function Tile({ src, alt, variants, origin, z, priority }: TileProps) {
  */
 export function ImageReveal({ leftImage, middleImage, rightImage, alt = "" }: Props) {
   return (
-    <motion.div
-      className="relative mx-auto flex aspect-[4/3] w-full max-w-[720px] items-center justify-center"
-      variants={container}
-      initial="initial"
-      animate="animate"
-    >
-      <Tile src={leftImage} alt="" variants={left} origin="origin-bottom-right" z={30} />
-      <Tile src={middleImage} alt={alt} variants={middle} origin="origin-bottom" z={20} priority />
-      <Tile src={rightImage} alt="" variants={right} origin="origin-bottom-left" z={10} />
-    </motion.div>
+    <>
+      {/* Mobile: two tiles only. A third tile at this width would clip against
+          the copy above and eat the tap targets on the button row. */}
+      <motion.div
+        className="relative mx-auto flex aspect-[4/3] w-full max-w-[720px] items-center justify-center imp:hidden"
+        variants={container}
+        initial="initial"
+        animate="animate"
+      >
+        <Tile src={leftImage} alt="" variants={leftMobile} origin="origin-bottom-right" z={20} />
+        <Tile
+          src={middleImage}
+          alt={alt}
+          variants={middleMobile}
+          origin="origin-bottom"
+          z={10}
+          priority
+        />
+      </motion.div>
+
+      {/* Desktop: full three-tile fan-out. */}
+      <motion.div
+        className="relative mx-auto hidden aspect-[4/3] w-full max-w-[720px] items-center justify-center imp:flex"
+        variants={container}
+        initial="initial"
+        animate="animate"
+      >
+        <Tile src={leftImage} alt="" variants={left} origin="origin-bottom-right" z={30} />
+        <Tile src={middleImage} alt={alt} variants={middle} origin="origin-bottom" z={20} priority />
+        <Tile src={rightImage} alt="" variants={right} origin="origin-bottom-left" z={10} />
+      </motion.div>
+    </>
   );
 }

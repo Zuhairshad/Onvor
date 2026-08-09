@@ -102,8 +102,8 @@ export function CustomerReviews() {
   return (
     <section className="section--divider index-section">
       <div className="page-width">
-        <div className="mb-8 flex items-end justify-between gap-4">
-          <h2 className="m-0">Customer Reviews</h2>
+        <div className="mb-6 flex items-end justify-between gap-4 imp:mb-8">
+          <h2 className="m-0 text-[24px] imp:text-[var(--type-h2)]">Customer Reviews</h2>
           <div className="hidden gap-3 imp:flex">
             <Arrow dir="prev" onClick={() => scrollByCard(-1)} disabled={atStart} />
             <Arrow dir="next" onClick={() => scrollByCard(1)} disabled={atEnd} />
@@ -112,12 +112,12 @@ export function CustomerReviews() {
 
         <div
           ref={scrollerRef}
-          className="-mx-[17px] flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-[17px] pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden imp:mx-0 imp:gap-8 imp:px-0"
+          className="-mx-[17px] flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-[17px] pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden imp:mx-0 imp:gap-8 imp:px-0"
         >
           {REVIEWS.map((review) => (
             <article
               key={review.name}
-              className="border-hairline flex w-[85%] shrink-0 snap-start flex-col border-l pl-6 first:border-l-0 first:pl-0 imp:w-[calc((100%-4*2rem)/5)]"
+              className="flex w-[85%] shrink-0 snap-start flex-col rounded-lg border border-hairline bg-white/40 p-5 imp:w-[calc((100%-4*2rem)/5)] imp:rounded-none imp:border-0 imp:border-l imp:border-hairline imp:bg-transparent imp:p-0 imp:pl-6 imp:first:border-l-0 imp:first:pl-0"
             >
               <StarRow />
               <p className="mb-6 flex-1 text-[14px] leading-[1.65] opacity-80">
@@ -130,6 +130,11 @@ export function CustomerReviews() {
             </article>
           ))}
         </div>
+
+        {/* Mobile pagination affordance: dot count so a shopper knows there's more. */}
+        <p className="tracking-caps mt-4 text-center text-[11px] uppercase opacity-55 imp:hidden">
+          Swipe for more reviews
+        </p>
       </div>
     </section>
   );
