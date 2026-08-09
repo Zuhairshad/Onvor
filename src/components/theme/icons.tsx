@@ -1,5 +1,5 @@
 /**
- * Icons lifted verbatim from the Impulse theme's own SVG sprites — paths are
+ * Icons lifted verbatim from the Impulse theme's own SVG sprites - paths are
  * copied exactly so the glyphs match the reference rather than approximating
  * them with a different icon set.
  *
@@ -174,7 +174,7 @@ export function IconFilter({ className }: IconProps) {
 }
 
 /* ------------------------- care-and-instruction glyphs ---------------------- */
-/* Minimal outline pictograms for the PDP care panel — the shopper only needs
+/* Minimal outline pictograms for the PDP care panel - the shopper only needs
    to recognise the symbol, so a single 1.5px stroke is enough. */
 
 const careProps = {

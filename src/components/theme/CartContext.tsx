@@ -16,7 +16,7 @@ import type { Cart } from "@/lib/shopify";
  * Client-side mirror of the current cart.
  *
  * The header badge and the mini-cart drawer both need cart state that updates
- * the instant a mutation resolves — cookie-driven server components can't do
+ * the instant a mutation resolves - cookie-driven server components can't do
  * that without a full round-trip. Server actions that mutate the cart return
  * the fresh `Cart`; callers hand it back here via `setCart` so the mirror
  * stays authoritative without a second network hop.
@@ -28,7 +28,7 @@ type State = {
   openDrawer: () => void;
   closeDrawer: () => void;
   setCart: (cart: Cart | null) => void;
-  /** Force a re-fetch — used when a mutation happens outside our own actions. */
+  /** Force a re-fetch - used when a mutation happens outside our own actions. */
   refresh: () => Promise<void>;
 };
 
@@ -44,7 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Prime the cart once on mount. The setState happens in the fetch resolver,
-  // not synchronously in the effect body — the header renders fine at count 0
+  // not synchronously in the effect body - the header renders fine at count 0
   // and the badge just appears when the fetch resolves.
   useEffect(() => {
     let cancelled = false;

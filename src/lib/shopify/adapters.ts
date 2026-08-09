@@ -6,7 +6,7 @@ import type { Product } from "./types";
 /**
  * Adapters from the live Storefront `Product` shape to the legacy `CatalogProduct`
  * shape the display components were built against. Keeps the swap from snapshot
- * to live catalog reads mechanical — pages change, leaves do not.
+ * to live catalog reads mechanical - pages change, leaves do not.
  */
 
 function pickPrice(product: Product): { price: string; compareAt: string | null } {

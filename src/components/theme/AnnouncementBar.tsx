@@ -60,7 +60,7 @@ export function AnnouncementBar() {
     >
       <div className="page-width">
         {/* Both messages share one grid cell, so the box is as tall as the taller
-            of them and swapping cannot shift the page — no fixed height needed
+            of them and swapping cannot shift the page - no fixed height needed
             (a fixed height would fight the 10px padding under border-box). */}
         <div className="grid py-[10px] text-center">
           {MESSAGES.map((message, i) => (

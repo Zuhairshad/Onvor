@@ -9,7 +9,7 @@ import { Reveal } from "@/components/theme/Reveal";
 export const metadata: Metadata = {
   title: "The Lookbook",
   description:
-    "Onvor's campaign photography — unisex cotton basics shot in neon, cut for an easy fit.",
+    "Onvor's campaign photography - unisex cotton basics shot in neon, cut for an easy fit.",
 };
 
 /**
@@ -78,7 +78,7 @@ export default function LookbookPage() {
               <h1>The Lookbook</h1>
               <p className="mt-4 text-[18px] imp:text-[21px]">
                 Cotton basics shot in neon. Loose-fit tees, relaxed trousers and easy
-                shorts — the same pieces, worn however you like.
+                shorts - the same pieces, worn however you like.
               </p>
             </Reveal>
           </div>

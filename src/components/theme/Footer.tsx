@@ -12,10 +12,10 @@ const SOCIAL_ICONS = {
   Facebook: IconFacebook,
 } as const;
 
-/* .footer__title / .h4 — 13px, 0.2em caps; margin-bottom 20px from 769px. */
+/* .footer__title / .h4 - 13px, 0.2em caps; margin-bottom 20px from 769px. */
 const TITLE_CLASS =
   "tracking-caps m-0 mb-4 text-[13px] uppercase text-white imp:mb-[20px]";
-/* .site-footer__linklist a — padding 4px 0; .footer__collapsible sets 14px.
+/* .site-footer__linklist a - padding 4px 0; .footer__collapsible sets 14px.
    4px leaves a 28px row, which is fine for a cursor but under the 40px a thumb
    wants, so the padding opens up below the desktop breakpoint. */
 const LINK_CLASS =

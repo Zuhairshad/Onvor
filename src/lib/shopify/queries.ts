@@ -126,7 +126,7 @@ export const GET_PRODUCT_RECOMMENDATIONS_QUERY = withFragments(
   MONEY_FRAGMENT,
 );
 
-/** Handles only — for generateStaticParams and sitemaps. */
+/** Handles only - for generateStaticParams and sitemaps. */
 export const GET_PRODUCT_HANDLES_QUERY = /* GraphQL */ `
   query getProductHandles($first: Int!, $after: String) {
     products(first: $first, after: $after, sortKey: UPDATED_AT) {

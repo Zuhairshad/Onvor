@@ -19,7 +19,7 @@ const WAYS_OUT = ["all-products", "oversized-tees", "bottoms", "men", "women"] a
  * 404.
  *
  * Next's default is an unstyled line of text with no header, no footer and no
- * way back — a dead end on a store where dead URLs are routine, since every
+ * way back - a dead end on a store where dead URLs are routine, since every
  * discontinued product leaves one behind. This keeps the chrome, so the nav and
  * search are still there, and offers the collections rather than just an
  * apology.

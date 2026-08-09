@@ -41,7 +41,7 @@ export function ProductCard({
           {hoverImage ? (
             /* Decorative and only ever seen on a pointer device. `hidden` below
                769px keeps it out of the layout, which also keeps a lazy image
-               from ever being fetched there — no phone pays for a hover state it
+               from ever being fetched there - no phone pays for a hover state it
                cannot trigger. On desktop it is fetched at low priority so it
                never competes with the visible shot above it. */
             <Image

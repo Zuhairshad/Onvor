@@ -4,7 +4,7 @@ import type { CatalogProduct } from "@/lib/content/catalog";
  * Collection filtering.
  *
  * Facets are derived from the catalog rather than declared, so a collection only
- * ever offers values it actually contains — a size filter that returns nothing is
+ * ever offers values it actually contains - a size filter that returns nothing is
  * worse than no size filter. Onvor's products carry two option names at most
  * (Size and Color), so those are the facets; anything else Shopify adds later
  * appears automatically.
@@ -77,7 +77,7 @@ export function countActive(filters: Filters): number {
 
 /**
  * A product matches when every *active* facet has at least one of its selected
- * values — union within a facet, intersection across facets, which is what
+ * values - union within a facet, intersection across facets, which is what
  * shoppers expect from "Black or Grey, in M".
  */
 export function applyFilters(products: CatalogProduct[], filters: Filters): CatalogProduct[] {

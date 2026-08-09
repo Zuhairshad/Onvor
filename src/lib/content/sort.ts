@@ -3,7 +3,7 @@
  *
  * These live outside the toolbar component on purpose: the toolbar is a client
  * component, and a server component importing a plain value from a `"use client"`
- * module gets a client-reference proxy rather than the value itself — the array
+ * module gets a client-reference proxy rather than the value itself - the array
  * arrives without its methods. Shared data has to sit in a module neither side
  * marks as client.
  */

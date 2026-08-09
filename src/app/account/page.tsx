@@ -25,7 +25,7 @@ export default function AccountPage() {
       <div className="page-width pt-8 pb-16">
         <div className="mx-auto max-w-[36rem] text-center">
           <p>
-            Sign-in is not wired up in this storefront yet — it needs Shopify&apos;s Customer
+            Sign-in is not wired up in this storefront yet - it needs Shopify&apos;s Customer
             Account API. In the meantime, the order confirmation email carries your order
             status and tracking.
           </p>

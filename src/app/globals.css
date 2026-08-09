@@ -86,7 +86,7 @@
 }
 
 @layer components {
-  /* .page-width — max-width:1500px; padding:0 17px */
+  /* .page-width - max-width:1500px; padding:0 17px */
   .page-width {
     margin: 0 auto;
     max-width: 1500px;
@@ -110,7 +110,7 @@
     }
   }
 
-  /* .section--divider — hairline above, 40px/75px of breathing room below it. */
+  /* .section--divider - hairline above, 40px/75px of breathing room below it. */
   .section--divider {
     border-top: 1px solid var(--color-hairline);
     padding-top: 40px;
@@ -199,7 +199,7 @@
     }
   }
 
-  /* .hero__text-shadow — a soft radial scrim behind hero copy, bleeding well past
+  /* .hero__text-shadow - a soft radial scrim behind hero copy, bleeding well past
      the text box, so white type stays legible over a light photo or video frame.
      Opacity is the theme's --colorImageOverlayTextShadow (0.2). */
   .hero-text-shadow {
@@ -219,7 +219,7 @@
     z-index: -1;
   }
 
-  /* .svg-mask--rounded-top — the arch-topped image in "Inside the journal". */
+  /* .svg-mask--rounded-top - the arch-topped image in "Inside the journal". */
   .arch-mask {
     border-top-left-radius: 50%;
     border-top-right-radius: 50%;

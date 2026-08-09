@@ -5,7 +5,7 @@ import { Reveal } from "@/components/theme/Reveal";
 
 /**
  * Four portrait collection tiles, two-up on mobile and four-up from 769px.
- * The title sits *below* the image, bottom-left, in the body face — the reference
+ * The title sits *below* the image, bottom-left, in the body face - the reference
  * uses `collection-item__title--below` here rather than overlaying it like the
  * lower image grid does.
  *

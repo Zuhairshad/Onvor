@@ -9,7 +9,7 @@ import { Reveal } from "@/components/theme/Reveal";
  * transparently over it, copy bottom-left and a `+` hotspot on the garment.
  *
  * The frame is Onvor's own SUMMER'26 banner. That art already carries a headline
- * and a "Shop now", so the copy overlaid here is a second set — a deliberate
+ * and a "Shop now", so the copy overlaid here is a second set - a deliberate
  * choice, not an oversight. Everything below is arranged around keeping the two
  * out of each other's way:
  *
@@ -25,12 +25,12 @@ import { Reveal } from "@/components/theme/Reveal";
  * cropped two ways cannot work: the landscape is 150px tall on a phone and its
  * type is unreadable, and cropping it to portrait cuts that type off. They go
  * through `getImageProps` into a `<picture>` so the browser downloads one and not
- * both — a `display: none` image is still fetched.
+ * both - a `display: none` image is still fetched.
  */
 const DESKTOP = { src: "/onvor/hero/men-desktop.jpg", width: 2400, height: 939 };
 const MOBILE = { src: "/onvor/hero/men-mobile.jpg", width: 1000, height: 1375 };
 
-const ALT = "Onvor Summer '26 — model in an olive loose-fit tee under neon tubes";
+const ALT = "Onvor Summer '26 - model in an olive loose-fit tee under neon tubes";
 
 /**
  * The garment in the frame, matched to the catalog by the shoot: the product's
@@ -52,7 +52,7 @@ const HOTSPOTS: Hotspot[] = [
 
 const COPY = {
   heading: "Easy by design",
-  body: "Unisex basics in 100% cotton — loose-fit tees and relaxed trousers built to wear every day.",
+  body: "Unisex basics in 100% cotton - loose-fit tees and relaxed trousers built to wear every day.",
   href: "/collections/all-products",
   cta: "Shop all",
 } as const;
@@ -99,7 +99,7 @@ export function ShoppableHero() {
 
           {/* A scrim under the overlaid header, as the reference has. Needed here
               rather than optional: a neon tube crosses the top-right of the frame
-              and the nav sat white-on-white over it. Desktop only — the header is
+              and the nav sat white-on-white over it. Desktop only - the header is
               solid below 769px. */}
           <div
             className="pointer-events-none absolute inset-x-0 top-0 hidden h-[190px] bg-gradient-to-b from-black/50 via-black/20 to-transparent imp:block"
@@ -113,7 +113,7 @@ export function ShoppableHero() {
           {/* Content sits bottom-left on desktop (--com-place: end start).
               No standfirst here, unlike the stacked mobile version below. The
               artwork's own "Shop now" bottoms out at 73% of the frame, leaving
-              27% for our copy — and 27% of the frame is a shrinking number of
+              27% for our copy - and 27% of the frame is a shrinking number of
               pixels as the viewport narrows, while a block of text is not. Two
               lines fit a 15" laptop and collide on a 12". Heading and button
               alone clear it at every width, which is the point. */}

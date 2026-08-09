@@ -95,7 +95,7 @@ export function ProductJsonLd({
           "@type": "Product",
           name: product.title,
           image: product.images,
-          description: `${product.title} — ${product.type} in 100% cotton, cut for an easy unisex fit.`,
+          description: `${product.title} - ${product.type} in 100% cotton, cut for an easy unisex fit.`,
           category: product.type,
           brand: { "@type": "Brand", name: BRAND.wordmark },
           offers: {

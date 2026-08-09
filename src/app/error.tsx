@@ -8,7 +8,7 @@ import { CONTACT } from "@/lib/content/onvor";
 /**
  * Route-level error boundary.
  *
- * Without one, a thrown error in any segment shows Next's default screen — no
+ * Without one, a thrown error in any segment shows Next's default screen - no
  * chrome, no way back, and on a store that means a lost sale with no route to
  * the people who could rescue it. The header and footer are deliberately not
  * rendered here: if the failure is in a shared component, rendering it again
@@ -32,7 +32,7 @@ export default function Error({
       <div className="page-width py-20 text-center imp:py-[110px]">
         <h1 className="m-0">Something went wrong</h1>
         <p className="mx-auto mt-3 max-w-[38rem]">
-          That is on us, not you. Try again — and if it keeps happening, message us and we
+          That is on us, not you. Try again - and if it keeps happening, message us and we
           will sort it out.
         </p>
 

@@ -49,7 +49,7 @@ function FabricPanel() {
     <ul className="m-0 list-none space-y-2 p-0 pb-5 text-[14px]">
       <li className="flex items-start gap-3">
         <IconCotton className="mt-[2px] h-5 w-5 shrink-0 opacity-70" />
-        <span>100% combed cotton — mid-weight and prewashed to hold its shape.</span>
+        <span>100% combed cotton - mid-weight and prewashed to hold its shape.</span>
       </li>
       <li className="flex items-start gap-3">
         <span
@@ -63,7 +63,7 @@ function FabricPanel() {
           aria-hidden
           className="mt-[8px] inline-block h-[6px] w-[6px] shrink-0 rounded-full bg-current opacity-40"
         />
-        <span>Loose unisex cut with a slight drop shoulder — sits away from the body.</span>
+        <span>Loose unisex cut with a slight drop shoulder - sits away from the body.</span>
       </li>
     </ul>
   );

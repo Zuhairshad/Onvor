@@ -36,7 +36,7 @@ const ASPECT = {
 
 /**
  * The theme's `image_grid` section. The reference reuses it for the homepage
- * category tiles and, twice over, for the lookbook — so this takes the same knobs
+ * category tiles and, twice over, for the lookbook - so this takes the same knobs
  * its section settings do rather than being two near-identical components.
  *
  * The layout trick is worth preserving: tiles are flex items with a

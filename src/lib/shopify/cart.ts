@@ -13,7 +13,7 @@ import type { Cart, CartLine } from "./types";
 export const CART_COOKIE = "onvor_cart_id";
 
 /**
- * Cart reads are per-visitor, so nothing here is wrapped in `use cache` — that
+ * Cart reads are per-visitor, so nothing here is wrapped in `use cache` - that
  * would leak one shopper's cart to another. Call these behind a <Suspense>
  * boundary so the rest of the route still prerenders.
  */

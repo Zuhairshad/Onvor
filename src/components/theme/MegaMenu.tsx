@@ -85,7 +85,7 @@ export function MegaMenu({ content, open, id, onNavigate }: Props) {
             ))}
           </div>
 
-          {/* Promo cards — arch-topped, as the reference renders them. */}
+          {/* Promo cards - arch-topped, as the reference renders them. */}
           {promos?.length ? (
             <div className="flex min-w-0 flex-[0_0_33%] justify-end gap-[30px] overflow-hidden">
               {promos.map((promo) => (

@@ -84,7 +84,7 @@ async function Results({
  *
  * The old fallback was 60px tall. Results are a search box, a count and a grid of
  * up to 35 cards, so the footer sat just under the fold on first paint and was
- * shoved down the moment they streamed in — a 0.48 layout shift, well into
+ * shoved down the moment they streamed in - a 0.48 layout shift, well into
  * Google's "poor" band. The result count is not knowable before the query is
  * read, so this reserves a viewport instead: enough that the footer starts off
  * screen and whatever arrives grows the page below the fold, where a shift costs

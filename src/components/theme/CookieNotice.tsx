@@ -6,13 +6,13 @@ import { useSyncExternalStore } from "react";
  * Informational cookie notice.
  *
  * The only cookie set by the storefront today is `onvor_cart_id`, which is
- * strictly necessary for the cart to survive a page reload — no analytics or
+ * strictly necessary for the cart to survive a page reload - no analytics or
  * marketing cookies are gated behind this. Kept as a small dismissible banner
  * rather than a consent modal so it does not block first-paint or LCP.
  *
  * Dismissal is read via `useSyncExternalStore` so the server-render matches
  * the "dismissed" state and the banner only appears once the client mounts
- * and confirms the flag is absent — no cascading effect, no hydration flash.
+ * and confirms the flag is absent - no cascading effect, no hydration flash.
  */
 const STORAGE_KEY = "cookie-notice-dismissed";
 

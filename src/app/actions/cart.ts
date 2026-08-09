@@ -33,7 +33,7 @@ async function setCartCookie(cartId: string) {
 /**
  * Returns the visitor's cart id, creating a cart if there isn't one. A cookie
  * pointing at a cart Shopify has already completed is replaced rather than
- * reused — otherwise every mutation on it would fail.
+ * reused - otherwise every mutation on it would fail.
  */
 async function resolveCartId(): Promise<string> {
   const existing = (await cookies()).get(CART_COOKIE)?.value;

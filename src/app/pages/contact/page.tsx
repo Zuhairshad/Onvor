@@ -14,7 +14,7 @@ export default function ContactPage() {
     <PageShell>
       <PageHeader
         title="Contact"
-        intro="Questions about a fit, an order or an exchange — we answer quickly."
+        intro="Questions about a fit, an order or an exchange - we answer quickly."
       />
 
       <div className="page-width pt-10 pb-16">

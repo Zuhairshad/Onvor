@@ -29,7 +29,7 @@ const NAV_LEFT = ITEMS.slice(0, SPLIT);
 const NAV_RIGHT = ITEMS.slice(SPLIT);
 
 /**
- * .site-nav__link — padding 7.5px 15px. Note the font: the reference header opts
+ * .site-nav__link - padding 7.5px 15px. Note the font: the reference header opts
  * into `site-header--heading-style`, so nav links are set in the heading face
  * (Host Grotesk 500 / line-height 1.1), not the body face.
  */
@@ -141,7 +141,7 @@ export function Header({ overlay = false }: HeaderProps) {
   // mega menu forces the solid treatment.
   //
   // The transparency is desktop-only. Below 769px the hero shows the campaign
-  // art's portrait cut, which carries its own SUMMER'26 across the top — exactly
+  // art's portrait cut, which carries its own SUMMER'26 across the top - exactly
   // where an overlaid header sits, wordmark on wordmark. On a phone the header
   // stays solid and in flow, and the artwork starts beneath it.
   const isLight = overlay && !scrolled && !openMenu;
@@ -167,7 +167,7 @@ export function Header({ overlay = false }: HeaderProps) {
         className="page-width"
         onMouseLeave={() => setOpenMenu(null)}
       >
-        {/* .site-header — padding 7px 0 mobile, 20px 0 from 769px. */}
+        {/* .site-header - padding 7px 0 mobile, 20px 0 from 769px. */}
         <div className="flex items-center justify-between gap-4 py-[7px] imp:py-[20px]">
           {/* Left: search on desktop, drawer trigger below 1024px. */}
           <div className="-ml-[7.5px] flex flex-1 items-center wide:-ml-[12px] wide:flex-none">
@@ -207,7 +207,7 @@ export function Header({ overlay = false }: HeaderProps) {
             <Link
               href="/"
               className="my-[10px] block shrink-0 wide:mx-[30px]"
-              aria-label={`${BRAND.name} — home`}
+              aria-label={`${BRAND.name} - home`}
             >
               <Image
                 src={BRAND.logo.src}
@@ -219,7 +219,7 @@ export function Header({ overlay = false }: HeaderProps) {
                 sizes="128px"
                 priority
                 // The wordmark is solid black on transparent, so it inverts to
-                // white cleanly while the header rides over the hero — which it
+                // white cleanly while the header rides over the hero - which it
                 // only does from 769px up, hence the breakpoint on the filter.
                 className={`h-auto w-[104px] wide:w-[128px] ${isLight ? "imp:brightness-0 imp:invert" : ""}`}
               />
@@ -247,7 +247,7 @@ export function Header({ overlay = false }: HeaderProps) {
             >
               <IconUser className="h-5 w-5" />
             </Link>
-            {/* Wishlist link — count comes from the client-side WishlistContext
+            {/* Wishlist link - count comes from the client-side WishlistContext
                 so the badge updates the instant a shopper hits Add to wishlist. */}
             <Link
               href="/wishlist"

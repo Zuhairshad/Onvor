@@ -14,7 +14,7 @@ import { formatPkr } from "@/lib/money";
  * ids Shopify needs for a cart line, so this collects the selection and hands it
  * to the cart action, which resolves the variant against the live Storefront API.
  * Until a Storefront token exists that call fails, and rather than swallow it the
- * button surfaces the reason — a silently dead add-to-cart is worse than an
+ * button surfaces the reason - a silently dead add-to-cart is worse than an
  * honest one.
  */
 type Props = {

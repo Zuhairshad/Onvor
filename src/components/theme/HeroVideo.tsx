@@ -9,7 +9,7 @@ import { NEWSLETTER } from "@/lib/content/onvor";
  *
  * The reference runs a background video here. Onvor has no brand video, so this
  * uses their own campaign banner as a still frame rather than shipping a
- * placeholder video — the layout, height and light button treatment are the
+ * placeholder video - the layout, height and light button treatment are the
  * reference's.
  *
  * No flat overlay on this section; legibility comes from `hero-text-shadow`, the

@@ -29,7 +29,7 @@ const fustat = Fustat({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: `${BRAND.name} — unisex cotton basics`,
+    default: `${BRAND.name} - unisex cotton basics`,
     template: `%s | ${BRAND.name}`,
   },
   description: BRAND.statement,
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: BRAND.name,
     locale: "en_PK",
-    title: `${BRAND.name} — unisex cotton basics`,
+    title: `${BRAND.name} - unisex cotton basics`,
     description: BRAND.statement,
   },
   twitter: { card: "summary_large_image" },

@@ -1,5 +1,5 @@
 /**
- * Each fragment holds only its own definition — no nested interpolation. A
+ * Each fragment holds only its own definition - no nested interpolation. A
  * fragment that embedded its dependencies would emit duplicate definitions the
  * moment two such fragments met in one document, and GraphQL rejects that
  * ("There can be only one fragment named ImageFields"). Queries declare the

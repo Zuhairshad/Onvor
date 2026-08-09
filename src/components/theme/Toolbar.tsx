@@ -19,7 +19,7 @@ const UTILITY_LINKS = [
  * hero so it reads as part of the image, which is why it carries light text and
  * a hairline rule rather than its own background.
  *
- * Desktop only — the reference hides it below 769px, where these links live in
+ * Desktop only - the reference hides it below 769px, where these links live in
  * the nav drawer instead.
  */
 export function Toolbar() {

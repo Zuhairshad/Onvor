@@ -1,6 +1,6 @@
 /**
  * Hand-written mirrors of the Storefront API shapes this app selects. They line
- * up with the fragments in fragments.ts — if you change a fragment, change the
+ * up with the fragments in fragments.ts - if you change a fragment, change the
  * type. When the query surface grows past comfort, swap these for generated
  * types (`@shopify/api-codegen-preset`) without touching call sites.
  */
@@ -126,7 +126,7 @@ export type Cart = {
 
 /**
  * Storefront `ProductSortKeys`. `RELEVANCE` is only meaningful alongside a
- * search query — Shopify ignores it otherwise.
+ * search query - Shopify ignores it otherwise.
  */
 export type ProductSortKey =
   | "TITLE"
@@ -139,7 +139,7 @@ export type ProductSortKey =
   | "ID"
   | "RELEVANCE";
 
-/** Storefront `ProductCollectionSortKeys` — the keys valid inside a collection. */
+/** Storefront `ProductCollectionSortKeys` - the keys valid inside a collection. */
 export type CollectionProductSortKey =
   | "TITLE"
   | "PRICE"

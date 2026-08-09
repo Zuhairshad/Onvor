@@ -17,7 +17,7 @@ const STEP_MS = 120;
 
 /**
  * Fades and lifts its children into view the first time they scroll into range,
- * then stops observing — it never re-hides or re-animates.
+ * then stops observing - it never re-hides or re-animates.
  *
  * The reveal state lives in a `data-reveal` attribute written straight to the
  * node rather than in React state: this effect's whole job is to drive the DOM

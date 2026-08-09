@@ -6,7 +6,7 @@ import { BRAND } from "@/lib/content/onvor";
  * Newsletter and contact submissions.
  *
  * Both forms used to post straight to `/contact`, a Liquid route that only
- * exists on the Shopify domain — on a headless deploy the newsletter landed on a
+ * exists on the Shopify domain - on a headless deploy the newsletter landed on a
  * 404 and the contact form did nothing. Shopify has no Storefront API mutation
  * for either, so the submission is forwarded server-side to the store's own form
  * endpoint, which is the same one the live theme posts to. That keeps the

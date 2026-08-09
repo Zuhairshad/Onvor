@@ -11,7 +11,7 @@ const HREF = "/collections/oversized-tees";
  * Full-bleed video hero with the reference's 20%-black overlay between the clip
  * and the copy. Source clip is portrait, so object-position keeps the subject in
  * shot as it crops to the hero's landscape box. Poster paints instantly so the
- * copy has a background before the mp4 hydrates. Playback is gated on scroll —
+ * copy has a background before the mp4 hydrates. Playback is gated on scroll -
  * the clip only decodes while the section is on screen, so the video isn't
  * chewing CPU up top when a shopper is nowhere near it.
  */

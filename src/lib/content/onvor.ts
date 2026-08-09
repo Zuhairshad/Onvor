@@ -9,7 +9,7 @@
  *
  * Once the Storefront API credentials are in place, the catalog-derived parts
  * (collections, featured products, prices) should be read live via
- * `src/lib/shopify/catalog.ts` — the shapes here deliberately mirror what those
+ * `src/lib/shopify/catalog.ts` - the shapes here deliberately mirror what those
  * functions return so the swap is mechanical. The brand copy stays here.
  */
 
@@ -32,7 +32,7 @@ export const BRAND = {
   copyright: "All Right Reserved © 2024 The Onvor",
 } as const;
 
-/** Currently running promotion — check before reusing, it is seasonal. */
+/** Currently running promotion - check before reusing, it is seasonal. */
 export const ANNOUNCEMENTS = [
   { bold: "Azadi Sale", rest: "Flat 30% off on all products" },
   { bold: "Free shipping", rest: "On all orders nationwide" },
@@ -40,7 +40,7 @@ export const ANNOUNCEMENTS = [
 
 export const NEWSLETTER = {
   heading: "Get 10% Off Your First Order",
-  body: "Subscribe & use code wearonvor at checkout for 10% off your first order. Join the ONVOR community — comfort for everyone.",
+  body: "Subscribe & use code wearonvor at checkout for 10% off your first order. Join the ONVOR community - comfort for everyone.",
   code: "wearonvor",
   placeholder: "Your email address",
   footerHeading: "Subscribe to our emails",
@@ -48,7 +48,7 @@ export const NEWSLETTER = {
 
 /**
  * Their three homepage value props. Note these are heading-only in the live
- * store — icon plus a short label, no body paragraph. The icons are their own
+ * store - icon plus a short label, no body paragraph. The icons are their own
  * line drawings, not Impulse's.
  */
 export const VALUE_PROPS = [
@@ -59,7 +59,7 @@ export const VALUE_PROPS = [
 
 /**
  * Customer testimonials shown above the footer. Kept as inline content for
- * now — a real reviews integration (Judge.me / Loox) can populate this same
+ * now - a real reviews integration (Judge.me / Loox) can populate this same
  * shape without changing the section markup.
  */
 export const REVIEWS = [
@@ -76,7 +76,7 @@ export const REVIEWS = [
   {
     name: "Nadia R.",
     meta: "Islamabad · Signature Baggy · Olive",
-    body: "The craftsmanship on these trousers is extraordinary — soft against the skin but structured where it matters. Six hours later I forgot I was wearing them. I've recommended them to every woman in my circle since.",
+    body: "The craftsmanship on these trousers is extraordinary - soft against the skin but structured where it matters. Six hours later I forgot I was wearing them. I've recommended them to every woman in my circle since.",
   },
   {
     name: "Fatima A.",
@@ -86,7 +86,7 @@ export const REVIEWS = [
   {
     name: "Sara H.",
     meta: "Rawalpindi · Signature Shorts · Sand",
-    body: "Worth every rupee. I bought the shorts for the studio and I've worn them out for coffee twice since — that says everything. They pair with almost anything and never look like they're trying too hard.",
+    body: "Worth every rupee. I bought the shorts for the studio and I've worn them out for coffee twice since - that says everything. They pair with almost anything and never look like they're trying too hard.",
   },
 ] as const;
 
@@ -101,7 +101,7 @@ export const SERVICE_POINTS = [
 /**
  * Primary navigation, reconstructed from the live header.
  *
- * Onvor splits by gender first, then fit — the opposite emphasis to Impulse's
+ * Onvor splits by gender first, then fit - the opposite emphasis to Impulse's
  * editorial menu, so do not carry Impulse's labels across.
  */
 export const NAV = [
@@ -163,7 +163,7 @@ export const COLLECTIONS = [
 /**
  * The two category tiles the live store leads with. Onvor merchandises by
  * gender, so a reference design's editorial tiles ("The Linen Edit", "Soft
- * Neutrals") map onto these plus fit-based collections — not one-to-one.
+ * Neutrals") map onto these plus fit-based collections - not one-to-one.
  */
 export const CATEGORY_TILES = [
   {
@@ -202,7 +202,7 @@ export const IMAGERY = {
 
 /**
  * The five products their live homepage features under "BEST SELLING".
- * Prices are PKR and were correct at scouting time — treat them as placeholders
+ * Prices are PKR and were correct at scouting time - treat them as placeholders
  * and read live prices from the Storefront API before shipping.
  */
 export const FEATURED_PRODUCTS = [
@@ -282,7 +282,7 @@ export const FOOTER_MENUS = [
   },
 ] as const;
 
-/** Only two channels are live — do not pad this out with unused networks. */
+/** Only two channels are live - do not pad this out with unused networks. */
 export const SOCIALS = [
   { label: "Instagram", href: "https://www.instagram.com/theonvor/" },
   { label: "Facebook", href: "https://www.facebook.com/wearonvor" },
@@ -294,8 +294,8 @@ export const SOCIALS = [
  * The reference theme runs two mega-menu shapes: image-topped category columns,
  * and text columns alongside arch-topped promo cards. Both are used here.
  *
- * Onvor's catalog is shallower than the reference's — 14 collections against its
- * editorial sprawl — so columns carry two to five links rather than being padded
+ * Onvor's catalog is shallower than the reference's - 14 collections against its
+ * editorial sprawl - so columns carry two to five links rather than being padded
  * out with invented categories. Menu images reuse product shots, since their
  * collections have no collection images and their two banners have SUMMER'26
  * burnt into the artwork.
@@ -447,7 +447,7 @@ export const CONTACT = {
 
 /**
  * Their return policy, from the live store. Kept as structured points rather
- * than one blob so the page can lay it out — the terms are specific and worth
+ * than one blob so the page can lay it out - the terms are specific and worth
  * not paraphrasing.
  */
 export const RETURN_POLICY = {
@@ -475,20 +475,20 @@ export const SHIPPING_POLICY = {
     "A tracking link is sent by email and SMS as soon as the parcel is collected.",
     "We currently ship within Pakistan only.",
   ],
-  note: "If a parcel has not moved for several days, send us the order number and we will chase the courier — you should not have to.",
+  note: "If a parcel has not moved for several days, send us the order number and we will chase the courier - you should not have to.",
 } as const;
 
 /**
  * Terms of service.
  *
- * These restate how the store already operates — prices in PKR, Shopify-hosted
- * checkout, exchange-only returns — rather than inventing obligations. Have them
+ * These restate how the store already operates - prices in PKR, Shopify-hosted
+ * checkout, exchange-only returns - rather than inventing obligations. Have them
  * reviewed before launch: this is the one page on the site with legal weight.
  */
 export const TERMS = [
   {
     heading: "Orders",
-    body: "Placing an order is an offer to buy. We confirm it by email once payment clears; until then we may decline it — for example if an item sells out between your click and our packing table.",
+    body: "Placing an order is an offer to buy. We confirm it by email once payment clears; until then we may decline it - for example if an item sells out between your click and our packing table.",
   },
   {
     heading: "Prices",
@@ -496,7 +496,7 @@ export const TERMS = [
   },
   {
     heading: "Products",
-    body: "Colours shift between screens, so a garment may read slightly differently in person. Measurements are approximate and taken with the garment laid flat — see the size guide.",
+    body: "Colours shift between screens, so a garment may read slightly differently in person. Measurements are approximate and taken with the garment laid flat - see the size guide.",
   },
   {
     heading: "Payment and checkout",
@@ -606,5 +606,5 @@ export const SIZE_GUIDE = {
       body: "Measure flat across the widest point of the hips and double it.",
     },
   ],
-  note: "Everything is cut for a loose, unisex fit — if you are between sizes, size down for a closer fit or stay put for the intended drape.",
+  note: "Everything is cut for a loose, unisex fit - if you are between sizes, size down for a closer fit or stay put for the intended drape.",
 } as const;

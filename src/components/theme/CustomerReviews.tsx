@@ -8,7 +8,7 @@ import { REVIEWS } from "@/lib/content/onvor";
  * Horizontally-scrolling testimonial strip that sits above the footer.
  *
  * The layout matches the reference (heading left, arrows right, snap-scroll
- * row of cards), but everything inside is our brand — Host Grotesk headings,
+ * row of cards), but everything inside is our brand - Host Grotesk headings,
  * Fustat body, ink text on the beige body colour, hairline dividers between
  * cards. Mobile is a single-card swipe; from `imp` the row peeks at the next
  * card so the horizontal affordance is obvious without cropping copy.

@@ -7,7 +7,7 @@ import { CONTACT, RETURN_POLICY, SHIPPING_POLICY, TERMS } from "@/lib/content/on
 /**
  * Store policies.
  *
- * Return and contact policies carry the store's own wording — the terms are
+ * Return and contact policies carry the store's own wording - the terms are
  * specific and paraphrasing them would change what customers are promised.
  * Privacy is not reproduced here: the live store's version is Shopify's generated
  * policy and the authoritative copy lives on the store, so this links out rather

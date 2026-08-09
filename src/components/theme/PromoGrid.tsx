@@ -12,7 +12,7 @@ import { Reveal } from "@/components/theme/Reveal";
 const PANELS = [
   {
     heading: "Built for every day",
-    body: "Loose-fit tees in 100% cotton — the ones you reach for without thinking.",
+    body: "Loose-fit tees in 100% cotton - the ones you reach for without thinking.",
     cta: "Shop tees",
     href: "/collections/oversized-tees",
     src: "/onvor/tile-men.jpg",

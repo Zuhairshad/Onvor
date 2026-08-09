@@ -13,7 +13,7 @@ import {
 /**
  * Persistent client-side wishlist.
  *
- * The wishlist is a pure browser affordance — a shopper can bookmark items
+ * The wishlist is a pure browser affordance - a shopper can bookmark items
  * without an account, and the list survives refreshes via localStorage. We
  * store enough per item (title / image / price) that the /wishlist route can
  * render instantly without a Storefront round-trip.
@@ -63,7 +63,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   // Hydrate from localStorage on mount. Kept out of initial state so SSR and
-  // the first client render match — the empty [] before hydration matches what
+  // the first client render match - the empty [] before hydration matches what
   // the server produced.
   useEffect(() => {
     setItems(readFromStorage());
@@ -77,7 +77,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch {
-      // Storage full or blocked — the in-memory list still works for the tab.
+      // Storage full or blocked - the in-memory list still works for the tab.
     }
   }, [items, hydrated]);
 

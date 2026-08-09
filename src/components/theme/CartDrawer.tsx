@@ -28,7 +28,7 @@ export function CartDrawer() {
   const [pending, startTransition] = useTransition();
 
   // Fetch recs lazily on first open. Cheap enough that a single fetch per
-  // session is fine — nothing about them is user-specific.
+  // session is fine - nothing about them is user-specific.
   useEffect(() => {
     if (!drawerOpen || recs !== null) return;
     void getBagRecommendations().then(setRecs);
@@ -202,7 +202,7 @@ export function CartDrawer() {
             </ul>
           )}
 
-          {/* You may also like — kept below the lines so the shopper sees their
+          {/* You may also like - kept below the lines so the shopper sees their
               own bag first, but inside the scroll container so long bags don't
               hide it. */}
           {recs && recs.length > 0 ? (

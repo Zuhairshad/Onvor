@@ -7,7 +7,7 @@ import { BRAND } from "@/lib/content/onvor";
 const HREF = "/collections/all-products";
 
 /**
- * "Clothing that simply works" — text beside a three-tile stacked image reveal.
+ * "Clothing that simply works" - text beside a three-tile stacked image reveal.
  *
  * The tile column keeps a bounded max-width and reserves its own square via
  * ImageReveal, so the sibling text column has stable geometry and the fan-out

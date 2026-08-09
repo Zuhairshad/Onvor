@@ -29,7 +29,7 @@ function Submit() {
  *
  * Posts through a server action to the store's own contact endpoint, so the
  * message lands where Onvor already reads them. The previous version posted
- * straight to `/contact`, which only resolves on the Shopify domain — pressing
+ * straight to `/contact`, which only resolves on the Shopify domain - pressing
  * Send on the headless site did nothing at all.
  */
 export function ContactForm() {

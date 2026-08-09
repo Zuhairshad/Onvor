@@ -8,7 +8,7 @@ import { countActive, type Facet, type Filters } from "@/lib/content/filters";
 import { SORT_OPTIONS, type SortValue } from "@/lib/content/sort";
 
 /**
- * `.collection-filter` — the row above a collection grid: a Filter trigger, the
+ * `.collection-filter` - the row above a collection grid: a Filter trigger, the
  * product count, and the sort select, with the filter panel opening beneath.
  *
  * Both controls drive the query string rather than local state, so the server

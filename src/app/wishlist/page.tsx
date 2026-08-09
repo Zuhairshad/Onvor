@@ -36,7 +36,7 @@ export default function WishlistPage() {
         {items.length === 0 ? (
           <div className="border-hairline flex flex-col items-start gap-4 border-t pt-8">
             <p className="m-0 text-[15px]">
-              Tap the heart on any product page to save it here — the list stays
+              Tap the heart on any product page to save it here - the list stays
               on this device so you can come back to it later.
             </p>
             <Link href="/collections/all-products" className="btn">

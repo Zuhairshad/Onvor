@@ -6,7 +6,7 @@
  * `theonvor.com` is allowed in next.config.ts for this reason.
  *
  * This is a stand-in for live Storefront API reads. Prices and availability were
- * correct at snapshot time only — wire up `src/lib/shopify/catalog.ts` before
+ * correct at snapshot time only - wire up `src/lib/shopify/catalog.ts` before
  * trusting either. Note every product currently carries a compare-at price
  * because the whole store is on the Azadi Sale.
  */

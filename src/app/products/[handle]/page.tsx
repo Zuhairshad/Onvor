@@ -37,7 +37,7 @@ export async function generateMetadata({
     title: product.seo.title ?? product.title,
     description:
       product.seo.description ??
-      `${product.title} — ${product.productType || "cotton basics"} cut for a loose unisex fit.`,
+      `${product.title} - ${product.productType || "cotton basics"} cut for a loose unisex fit.`,
     openGraph: image ? { images: [image] } : undefined,
   };
 }
@@ -124,7 +124,7 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
         collection={{ handle: collectionHref.replace("/collections/", ""), title: collectionTitle }}
       />
       <div className="page-width pt-8 imp:pt-[40px]">
-        {/* Breadcrumb — the theme keeps it small and quiet above the title. */}
+        {/* Breadcrumb - the theme keeps it small and quiet above the title. */}
         <nav aria-label="Breadcrumb" className="mb-6 text-[14px]">
           <ol className="m-0 flex list-none flex-wrap items-center gap-2 p-0">
             <li>
@@ -150,7 +150,7 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
         {/* Two-column PDP.
             `minmax(0, ...)` on both tracks is load-bearing: without it, flex/grid
             children default to `min-width: auto` and size to their intrinsic
-            content — the gallery Image renders at 1000px natively, which would
+            content - the gallery Image renders at 1000px natively, which would
             blow the media track past 55% and push the info column off-screen.
             The right track is capped at 520px so the copy stays readable at
             ultrawide (~2048px+) viewports without ballooning line length. */}

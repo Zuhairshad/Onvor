@@ -30,7 +30,7 @@ const container: Variants = {
 /* Offsets are percentages of each tile's own width, so the fan-out scales with
    the container. Three tiles at w-[42%] with ±85% x-shifts land at roughly the
    left third / centre / right third of the container with a comfortable
-   overlap — the geometry from the reference screenshot. */
+   overlap - the geometry from the reference screenshot. */
 const left: Variants = {
   initial: { rotate: 0, x: "0%", y: 0 },
   animate: {
@@ -94,7 +94,7 @@ function Tile({ src, alt, variants, origin, z, priority }: TileProps) {
       className={`absolute aspect-square w-[48%] overflow-hidden rounded-2xl shadow-[0_18px_40px_-14px_rgba(0,0,0,0.35)] ${origin}`}
       variants={variants}
       /* Explicit initial + animate so the child definitely enters the fan-out
-         even though it also owns `whileHover` — framer-motion's inherited
+         even though it also owns `whileHover` - framer-motion's inherited
          variant name isn't reliably applied when a child sets whileHover. */
       initial="initial"
       animate="animate"
