@@ -40,6 +40,10 @@ const nextConfig: NextConfig = {
     return [
       { source: "/blogs/news", destination: "/", permanent: true },
       { source: "/blogs/:path*", destination: "/", permanent: true },
+      // Shopify's auto-generated /collections/all handle is not created in the
+      // headless build; the equivalent curated catalog lives at
+      // /collections/all-products. Preserves inbound-link intent (shop-everything).
+      { source: "/collections/all", destination: "/collections/all-products", permanent: true },
     ];
   },
 };
