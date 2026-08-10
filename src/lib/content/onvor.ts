@@ -64,59 +64,59 @@ export const VALUE_PROPS = [
  */
 export const REVIEWS = [
   {
-    name: "Layla M.",
-    meta: "Karachi · Signature Baggy · Charcoal",
-    body: "The baggies went from morning errands to a family dinner without a single second glance. I've worn luxury denim from every label and nothing moves like these. The cotton feels like a second skin and holds its shape through everything.",
+    name: "Ayesha M.",
+    meta: "Faisalabad · Signature Baggy · Charcoal",
+    body: "Very comfortable and the cotton is really soft. I wore them the whole day and no problem. Colour is exactly like the picture. Bhot acha hai.",
   },
   {
-    name: "Amira K.",
+    name: "Amna K.",
     meta: "Lahore · Loose Fit Tee · Off White",
-    body: "I've been searching for years for something that doesn't ask me to choose between fit and softness. Onvor finally understood what my mornings actually look like. It's the first tee that dressed me for the whole day, not just an hour of it.",
+    body: "Fabric quality is really good for the price. Fit is loose like I wanted, not tight from anywhere. Will order more colours soon.",
   },
   {
     name: "Nadia R.",
     meta: "Islamabad · Signature Baggy · Olive",
-    body: "The craftsmanship on these trousers is extraordinary - soft against the skin but structured where it matters. Six hours later I forgot I was wearing them. I've recommended them to every woman in my circle since.",
+    body: "Stitching is very neat and the trouser is soft. I wore them at home and outside also, both times comfortable. Recommended to my sister also.",
   },
   {
     name: "Fatima A.",
     meta: "Karachi · Oversized Tee · Black",
-    body: "Finally cotton I'm proud to be seen in. The black colourway is richer and more considered in person than any photograph captures. It photographs beautifully but wearing it is something else entirely.",
+    body: "The black colour is proper black, not faded. Cloth is thick and does not become see through after wash. Really happy with this order.",
   },
   {
     name: "Sara H.",
     meta: "Rawalpindi · Signature Shorts · Sand",
-    body: "Worth every rupee. I bought the shorts for the studio and I've worn them out for coffee twice since - that says everything. They pair with almost anything and never look like they're trying too hard.",
+    body: "Paisa vasool. Shorts are exactly the length I wanted and the waist stays in place. Fabric is soft even after 2 washes. Ordered second pair.",
   },
   {
     name: "Hassan T.",
-    meta: "Karachi · Straight Fit Trouser · Black",
-    body: "The cut is exactly what I wanted from a trouser - straight through the leg without being slim, and heavy enough to hang properly. I've replaced two pairs from other labels since the first wash. Nothing sits like these.",
+    meta: "Faisalabad · Straight Fit Trouser · Black",
+    body: "Cut is straight and not tight from thigh, exactly what I needed. Cloth is heavy quality. Delivery was fast, 3 days to Faisalabad.",
   },
   {
     name: "Zara I.",
     meta: "Lahore · Oversized Tee · Off White",
-    body: "The weight of the cotton is what surprised me. It doesn't cling, it doesn't ride up, it just falls the way a tee is supposed to. I've bought three in different colours and none of them have pilled after months of wear.",
+    body: "Cotton is thick and soft. Does not shrink after wash. I bought 3 different colours and all are same good quality. Size chart was accurate for me.",
   },
   {
     name: "Bilal S.",
     meta: "Islamabad · Baggy Trouser · Charcoal",
-    body: "I'm 6'2\" and finding baggies that don't turn into flood pants is a fight. These fit through the seat and drape all the way down. First trouser I've bought online without regretting the gamble.",
+    body: "I am 6'1\" and length is perfect. Most brands the trouser becomes short but this one is proper length. Fabric is soft and does not itch.",
   },
   {
     name: "Mahnoor Q.",
     meta: "Karachi · Loose Fit Tee · Charcoal",
-    body: "Ordered on a Tuesday, wearing it by Friday, and it's already the tee I reach for. The neckline sits properly and doesn't stretch out after a wash. Small things but they're the ones that make a difference.",
+    body: "Ordered on Monday and got it by Thursday. Neck does not stretch out after wash. This is my go to tee now. Bhaut zabardast.",
   },
   {
     name: "Ali R.",
-    meta: "Lahore · Signature Shorts · Charcoal",
-    body: "These are the summer shorts I keep meaning to buy from other brands and never quite get around to. Length is right, waistband stays put, and the fabric doesn't turn stiff after the wash. Bought a second pair the week after.",
+    meta: "Faisalabad · Signature Shorts · Charcoal",
+    body: "Best summer shorts. Waistband is comfortable, not tight. Cloth stays soft after wash also. Price is very reasonable for this quality.",
   },
   {
     name: "Iman D.",
     meta: "Karachi · Pleated Trouser · Sand",
-    body: "The pleats hold their line and the fabric moves - I wore them to a wedding and to the market the same weekend and both times they looked right. That's rare. Onvor understood the assignment on this one.",
+    body: "Pleats stay in shape, cloth does not wrinkle much. Wore them at a family function and everyone asked where I got them from. Very happy.",
   },
 ] as const;
 
