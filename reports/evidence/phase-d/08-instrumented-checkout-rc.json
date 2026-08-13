@@ -1,0 +1,114 @@
+{
+  "startedAt": "2026-08-10T00:15:48.712Z",
+  "preview": "https://onvor-2la0c43ml-zuhairshads-projects.vercel.app",
+  "cartCookieSet": true,
+  "cartOnPreview": {
+    "httpStatus": 200,
+    "checkoutButtons": [
+      {
+        "text": "Checkout",
+        "hostname": "theonvor.com",
+        "href": "https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+      },
+      {
+        "text": "Checkout",
+        "hostname": "theonvor.com",
+        "href": "https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+      }
+    ]
+  },
+  "checkoutHandoff": {
+    "requestedUrl": "https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]",
+    "finalUrl": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]",
+    "finalHostname": "theonvor.com",
+    "redirectChain": [
+      {
+        "url": "https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]",
+        "status": 302,
+        "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+      }
+    ],
+    "navigatedUrls": [
+      "https://onvor-2la0c43ml-zuhairshads-projects.vercel.app/cart",
+      "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    ]
+  },
+  "preFormVisibleState": {
+    "title": "Checkout - ONVOR",
+    "hasEmailInput": true,
+    "hasCardInput": false,
+    "shopPayVisible": false,
+    "applePayVisible": false,
+    "productLikelyVisible": true,
+    "subtotalLikelyVisible": true,
+    "discountFieldPresent": false,
+    "onvorBrandingPresent": true
+  },
+  "consoleMessages": [
+    {
+      "type": "info",
+      "text": "Clear-Site-Data header on 'https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]': Cleared data types: \"prefetchCache\", \"prerenderCache\".",
+      "location": "https://onvor-2la0c43ml-zuhairshads-projects.vercel.app/cart"
+    },
+    {
+      "type": "warn",
+      "text": "The resource https://theonvor.com/cdn/shopifycloud/checkout-web/assets/c1/assets/AnnouncementRuntimeExtensions.DWE5rRxz.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    },
+    {
+      "type": "warn",
+      "text": "The resource https://theonvor.com/cdn/shopifycloud/checkout-web/assets/c1/assets/QRCode.BZ_m5G5a.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    },
+    {
+      "type": "warn",
+      "text": "The resource https://theonvor.com/cdn/shopifycloud/checkout-web/assets/c1/assets/NumberField.CRpcZnVJ.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    },
+    {
+      "type": "warn",
+      "text": "The resource https://theonvor.com/cdn/shopifycloud/checkout-web/assets/c1/assets/RuntimeExtension.DWkDBM73.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    },
+    {
+      "type": "warn",
+      "text": "The resource https://theonvor.com/cdn/shopifycloud/checkout-web/assets/c1/assets/Sheet.BiQjEGaX.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    }
+  ],
+  "consoleErrorCount": 0,
+  "consoleWarningCount": 0,
+  "pageErrors": [
+    {
+      "name": "navigation-timeout",
+      "message": "Navigation timeout of 45000 ms exceeded"
+    }
+  ],
+  "requestFailures": [
+    {
+      "url": "https://onvor-2la0c43ml-zuhairshads-projects.vercel.app/.well-known/vercel/jwe",
+      "method": "GET",
+      "resourceType": "fetch",
+      "errorText": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://onvor-2la0c43ml-zuhairshads-projects.vercel.app/",
+      "method": "OPTIONS",
+      "resourceType": "fetch",
+      "errorText": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://onvor-2la0c43ml-zuhairshads-projects.vercel.app/cart",
+      "method": "HEAD",
+      "resourceType": "fetch",
+      "errorText": "net::ERR_ABORTED"
+    }
+  ],
+  "httpErrors": [],
+  "counts": {
+    "totalConsoleMessages": 6,
+    "pageErrors": 1,
+    "requestFailures": 3,
+    "httpErrors": 0
+  }
+}

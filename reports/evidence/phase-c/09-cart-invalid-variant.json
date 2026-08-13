@@ -1,0 +1,1 @@
+{"data":{"cartLinesAdd":{"cart":null,"userErrors":[{"field":["lines","0","merchandiseId"],"message":"The merchandise with id gid://shopify/ProductVariant/9999999999999 does not exist."}]}},"extensions":{"cost":{"requestedQueryCost":12}}}

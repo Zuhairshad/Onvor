@@ -1,0 +1,7 @@
+# Local deployment-only ignore. Untracked, do not commit.
+# Excludes owner media assets sitting in the working tree that exceed
+# Vercel's 100 MB per-file limit and are not part of the app bundle.
+*.mp4
+*.mov
+Screenshot*.png
+reports/

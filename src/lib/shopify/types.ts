@@ -108,10 +108,16 @@ export type CartLine = {
   };
 };
 
+export type CartDiscountCode = {
+  code: string;
+  applicable: boolean;
+};
+
 export type Cart = {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
+  discountCodes?: CartDiscountCode[];
   /**
    * Tax and duty are deliberately absent: `CartCost.totalTaxAmount` is
    * deprecated and Shopify no longer returns those amounts. Shopify's own

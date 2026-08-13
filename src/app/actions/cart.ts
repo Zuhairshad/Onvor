@@ -13,6 +13,7 @@ import {
   getProducts,
   removeCartLines,
   updateCartLines,
+  updateCartDiscountCodes,
   type Cart,
   type Product,
 } from "@/lib/shopify";
@@ -104,6 +105,21 @@ export async function updateCartLineQuantity(lineId: string, quantity: number): 
 export async function removeFromCart(lineId: string): Promise<Cart> {
   const cartId = await resolveCartId();
   const cart = await removeCartLines(cartId, [lineId]);
+  revalidatePath("/cart");
+  return cart;
+}
+
+export async function applyDiscountCode(code: string): Promise<Cart> {
+  const cartId = await resolveCartId();
+  const trimmed = code.trim();
+  const cart = await updateCartDiscountCodes(cartId, trimmed ? [trimmed] : []);
+  revalidatePath("/cart");
+  return cart;
+}
+
+export async function removeDiscountCode(): Promise<Cart> {
+  const cartId = await resolveCartId();
+  const cart = await updateCartDiscountCodes(cartId, []);
   revalidatePath("/cart");
   return cart;
 }

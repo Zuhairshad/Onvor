@@ -125,6 +125,21 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
         product={catalog}
         collection={{ handle: collectionHref.replace("/collections/", ""), title: collectionTitle }}
       />
+      {/* Pushbots Product Alert & Automation Metadata */}
+      <script
+        type="application/json"
+        data-pushbot-product-alert-config
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            product_id: product.id,
+            handle: product.handle,
+            title: product.title,
+            price: product.priceRange.minVariantPrice.amount,
+            currency: product.priceRange.minVariantPrice.currencyCode,
+            in_stock: product.availableForSale,
+          }),
+        }}
+      />
       <div className="page-width pt-8 imp:pt-[40px]">
         {/* Breadcrumb - the theme keeps it small and quiet above the title. */}
         <nav aria-label="Breadcrumb" className="mb-6 text-[14px]">

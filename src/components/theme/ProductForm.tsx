@@ -6,6 +6,7 @@ import { addToCart } from "@/app/actions/cart";
 import { useCart } from "@/components/theme/CartContext";
 import type { CatalogProduct } from "@/lib/content/catalog";
 import { formatPkr } from "@/lib/money";
+import { trackStorefrontEvent } from "@/components/integrations/ShopifyAutomationScripts";
 
 /**
  * Variant picker and add-to-cart.
@@ -51,6 +52,13 @@ export function ProductForm({ product }: Props) {
         // the mini-cart so the shopper sees what they just added.
         setCart(cart);
         openDrawer();
+        trackStorefrontEvent("add_to_cart", {
+          handle: product.handle,
+          title: product.title,
+          price: product.price,
+          selected_options: selected,
+          quantity,
+        });
       } catch {
         setMessage("Couldn't add to bag. Try again.");
       }

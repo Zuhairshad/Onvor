@@ -6,6 +6,7 @@ import {
   CREATE_CART_MUTATION,
   REMOVE_CART_LINES_MUTATION,
   UPDATE_CART_LINES_MUTATION,
+  UPDATE_CART_DISCOUNT_CODES_MUTATION,
 } from "./mutations";
 import { GET_CART_QUERY } from "./queries";
 import type { Cart, CartLine } from "./types";
@@ -121,5 +122,24 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
 
   const cart = normalizeCart(data.cartLinesRemove.cart);
   if (!cart) throw new Error("Removing from cart failed: Shopify returned no cart");
+  return cart;
+}
+
+export async function updateCartDiscountCodes(
+  cartId: string,
+  discountCodes: string[],
+): Promise<Cart> {
+  const data = await storefront<{
+    cartDiscountCodesUpdate: { cart: RawCart | null; userErrors: UserError[] };
+  }>({
+    query: UPDATE_CART_DISCOUNT_CODES_MUTATION,
+    variables: { cartId, discountCodes },
+    cache: "no-store",
+  });
+
+  assertNoUserErrors(data.cartDiscountCodesUpdate.userErrors, "Updating cart discounts");
+
+  const cart = normalizeCart(data.cartDiscountCodesUpdate.cart);
+  if (!cart) throw new Error("Updating cart discounts failed: Shopify returned no cart");
   return cart;
 }

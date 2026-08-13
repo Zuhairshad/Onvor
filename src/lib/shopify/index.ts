@@ -23,6 +23,7 @@ export {
   getCurrentCart,
   removeCartLines,
   updateCartLines,
+  updateCartDiscountCodes,
 } from "./cart";
 export type { CartLineInput } from "./cart";
 export { TAGS, collectionTag, productTag } from "./tags";

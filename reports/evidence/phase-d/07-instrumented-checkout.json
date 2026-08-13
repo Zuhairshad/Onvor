@@ -1,0 +1,126 @@
+{
+  "startedAt": "2026-08-09T23:48:55.550Z",
+  "preview": "https://onvor.vercel.app",
+  "cartCookieSet": true,
+  "cartOnPreview": {
+    "httpStatus": 200,
+    "checkoutButtons": [
+      {
+        "text": "Checkout",
+        "hostname": "theonvor.com",
+        "href": "https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+      },
+      {
+        "text": "Checkout",
+        "hostname": "theonvor.com",
+        "href": "https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+      }
+    ]
+  },
+  "checkoutHandoff": {
+    "requestedUrl": "https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]",
+    "finalUrl": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]",
+    "finalHostname": "theonvor.com",
+    "redirectChain": [
+      {
+        "url": "https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]",
+        "status": 302,
+        "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+      }
+    ],
+    "navigatedUrls": [
+      "https://onvor.vercel.app/cart",
+      "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    ]
+  },
+  "preFormVisibleState": {
+    "title": "Checkout - ONVOR",
+    "hasEmailInput": true,
+    "hasCardInput": false,
+    "shopPayVisible": false,
+    "applePayVisible": false,
+    "productLikelyVisible": true,
+    "subtotalLikelyVisible": true,
+    "discountFieldPresent": false,
+    "onvorBrandingPresent": true
+  },
+  "consoleMessages": [
+    {
+      "type": "info",
+      "text": "Clear-Site-Data header on 'https://theonvor.com/cart/c/[REDACTED-TOKEN]?key=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]': Cleared data types: \"prefetchCache\", \"prerenderCache\".",
+      "location": "https://onvor.vercel.app/cart"
+    },
+    {
+      "type": "warn",
+      "text": "The resource https://theonvor.com/cdn/shopifycloud/checkout-web/assets/c1/assets/AnnouncementRuntimeExtensions.DWE5rRxz.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    },
+    {
+      "type": "warn",
+      "text": "The resource https://theonvor.com/cdn/shopifycloud/checkout-web/assets/c1/assets/QRCode.BZ_m5G5a.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    },
+    {
+      "type": "warn",
+      "text": "The resource https://theonvor.com/cdn/shopifycloud/checkout-web/assets/c1/assets/NumberField.CRpcZnVJ.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    },
+    {
+      "type": "warn",
+      "text": "The resource https://theonvor.com/cdn/shopifycloud/checkout-web/assets/c1/assets/RuntimeExtension.DWkDBM73.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "location": "https://theonvor.com/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 ()",
+      "location": "https://theonvor.com/private_access_tokens?id=[REDACTED]&checkout_type=c1"
+    }
+  ],
+  "consoleErrorCount": 1,
+  "consoleWarningCount": 0,
+  "pageErrors": [
+    {
+      "name": "navigation-timeout",
+      "message": "Navigation timeout of 45000 ms exceeded"
+    }
+  ],
+  "requestFailures": [
+    {
+      "url": "https://error-analytics-sessions-production.shopifysvc.com/observeonly",
+      "method": "POST",
+      "resourceType": "fetch",
+      "errorText": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://theonvor.com/api/collect",
+      "method": "POST",
+      "resourceType": "fetch",
+      "errorText": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://theonvor.com/private_access_tokens?id=[REDACTED]&checkout_type=c1",
+      "method": "GET",
+      "resourceType": "fetch",
+      "errorText": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://theonvor.com/web-pixels@8b4bdd91w657eaa09pa445a201m797ba740/custom/web-pixel-shopify-custom-pixel@0480/sandbox/modern/checkouts/cn/[REDACTED-TOKEN]/en-pk?_r=[REDACTED]&_s=[REDACTED]&_y=[REDACTED]",
+      "method": "GET",
+      "resourceType": "document",
+      "errorText": "net::ERR_ABORTED"
+    }
+  ],
+  "httpErrors": [
+    {
+      "url": "https://theonvor.com/private_access_tokens?id=[REDACTED]&checkout_type=c1",
+      "status": 401,
+      "statusText": ""
+    }
+  ],
+  "counts": {
+    "totalConsoleMessages": 6,
+    "pageErrors": 1,
+    "requestFailures": 4,
+    "httpErrors": 1
+  }
+}

@@ -67,7 +67,7 @@ export async function subscribeToNewsletter(
   );
 
   return result.ok
-    ? { ok: true, message: "You're on the list. Watch for your 10% code." }
+    ? { ok: true, message: "Thank you for subscribing! You're now on the list." }
     : result;
 }
 

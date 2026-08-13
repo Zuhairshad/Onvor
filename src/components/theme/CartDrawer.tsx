@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 
-import { removeFromCart, updateCartLineQuantity } from "@/app/actions/cart";
+import { applyDiscountCode, removeDiscountCode, removeFromCart, updateCartLineQuantity } from "@/app/actions/cart";
 import { useCart } from "@/components/theme/CartContext";
 import { formatMoney } from "@/lib/money";
+import { getStoredDiscountCode, setDiscountCookie } from "@/lib/discounts";
+import { trackStorefrontEvent } from "@/components/integrations/ShopifyAutomationScripts";
 
 /**
  * Mini-cart drawer. Slides in from the right, listing the current bag with
@@ -17,6 +19,8 @@ import { formatMoney } from "@/lib/money";
 export function CartDrawer() {
   const { cart, drawerOpen, closeDrawer, setCart } = useCart();
   const [pending, startTransition] = useTransition();
+  const [discountInput, setDiscountInput] = useState("");
+  const [discountError, setDiscountError] = useState<string | null>(null);
 
   // Lock page scroll + close on Escape while open.
   useEffect(() => {
@@ -48,6 +52,7 @@ export function CartDrawer() {
       startTransition(async () => {
         const next = await removeFromCart(lineId);
         setCart(next);
+        trackStorefrontEvent("remove_from_cart", { line_id: lineId });
       });
     },
     [setCart],
@@ -55,6 +60,51 @@ export function CartDrawer() {
 
   const lines = cart?.lines ?? [];
   const empty = lines.length === 0;
+
+  const handleApplyDiscount = (codeToApply?: string) => {
+    const code = (codeToApply || discountInput).trim();
+    if (!code) return;
+    setDiscountError(null);
+    startTransition(async () => {
+      try {
+        const next = await applyDiscountCode(code);
+        setCart(next);
+        setDiscountCookie(code);
+        setDiscountInput("");
+      } catch {
+        setDiscountError("Could not apply discount code.");
+      }
+    });
+  };
+
+  const handleRemoveDiscount = () => {
+    setDiscountError(null);
+    startTransition(async () => {
+      try {
+        const next = await removeDiscountCode();
+        setCart(next);
+      } catch {
+        // no-op
+      }
+    });
+  };
+
+  const activeDiscountCode = cart?.discountCodes?.find((d) => d.applicable)?.code || getStoredDiscountCode();
+
+  const checkoutUrlWithDiscount = () => {
+    if (!cart?.checkoutUrl) return "#";
+    const discount = activeDiscountCode || getStoredDiscountCode();
+    if (!discount) return cart.checkoutUrl;
+    try {
+      const url = new URL(cart.checkoutUrl);
+      if (!url.searchParams.has("discount")) {
+        url.searchParams.set("discount", discount);
+      }
+      return url.toString();
+    } catch {
+      return cart.checkoutUrl;
+    }
+  };
 
   return (
     <div
@@ -190,6 +240,55 @@ export function CartDrawer() {
 
         {cart && !empty ? (
           <footer className="border-hairline border-t px-5 py-4">
+            {/* Promo / Discount Code Block */}
+            <div className="mb-4">
+              {activeDiscountCode ? (
+                <div className="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2 text-[13px] text-emerald-800 border border-emerald-200">
+                  <div className="flex items-center gap-1.5 font-medium">
+                    <span>🏷️</span>
+                    <span className="font-mono font-bold uppercase">{activeDiscountCode}</span>
+                    <span className="text-[11px] text-emerald-600 font-normal">(Applied)</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveDiscount}
+                    disabled={pending}
+                    className="text-[12px] text-neutral-500 hover:text-red-600 underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleApplyDiscount();
+                    }}
+                    className="flex gap-2"
+                  >
+                    <input
+                      type="text"
+                      value={discountInput}
+                      onChange={(e) => setDiscountInput(e.target.value)}
+                      placeholder="Promo code"
+                      className="w-full rounded-md border border-neutral-300 px-3 py-1.5 text-[13px] placeholder:text-neutral-400 focus:border-ink focus:outline-none uppercase font-mono"
+                    />
+                    <button
+                      type="submit"
+                      disabled={pending || !discountInput.trim()}
+                      className="rounded-md bg-ink px-3.5 py-1.5 text-[12px] font-semibold text-white hover:bg-neutral-800 disabled:opacity-40"
+                    >
+                      Apply
+                    </button>
+                  </form>
+                  {discountError && (
+                    <p className="text-[11px] text-red-600 m-0">{discountError}</p>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="mb-3 flex items-baseline justify-between text-[14px]">
               <span className="opacity-70">Subtotal</span>
               <span>{formatMoney(cart.cost.subtotalAmount, "en-PK")}</span>
@@ -205,7 +304,13 @@ export function CartDrawer() {
               Review order
             </Link>
             <a
-              href={cart.checkoutUrl}
+              href={checkoutUrlWithDiscount()}
+              onClick={() => {
+                trackStorefrontEvent("begin_checkout", {
+                  cart_id: cart.id,
+                  total: cart.cost.totalAmount,
+                });
+              }}
               className="btn mt-2 block w-full border !bg-white !text-ink text-center hover:!bg-body-dim"
             >
               Checkout

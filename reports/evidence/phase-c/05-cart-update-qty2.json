@@ -1,0 +1,1 @@
+{"data":{"cartLinesUpdate":{"cart":{"totalQuantity":2,"cost":{"subtotalAmount":{"amount":"3358.6","currencyCode":"PKR"}},"lines":{"edges":[{"node":{"id":"gid://shopify/CartLine/73e384a4-565d-464e-b5d7-0b70f9c2c0c8?cart=[REDACTED-CART-ID]","quantity":2}}]}},"userErrors":[]}},"extensions":{"cost":{"requestedQueryCost":23}}}

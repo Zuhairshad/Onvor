@@ -39,9 +39,8 @@ export const ANNOUNCEMENTS = [
 ] as const;
 
 export const NEWSLETTER = {
-  heading: "Get 10% Off Your First Order",
-  body: "Subscribe & use code wearonvor at checkout for 10% off your first order. Join the ONVOR community - comfort for everyone.",
-  code: "wearonvor",
+  heading: "Subscribe to our emails",
+  body: "Join the ONVOR community for early access to new releases, limited drops, and exclusive updates.",
   placeholder: "Your email address",
   footerHeading: "Subscribe to our emails",
 } as const;

@@ -5,9 +5,9 @@ import { Suspense } from "react";
 import { getCartPairings } from "@/app/actions/cart";
 import { CartLines } from "@/components/theme/CartLines";
 import { CartPairings } from "@/components/theme/CartPairings";
+import { CartSummary } from "@/components/theme/CartSummary";
 import { PageHeader, PageShell } from "@/components/theme/PageShell";
 import { getCurrentCart } from "@/lib/shopify";
-import { formatMoney } from "@/lib/money";
 
 export const metadata: Metadata = { title: "Your bag" };
 
@@ -54,32 +54,7 @@ async function CartBody() {
 
       <aside className="min-w-0">
         <CartPairings products={pairings} />
-        <div className="bg-body-dim p-6">
-          <h2 className="m-0 text-[21px]">Summary</h2>
-          <dl className="mt-4 space-y-2 text-[15px]">
-            <div className="flex justify-between">
-              <dt>Subtotal</dt>
-              <dd className="m-0">{formatMoney(cart.cost.subtotalAmount, "en-PK")}</dd>
-            </div>
-            <div className="border-hairline/40 flex justify-between border-t pt-2 font-bold">
-              <dt>Total</dt>
-              <dd className="m-0">{formatMoney(cart.cost.totalAmount, "en-PK")}</dd>
-            </div>
-          </dl>
-          <p className="mt-3 text-[13px] opacity-70">
-            Shipping and any taxes are calculated at checkout.
-          </p>
-          {/* Shopify owns checkout; this hands off to its hosted flow. */}
-          <a href={cart.checkoutUrl} className="btn mt-4 block w-full">
-            Checkout
-          </a>
-          <Link
-            href="/collections/all-products"
-            className="mt-3 block text-center text-[14px] underline"
-          >
-            Continue shopping
-          </Link>
-        </div>
+        <CartSummary initialCart={cart} />
       </aside>
     </div>
   );

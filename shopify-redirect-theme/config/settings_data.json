@@ -1,0 +1,14 @@
+{
+  "current": {
+    "storefront_hostname": "theonvor.com",
+    "custom_redirects": "",
+    "integrate_with_customer_accounts": false
+  },
+  "presets": {
+    "Default": {
+      "storefront_hostname": "theonvor.com",
+      "custom_redirects": "",
+      "integrate_with_customer_accounts": false
+    }
+  }
+}

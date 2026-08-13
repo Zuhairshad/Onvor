@@ -1,0 +1,8 @@
+User-Agent: *
+Allow: /
+Disallow: /cart
+Disallow: /account
+Disallow: /search
+Disallow: /api/
+
+Sitemap: https://theonvor.com/sitemap.xml

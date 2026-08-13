@@ -7,6 +7,9 @@ import { CartProvider } from "@/components/theme/CartContext";
 import { CookieNotice } from "@/components/theme/CookieNotice";
 import { SiteJsonLd } from "@/components/theme/JsonLd";
 import { WishlistProvider } from "@/components/theme/WishlistContext";
+import { ShopifyAutomationScripts } from "@/components/integrations/ShopifyAutomationScripts";
+import { ShopifyFormsIntegration } from "@/components/integrations/ShopifyFormsIntegration";
+import { PushbotsIntegration } from "@/components/integrations/PushbotsIntegration";
 import { BRAND } from "@/lib/content/onvor";
 import "./globals.css";
 
@@ -67,6 +70,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <CookieNotice />
           </WishlistProvider>
         </CartProvider>
+        <ShopifyAutomationScripts />
+        <ShopifyFormsIntegration />
+        <PushbotsIntegration />
         <Analytics />
       </body>
     </html>
