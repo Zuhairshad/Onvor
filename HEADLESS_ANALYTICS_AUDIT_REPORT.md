@@ -86,12 +86,25 @@ Based on the store's published theme and checkout pixel configuration (Shop ID `
 
 ---
 
-## 5. Attribution Cookie Security & Encoding Clarification
+## 5. Consent, Privacy & Cookie Management Audit
 
-- **Cookie Name**: `onvor_attribution`
-- **Encoding Scheme**: **URL-encoded JSON plaintext** (`encodeURIComponent(JSON.stringify(data))`), **NOT cryptographically encrypted**.
-- **Data Stored**: Non-sensitive URL marketing query parameters (`utm_*`, `gclid`, `fbclid`, `ttclid`, landing page, referrer, and timestamp).
-- **Security Constraints**: This cookie is **not confidential storage** and must **NEVER** contain passwords, authentication tokens, API keys, credit card details, or sensitive customer PII. Next.js server actions decode it strictly to populate Shopify cart note attributes.
+### 5.1 Current Implementation Reality
+- **Notice Component**: `CookieNotice.tsx` renders a single informational banner with a dismiss button ("Got it") that writes `cookie-notice-dismissed: 1` to `localStorage`.
+- **Pre-Consent Script Gating**: **Not Implemented.** GA4 (`gtag.js`), Meta Pixel (`fbevents.js`), and the `onvor_attribution` cookie load unconditionally on initial page mount regardless of banner interaction.
+- **Opt-In / Opt-Out Controls**: **Not Implemented.** Users are not provided with granular Accept / Reject toggles for analytics vs. marketing vs. essential cookies.
+- **Provider Consent APIs**:
+  - Google Consent Mode v2 (`gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ... })`) is **not active**.
+  - Meta Pixel Consent (`fbq('consent', 'revoke')` / `fbq('consent', 'grant')`) is **not wired**.
+  - TikTok Consent API (`ttq.holdConsent()` / `ttq.grantConsent()`) is **not wired**.
+- **Cookie Security & Encoding**:
+  - `onvor_attribution` is **URL-encoded JSON plaintext** (`encodeURIComponent(JSON.stringify(data))`), **not cryptographically encrypted**.
+  - It contains non-sensitive marketing query strings (`utm_*`, `gclid`, `fbclid`, `ttclid`, landing page, referrer). It does not contain passwords, tokens, or sensitive customer PII, but it is not gated behind affirmative user consent.
+
+### 5.2 Required Actions for Full Privacy & Regulatory Compliance (GDPR / ePrivacy / CCPA)
+1. Upgrade `CookieNotice.tsx` into a Consent Preference Center offering explicit **Accept All**, **Reject Non-Essential**, and **Customize** actions.
+2. Initialize Google Consent Mode v2 with `denied` defaults prior to loading `gtag.js`, updating to `granted` only upon affirmative user acceptance.
+3. Block Meta and TikTok pixel execution until marketing consent is granted.
+4. Gate `onvor_attribution` cookie creation behind analytics/marketing consent.
 
 ---
 
@@ -107,5 +120,5 @@ Based on the store's published theme and checkout pixel configuration (Shop ID `
 | **Cart Attribution** | **PASS** | Captured attribution (`_utm_*`, `_gclid`, `_fbclid`, `_ttclid`, `_landing_page`, `_referrer`) is written to Shopify Cart Attributes via Storefront API `cartAttributesUpdate`. | None. Operational in production. |
 | **Order Attribution** | **BLOCKED** | End-to-end cart attribute propagation is proven via Storefront API schema, but verifying `order.customAttributes` in Shopify Admin requires completing a real test purchase. | Place a live test order in Shopify Admin to inspect `order.customAttributes` and `landing_site_ref`. |
 | **Purchase Tracking** | **BLOCKED** | Hosted checkout confirmation page is configured with Google App (`G-JD6C3GXY26`, `AW-18302441675`) and Meta App (`1261670659444600`), but thank-you page firing requires a live test purchase. | Verify `purchase` event firing on order completion during next live order or test checkout. |
-| **Consent / Privacy** | **PASS** | Informational banner in `CookieNotice.tsx` manages cookie dismissal. `onvor_attribution` stores only non-sensitive marketing query strings. | None. |
+| **Consent / Privacy** | **NEEDS REVIEW** | `CookieNotice.tsx` is an informational dismissal banner only. Non-essential tracking scripts (GA4, Meta) and `onvor_attribution` cookie load prior to consent; Google Consent Mode v2 and Meta/TikTok consent APIs are not actively gated. | Implement affirmative Accept/Reject consent controls and Google Consent Mode v2 if jurisdiction requires strict opt-in consent. |
 | **Secrets / Security** | **PASS** | All client bundles audited: zero Admin API tokens, private keys, or webhook secrets are exposed. `SHOPIFY_STOREFRONT_ACCESS_TOKEN` is public-scoped read-only token. | None. |
