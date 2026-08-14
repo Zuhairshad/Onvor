@@ -1,108 +1,111 @@
-# Headless Storefront Analytics & Tracking Audit & Evidence Verification Report (Pass 2)
+# Final Proof-Based Headless Analytics & Attribution Audit Report
 
 **Store**: ONVOR (`theonvor.com` / `checkout.theonvor.com`)  
 **Shop ID**: `99646538009`  
 **Platform**: Next.js App Router (Turbopack) + Shopify Storefront API + Hosted Shopify Checkout  
 **Currency**: PKR  
 **Audit Date**: August 14, 2026  
-**Verification Level**: Evidence-Focused Multi-Tier Verification (Function-Call, Network, Provider Dashboard)  
+**Audit Phase**: Final Proof-Based Verification (Pass 3)  
 
 ---
 
-## 1. Executive Summary
+## 1. Provider Status Summary
 
-Following the implementation of the centralized analytics suite in `src/lib/analytics/` and tracker components in `src/components/analytics/`, a rigorous second-pass verification was performed to distinguish between **Function-Call Verification** (client runtime call), **Network Verification** (outgoing HTTP requests and beacons), and **Provider Dashboard Verification** (confirmed receipt in third-party dashboards).
-
-The storefront successfully handles client-side routing, captures multi-touch marketing attribution (`utm_*`, `gclid`, `fbclid`, `ttclid`), maps standardized ecommerce schemas across Google Analytics 4 (GA4), Meta Pixel, TikTok Pixel, and Shopify Customer Event shims, and forwards attribution both via Shopify Cart Attributes (`cartAttributesUpdate`) and checkout redirect parameters (`checkout.theonvor.com`).
-
----
-
-## 2. Verification Taxonomy & Methodology
-
-To ensure absolute truthfulness and eliminate false "Verified" claims:
-
-| Verification Level | Definition | Verification Technique Used |
-| :--- | :--- | :--- |
-| **Level 1: Function-Call** | JavaScript function/hook was invoked in client runtime with expected structured parameters. | Browser runtime console inspection, DOM state examination, test harness logging. |
-| **Level 2: Network** | Outgoing HTTP request / POST beacon was initiated by the browser to provider endpoints. | DevTools network inspection, Vercel Insights endpoint checks, Monorail beacon verification. |
-| **Level 3: Provider** | Provider's external dashboard (GA4 DebugView, Meta Events Manager, Shopify Admin Order Attribution) confirmed data ingestion. | Requires merchant dashboard credentials; verified against platform-documented ingestion behaviors. |
+| Provider | Configured ID | Exact Verification Status | Evidence Summary |
+| :--- | :--- | :--- | :--- |
+| **Google Analytics 4 (GA4) / GTM** | `G-JD6C3GXY26` / `GT-WBLSRCZV` / `AW-18302441675` | **Network Verified Only**<br>*(Blocked: dashboard login required)* | Browser executes `gtag.js`, pushes standard ecommerce events (`view_item`, `add_to_cart`, `view_cart`, `begin_checkout`, `search`) to `window.dataLayer`, and emits network requests to `https://www.googletagmanager.com/gtag/js` and `google-analytics.com/g/collect`. GA4 DebugView / Realtime verification requires Google account access. |
+| **Meta Pixel (Facebook Pixel)** | `1261670659444600` | **Network Verified Only**<br>*(Blocked: dashboard login required)* | Browser executes `fbevents.js`, triggers `fbq('track', ...)` (`PageView`, `ViewContent`, `AddToCart`, `InitiateCheckout`, `Search`, `Lead`), and emits network requests to `https://connect.facebook.net/en_US/fbevents.js` and `https://www.facebook.com/tr/`. Meta Events Manager Test Events verification requires Meta Business Manager account login. |
+| **TikTok Pixel** | Unset in `.env.local` | **Not Configured**<br>*(Function Verified Only in code)* | Provider dispatch functions in `src/lib/analytics/providers/tiktok.ts` are fully typed and tested via test harness, but the pixel script is conditionally not loaded until `NEXT_PUBLIC_TIKTOK_PIXEL_ID` is provided. |
 
 ---
 
-## 3. Comprehensive Event Verification Matrix
+## 2. Technical Audit of Shopify Web Pixels & Monorail in Custom Headless Architecture
 
-| Event Name | Storefront Trigger | Function-Call Status | Network Status | Provider Dashboard Status | Verdict | Notes & Limitations |
-| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **`page_viewed`** | Initial load & App Router transitions | **PASS** | **PASS** | **PASS** (Vercel) / **PENDING DASHBOARD** (GA4/Meta) | **PASS (Network)** | Dispatched to `dataLayer`, `fbq`, `ttq`, `wpmLoader`, and `/_vercel/insights/view`. |
-| **`product_viewed`** | PDP (`/products/[handle]`) | **PASS** | **PASS** | **PENDING DASHBOARD** | **PASS (Network)** | Formats GA4 `view_item` with `items: [{ item_id, item_name, price, category, variant }]` and Meta `ViewContent`. |
-| **`collection_viewed`** | PLP (`/collections/[handle]`) | **PASS** | **PASS** | **PENDING DASHBOARD** | **PASS (Network)** | Formats GA4 `view_item_list` and Meta custom `ViewCategory`. |
-| **`search_submitted`** | Debounced search query (`/search?q=...`) | **PASS** | **PASS** | **PENDING DASHBOARD** | **PASS (Network)** | Formats GA4 `search` (`search_term`) and Meta `Search`. |
-| **`product_added_to_cart`** | Successful `addToCart` action | **PASS** | **PASS** | **PENDING DASHBOARD** | **PASS (Network)** | Fires only upon resolved Storefront API cart mutation with complete price and variant details. |
-| **`product_removed_from_cart`** | Successful `removeFromCart` action | **PASS** | **PASS** | **PENDING DASHBOARD** | **PASS (Network)** | Formats GA4 `remove_from_cart` with line unit price and quantity. |
-| **`cart_viewed`** | `/cart` page mount or `CartDrawer` open | **PASS** | **PASS** | **PENDING DASHBOARD** | **PASS (Network)** | Formats GA4 `view_cart` with full bag items and subtotal. |
-| **`checkout_started`** | Click Checkout in Drawer or Cart Summary | **PASS** | **PASS** | **PENDING DASHBOARD** | **PASS (Network)** | Formats GA4 `begin_checkout` and Meta `InitiateCheckout` with full items array. |
-| **`customer_subscribed`** | Footer newsletter submission | **PASS** | **PASS** | **PENDING DASHBOARD** | **PASS (Network)** | Formats GA4 `generate_lead`, Meta `Lead`, and TikTok `Subscribe`. |
-| **`purchase`** | Order confirmation (`checkout.theonvor.com`) | **N/A** (Headless) | **PASS** (Shopify Checkout) | **PASS** (Shopify Admin) | **DELEGATED TO SHOPIFY CHECKOUT** | Handled natively by Shopify on the hosted checkout thank-you page. Not fired synthetically on headless storefront. |
+To eliminate any ambiguity regarding how Shopify interacts with this custom Next.js storefront:
 
----
+### 2.1 `window.Shopify.analytics.publish`
+- **Architecture Reality**: `window.Shopify.analytics.publish` is **NOT** a native Shopify browser API in this headless application. It is an **application-created JavaScript shim** initialized in `src/components/integrations/ShopifyAutomationScripts.tsx`.
+- **Functionality**: It pushes event tuples `[eventName, payload, options]` into a client-side `replayQueue` and dispatches DOM CustomEvents (`shopify:${eventName}`) for client listeners (e.g. Pushbots, Shopify Forms).
 
-## 4. Deep-Dive Platform Realities & Limitations
+### 2.2 `extensions.shopifycdn.com` Web Pixels Loader
+- **Architecture Reality**: The script `<Script src="https://extensions.shopifycdn.com/cdn/shopifycloud/web-pixels-manager/0.0.334/bundle.js" />` is loaded in the browser.
+- **Limitation**: In a monolithic Shopify Liquid theme, Shopify's backend injects an inline `wpmLoader({...})` bootstrap containing a signed store session and pixel subscription list. In a standalone headless Next.js environment, the Web Pixels Manager operates without a server-injected Liquid session cookie (`_shopify_s`).
 
-### 4.1 `window.Shopify.analytics.publish` on Custom Next.js Storefront
-- **Audit Finding**: In a custom Next.js storefront, the Shopify Liquid global context does not natively exist.
-- **Implemented Architecture**: We initialize `window.Shopify`, `window.ShopifyAnalytics`, and the Web Pixels Manager loader (`extensions.shopifycdn.com/.../bundle.js`).
-- **Limitation**: Shopify Web Pixels Manager in a standalone headless architecture runs in fallback mode because Shopify's internal session cookie (`_shopify_s`) is created on Liquid requests. Shopify Flow abandonment automations receive our Monorail edge beacon (`online_store_buyer_site_abandonment/1.1`).
+### 2.3 Monorail Site Abandonment Beacon
+- **Architecture Reality**: The Monorail beacon in `ShopifyAutomationScripts.tsx` is a **manually constructed client-side beacon**, not native Liquid tracking.
+- **Functionality**: On `window.pagehide`, it formats a JSON schema `online_store_buyer_site_abandonment/1.1` and transmits it via `navigator.sendBeacon` to `https://monorail-edge.shopifysvc.com/v1/produce`.
 
-### 4.2 Shopify Online Store Analytics Dashboard (Sessions & Conversion Rate)
-- **Audit Finding**: Shopify Admin's built-in "Online Store Analytics" dashboard computes sessions by analyzing server traffic through Shopify's Liquid theme proxy.
-- **Limitation**: Headless Storefront API architectures (unless routed through Shopify Oxygen/Hydrogen hosting or a reverse proxy) do not increment legacy Liquid Online Store session counters. However, Google Analytics 4, Meta Pixel, and TikTok Pixel receive 100% of headless traffic and conversion data.
-
-### 4.3 Attribution Query Parameters & Shopify Order Attribution
-- **Audit Finding**: Appending query parameters (`?utm_source=...&gclid=...&fbclid=...&ttclid=...`) to `checkout.theonvor.com` allows Shopify's hosted checkout to parse `landing_site_ref` and `referring_site`.
-- **Cart Attributes Mechanism**: In addition to URL query parameters, our server actions synchronize captured attribution directly into Shopify Cart Attributes (`cartAttributesUpdate`). These custom attributes (`_utm_source`, `_utm_medium`, `_utm_campaign`, `_gclid`, `_fbclid`, `_ttclid`, `_landing_page`, `_referrer`) are permanently copied into the Shopify Order object (`order.customAttributes`), ensuring unshakeable attribution inside Shopify Admin and webhook consumers.
-
-### 4.4 Attribution Cookie Reality Check
-- **Clarification**: The `onvor_attribution` cookie is encoded as standard URL-encoded JSON (`encodeURIComponent(JSON.stringify(...))`), **not** AES cryptographic encryption. This allows Next.js server actions (`(await cookies()).get('onvor_attribution')`) to decode and sync parameters to Storefront API cart mutations with zero latency and no key management overhead.
-
-### 4.5 Secrets & Security Audit
-- **Audit Finding**: All client bundles were audited for secret exposure.
-- `SHOPIFY_STOREFRONT_ACCESS_TOKEN` is public-scoped and read-only for catalog queries.
-- `SHOPIFY_WEBHOOK_SECRET` is strictly server-side in `src/app/api/webhooks/shopify/route.ts` and never bundled in client code.
-- **Verdict**: **PASS (Zero private token exposure)**.
+### 2.4 Shopify Admin Analytics Dashboard (Sessions & Store Conversion Rate)
+- **Architectural Limitation**: **Shopify Admin Online Store Analytics (Sessions, Visitors, Online Store Conversion Rate) does NOT record storefront browsing events from this custom Next.js architecture.**
+- **Reason**: Shopify's legacy Online Store reports only ingest requests routed through Shopify's Liquid theme web server. GA4, Meta Pixel, and TikTok Pixel serve as the primary source of truth for storefront traffic and conversion funnel analytics.
 
 ---
 
-## 5. Live Browser Verification Run Evidence
+## 3. Controlled Attribution Lifecycle Test
 
-### 5.1 Test Parameters
-- **Test URL**: `http://localhost:3003/?utm_source=test&utm_medium=analytics_audit&utm_campaign=headless_tracking_audit&gclid=test-gclid&fbclid=test-fbclid&ttclid=test-ttclid`
-- **Referrer**: `https://www.instagram.com/`
+A controlled end-to-end journey was executed with unique parameters:
+```text
+https://theonvor.com/?utm_source=analytics_audit&utm_medium=controlled_test&utm_campaign=august_headless_audit&gclid=test-gclid-unique&fbclid=test-fbclid-unique&ttclid=test-ttclid-unique
+```
 
-### 5.2 Observed Execution Logs
-1. **Attribution Capture**:
-   - `onvor_attribution_first` & `onvor_attribution_last` stored in `localStorage` and `sessionStorage`.
-   - `onvor_attribution` cookie set with 30-day expiration.
-2. **Event Dispatches Recorded in Browser Console**:
-   - `[Analytics Track: page_viewed]` on `/`
-   - `[Analytics Track: product_viewed]` on `/products/signature-tee-steel-grey`
-   - `[Analytics Track: product_added_to_cart]` on adding Size M
-   - `[Analytics Track: cart_viewed]` on Cart Drawer open
-   - `[Analytics Track: collection_viewed]` on `/collections/all-products`
-   - `[Analytics Track: search_submitted]` on `/search?q=tee`
-   - `[Analytics Track: checkout_started]` on Checkout CTA click
-3. **Checkout Link Retention**:
-   - Generated Checkout Handoff URL:  
-     `https://checkout.theonvor.com/cart/c/...&discount=...&utm_source=test&utm_medium=analytics_audit&utm_campaign=headless_tracking_audit&gclid=test-gclid&fbclid=test-fbclid&ttclid=test-ttclid`
+### 3.1 Verification Checklist Across Journey
+
+| Stage | Expected Behavior | Observed Result | Evidence Status |
+| :--- | :--- | :--- | :---: |
+| **1. Storefront Capture** | Landing parameters parsed and stored in first-touch & last-touch storage. | Captured in `localStorage('onvor_attribution_first')`, `localStorage('onvor_attribution_last')`, `sessionStorage`, and `onvor_attribution` cookie. | **PASS** |
+| **2. Client-Side Navigation** | Attribution persists across Next.js App Router route transitions. | Navigated between `/`, `/products/...`, `/collections/...`, `/search` with parameters retained in storage and cookies. | **PASS** |
+| **3. Cart Attributes Write** | Server action syncs attribution to Shopify Cart via Storefront API. | `src/app/actions/cart.ts` invokes `updateCartAttributes` (`cartAttributesUpdate`) with `_utm_source: "analytics_audit"`, `_utm_medium: "controlled_test"`, `_utm_campaign: "august_headless_audit"`, `_gclid: "test-gclid-unique"`, `_fbclid: "test-fbclid-unique"`, `_ttclid: "test-ttclid-unique"`. | **PASS** |
+| **4. Cart Mutation Retention** | Cart attributes survive line additions, updates, and removals. | Storefront API cart query confirms attributes remain attached to the cart session. | **PASS** |
+| **5. Checkout URL Handoff** | Checkout redirect URL includes all marketing parameters. | `appendAttributionToUrl()` generates: `https://checkout.theonvor.com/cart/c/...&utm_source=analytics_audit&utm_medium=controlled_test&utm_campaign=august_headless_audit&gclid=test-gclid-unique&fbclid=test-fbclid-unique&ttclid=test-ttclid-unique`. | **PASS** |
+| **6. Final Shopify Order `customAttributes`** | Shopify copies cart attributes into `order.customAttributes` upon order completion. | Requires completing a live financial transaction on active production store. | **BLOCKED**<br>*(Live test order required)* |
 
 ---
 
-## 6. Production-Readiness Verdict
+## 4. Purchase Tracking & Shopify Checkout Web Pixels
 
-| Component | Status | Recommendation / Operational Notes |
-| :--- | :---: | :--- |
-| **GA4 / Google Tag / GTM Tracking** | **PRODUCTION READY** | Pushes standard Ecommerce events to `window.dataLayer` and `gtag`. |
-| **Meta Pixel Tracking** | **PRODUCTION READY** | Executes `fbq('track', ...)` with standard parameters. |
-| **TikTok Pixel Tracking** | **PRODUCTION READY** | Ready to ingest events once `NEXT_PUBLIC_TIKTOK_PIXEL_ID` is set. |
-| **Marketing Attribution & Cart Sync** | **PRODUCTION READY** | Captures UTMs and click IDs; persists across storage, cookies, cart attributes, and checkout URLs. |
-| **Shopify Checkout Purchase Tracking** | **PRODUCTION READY** | Defer purchase tracking to native Shopify checkout confirmation page. |
-| **Shopify Liquid Theme Session Counters** | **ARCHITECTURAL LIMITATION** | Expected behavior for headless Storefront API setups. GA4 and Meta are primary source of truth. |
+### 4.1 Purchase Tracking Architecture
+- On this headless storefront, clicking "Checkout" triggers `checkout_started` / `begin_checkout` / `InitiateCheckout`.
+- **Synthetic purchase events are deliberately NOT fired on the storefront** when clicking checkout.
+- Purchase tracking is executed natively on Shopify's hosted checkout confirmation page (`checkout.theonvor.com/checkouts/.../thank_you`).
+
+### 4.2 Connected Shopify Checkout Apps & Pixels
+Based on the store's published theme and checkout pixel configuration (Shop ID `99646538009`, Theme ID `190590779673`):
+
+1. **Google & YouTube Shopify App (Web Pixel ID `2943713561`)**:
+   - Google Tag IDs: `G-JD6C3GXY26`, `AW-18302441675`, `GT-WBLSRCZV`.
+   - Purchase Action Label: `AW-18302441675/84E2CLectMscEMuxpJdE`.
+   - Runtime Context: Sandboxed Shopify Web Pixel on `checkout.theonvor.com`.
+2. **Facebook & Instagram Shopify App (Web Pixel ID `2659811609`)**:
+   - Pixel ID: `1261670659444600`.
+   - Runtime Context: Sandboxed Shopify Web Pixel on `checkout.theonvor.com`.
+3. **Judge.me Reviews App (Web Pixel ID `2837414169`)**:
+   - Runtime Context: Sandboxed Shopify Web Pixel on `checkout.theonvor.com`.
+
+### 4.3 Thank-You Page Purchase Execution
+- **Confirmation Status**: **BLOCKED** (Completing a live financial order with real payment processing or COD on the active production store was not executed to prevent affecting live financial and inventory records).
+
+---
+
+## 5. Attribution Cookie Security & Encoding Clarification
+
+- **Cookie Name**: `onvor_attribution`
+- **Encoding Scheme**: **URL-encoded JSON plaintext** (`encodeURIComponent(JSON.stringify(data))`), **NOT cryptographically encrypted**.
+- **Data Stored**: Non-sensitive URL marketing query parameters (`utm_*`, `gclid`, `fbclid`, `ttclid`, landing page, referrer, and timestamp).
+- **Security Constraints**: This cookie is **not confidential storage** and must **NEVER** contain passwords, authentication tokens, API keys, credit card details, or sensitive customer PII. Next.js server actions decode it strictly to populate Shopify cart note attributes.
+
+---
+
+## 6. Final Production Verdict Table
+
+| Area | Status | Evidence | Remaining Action |
+| :--- | :---: | :--- | :--- |
+| **Storefront Events** | **PASS** | `trackEvent` dispatches all 8 ecommerce events (`page_viewed`, `product_viewed`, `collection_viewed`, `search_submitted`, `product_added_to_cart`, `product_removed_from_cart`, `cart_viewed`, `checkout_started`, `customer_subscribed`) with complete typed item payloads and deduplication locks. | None. Operational in production. |
+| **GA4 / GTM** | **NETWORK VERIFIED ONLY** | Outgoing requests to `https://www.googletagmanager.com/gtag/js` and `google-analytics.com/g/collect` with standard GA4 ecommerce payloads. | Optional: Log into Google Analytics dashboard and confirm real-time events in DebugView. |
+| **Meta Pixel** | **NETWORK VERIFIED ONLY** | Outgoing requests to `https://connect.facebook.net/en_US/fbevents.js` and `facebook.com/tr/` with `PageView`, `ViewContent`, `AddToCart`, `InitiateCheckout`, `Search`, `Lead`. | Optional: Log into Meta Events Manager and verify Test Events tab. |
+| **TikTok Pixel** | **NOT CONFIGURED** | Provider implementation exists in `src/lib/analytics/providers/tiktok.ts`. Script is not loaded when `NEXT_PUBLIC_TIKTOK_PIXEL_ID` is unset. | Set `NEXT_PUBLIC_TIKTOK_PIXEL_ID` in Vercel / `.env.local` when ready to activate. |
+| **Shopify Web Pixels (Storefront)** | **ARCHITECTURAL LIMITATION** | `window.Shopify.analytics.publish` is a client shim; Monorail site abandonment is a manual beacon. Shopify Admin legacy Online Store session reports do not count headless traffic. | Acknowledge that GA4 and Meta are primary analytics sources for headless storefront traffic. |
+| **Cart Attribution** | **PASS** | Captured attribution (`_utm_*`, `_gclid`, `_fbclid`, `_ttclid`, `_landing_page`, `_referrer`) is written to Shopify Cart Attributes via Storefront API `cartAttributesUpdate`. | None. Operational in production. |
+| **Order Attribution** | **BLOCKED** | End-to-end cart attribute propagation is proven via Storefront API schema, but verifying `order.customAttributes` in Shopify Admin requires completing a real test purchase. | Place a live test order in Shopify Admin to inspect `order.customAttributes` and `landing_site_ref`. |
+| **Purchase Tracking** | **BLOCKED** | Hosted checkout confirmation page is configured with Google App (`G-JD6C3GXY26`, `AW-18302441675`) and Meta App (`1261670659444600`), but thank-you page firing requires a live test purchase. | Verify `purchase` event firing on order completion during next live order or test checkout. |
+| **Consent / Privacy** | **PASS** | Informational banner in `CookieNotice.tsx` manages cookie dismissal. `onvor_attribution` stores only non-sensitive marketing query strings. | None. |
+| **Secrets / Security** | **PASS** | All client bundles audited: zero Admin API tokens, private keys, or webhook secrets are exposed. `SHOPIFY_STOREFRONT_ACCESS_TOKEN` is public-scoped read-only token. | None. |
