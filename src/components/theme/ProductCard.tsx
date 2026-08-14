@@ -29,15 +29,19 @@ export function ProductCard({
 
       <Link href={`/products/${product.handle}`} className="block">
         <span className="relative block aspect-[2/3] w-full overflow-hidden">
-          <Image
-            src={image}
-            alt={product.title}
-            width={1000}
-            height={1500}
-            sizes="(min-width: 769px) 25vw, 50vw"
-            priority={priority}
-            className="h-full w-full object-cover transition-opacity duration-500 imp:group-hover:opacity-0"
-          />
+          {image ? (
+            <Image
+              src={image}
+              alt={product.title}
+              width={1000}
+              height={1500}
+              sizes="(min-width: 769px) 25vw, 50vw"
+              priority={priority}
+              className="h-full w-full object-cover transition-opacity duration-500 imp:group-hover:opacity-0"
+            />
+          ) : (
+            <div className="bg-body-dim h-full w-full" />
+          )}
           {hoverImage ? (
             /* Decorative and only ever seen on a pointer device. `hidden` below
                769px keeps it out of the layout, which also keeps a lazy image
