@@ -1,22 +1,12 @@
 "use server";
 
-import { BRAND } from "@/lib/content/onvor";
+import { shopifyConfig } from "@/lib/shopify/config";
 
-/**
- * Newsletter and contact submissions.
- *
- * Both forms used to post straight to `/contact`, a Liquid route that only
- * exists on the Shopify domain - on a headless deploy the newsletter landed on a
- * 404 and the contact form did nothing. Shopify has no Storefront API mutation
- * for either, so the submission is forwarded server-side to the store's own form
- * endpoint, which is the same one the live theme posts to. That keeps the
- * shopper on this site and still puts the record where the shop owner looks for
- * it.
- *
- * Server-side, so the store domain is never a cross-origin request from the
- * browser and no redirect drags the visitor off to theonvor.com.
- */
-const STORE_FORM_URL = `https://${BRAND.domain}/contact`;
+// POST to the raw myshopify.com domain (jtszju-ha.myshopify.com), not the
+// storefront domain (theonvor.com). theonvor.com will be the Next.js app after
+// DNS cutover, so POSTing there loops back to this server action. The myshopify
+// domain has no Cloudflare in front — that's what was blocking the 403.
+const STORE_FORM_URL = `https://${shopifyConfig().domain}/contact`;
 
 export type FormResult = { ok: boolean; message: string };
 

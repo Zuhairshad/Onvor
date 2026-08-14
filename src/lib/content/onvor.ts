@@ -236,8 +236,8 @@ export const IMAGERY = {
  */
 export const FEATURED_PRODUCTS = [
   {
-    handle: "signature-straight-fit-black",
-    title: "Signature Straight Fit - Black",
+    handle: "signature-straight-fit-beige",
+    title: "Signature Straight Fit",
     price: "2379.30",
   },
   {
@@ -245,7 +245,7 @@ export const FEATURED_PRODUCTS = [
     title: "Urdu Calligraphy Tee - White",
     price: "1679.30",
   },
-  { handle: "stamp-shorts-grey", title: "Stamp Shorts - Grey", price: "1959.30" },
+  { handle: "stamp-shorts-charcoal", title: "Stamp Shorts", price: "1959.30" },
   {
     handle: "signature-tee-steel-grey",
     title: "Signature Tee - Steel Grey",
