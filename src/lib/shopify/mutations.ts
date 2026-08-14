@@ -86,3 +86,20 @@ export const UPDATE_CART_DISCOUNT_CODES_MUTATION = withFragments(
   `,
   ...CART_FRAGMENTS,
 );
+
+export const UPDATE_CART_ATTRIBUTES_MUTATION = withFragments(
+  /* GraphQL */ `
+    mutation updateCartAttributes($cartId: ID!, $attributes: [AttributeInput!]!) {
+      cartAttributesUpdate(cartId: $cartId, attributes: $attributes) {
+        cart {
+          ...CartFields
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `,
+  ...CART_FRAGMENTS,
+);

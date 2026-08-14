@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { searchProducts } from "@/app/actions/search";
 import { ProductCard } from "@/components/theme/ProductCard";
 import type { CatalogProduct } from "@/lib/content/catalog";
+import { trackEvent } from "@/lib/analytics";
 
 /**
  * Client-side live search. Types into a debounced input that fires the
@@ -58,7 +59,14 @@ export function SearchClient({ initialQuery, initialResults }: Props) {
       startTransition(async () => {
         const items = await searchProducts(q, 40);
         // Drop stale responses so a fast typist never sees an old result set.
-        if (mine === seq.current) setResults(items);
+        if (mine === seq.current) {
+          setResults(items);
+          trackEvent({
+            event: "search_submitted",
+            search_term: q,
+            results_count: items.length,
+          });
+        }
       });
     }, DEBOUNCE_MS);
 

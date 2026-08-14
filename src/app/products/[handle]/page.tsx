@@ -12,6 +12,7 @@ import { ProductGallery } from "@/components/theme/ProductGallery";
 import { Reveal } from "@/components/theme/Reveal";
 import { SizeGuideDrawer } from "@/components/theme/SizeGuideDrawer";
 import { WishlistButton } from "@/components/theme/WishlistButton";
+import { ProductViewTracker } from "@/components/analytics/ProductViewTracker";
 import { CONTACT, RETURN_POLICY } from "@/lib/content/onvor";
 import {
   getProduct,
@@ -121,6 +122,7 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
 
   return (
     <PageShell>
+      <ProductViewTracker product={product} />
       <ProductJsonLd
         product={catalog}
         collection={{ handle: collectionHref.replace("/collections/", ""), title: collectionTitle }}

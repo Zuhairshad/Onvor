@@ -6,6 +6,7 @@ import { getCartPairings } from "@/app/actions/cart";
 import { CartLines } from "@/components/theme/CartLines";
 import { CartPairings } from "@/components/theme/CartPairings";
 import { CartSummary } from "@/components/theme/CartSummary";
+import { CartViewTracker } from "@/components/analytics/CartViewTracker";
 import { PageHeader, PageShell } from "@/components/theme/PageShell";
 import { getCurrentCart } from "@/lib/shopify";
 
@@ -48,6 +49,7 @@ async function CartBody() {
 
   return (
     <div className="grid grid-cols-1 gap-10 imp:grid-cols-[minmax(0,1fr)_minmax(280px,380px)] imp:gap-[60px]">
+      <CartViewTracker cart={cart} />
       <div className="min-w-0">
         <CartLines cart={cart} />
       </div>

@@ -1,7 +1,6 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, Suspense } from "react";
+import { useEffect } from "react";
 import Script from "next/script";
 
 const SHOP_DOMAIN = "jtszju-ha.myshopify.com";
@@ -35,44 +34,6 @@ export function trackStorefrontEvent(eventName: string, payload: Record<string, 
   } catch (err) {
     console.debug("[Shopify Analytics Track Error]", err);
   }
-}
-
-function RouteChangeListener() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const fullUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-    let pageType = "page";
-    if (pathname === "/") pageType = "home";
-    else if (pathname.startsWith("/products/")) pageType = "product";
-    else if (pathname.startsWith("/collections/")) pageType = "collection";
-    else if (pathname.startsWith("/cart")) pageType = "cart";
-    else if (pathname.startsWith("/pages/")) pageType = "page";
-
-    if (window.ShopifyAnalytics) {
-      window.ShopifyAnalytics.meta = window.ShopifyAnalytics.meta || {};
-      window.ShopifyAnalytics.meta.page = {
-        pageType,
-        path: pathname,
-        url: window.location.href,
-      };
-    }
-
-    // Track page view event in Shopify Analytics & Web Pixels
-    trackStorefrontEvent("page_viewed", {
-      pageType,
-      path: pathname,
-      url: window.location.href,
-      title: document.title,
-    });
-
-    if (window.ShopifyAnalytics?.lib?.page) {
-      window.ShopifyAnalytics.lib.page(pageType, { path: pathname, url: fullUrl });
-    }
-  }, [pathname, searchParams]);
-
-  return null;
 }
 
 export function ShopifyAutomationScripts() {
@@ -178,10 +139,6 @@ export function ShopifyAutomationScripts() {
 
   return (
     <>
-      <Suspense fallback={null}>
-        <RouteChangeListener />
-      </Suspense>
-
       {/* Shopify Features JSON */}
       <script
         id="shopify-features"

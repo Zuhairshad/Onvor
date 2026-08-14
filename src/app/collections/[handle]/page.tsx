@@ -10,6 +10,7 @@ import { Footer } from "@/components/theme/Footer";
 import { Header } from "@/components/theme/Header";
 import { ProductCard } from "@/components/theme/ProductCard";
 import { Reveal } from "@/components/theme/Reveal";
+import { CollectionViewTracker } from "@/components/analytics/CollectionViewTracker";
 import {
   applyFilters,
   countActive,
@@ -125,6 +126,11 @@ async function Grid({
 
   return (
     <>
+      <CollectionViewTracker
+        handle={handle}
+        title={collection?.title || handle}
+        products={products}
+      />
       <CollectionToolbar count={products.length} sort={sort} filters={filters} />
 
       <div className="mt-8 flex flex-col gap-8 imp:flex-row imp:gap-10">

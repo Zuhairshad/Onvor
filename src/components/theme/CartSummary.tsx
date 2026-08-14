@@ -6,7 +6,7 @@ import { applyDiscountCode, removeDiscountCode } from "@/app/actions/cart";
 import { useCart } from "@/components/theme/CartContext";
 import { formatMoney } from "@/lib/money";
 import { getStoredDiscountCode, setDiscountCookie } from "@/lib/discounts";
-import { trackStorefrontEvent } from "@/components/integrations/ShopifyAutomationScripts";
+import { appendAttributionToUrl, formatEcommerceItem, trackEvent } from "@/lib/analytics";
 import type { Cart } from "@/lib/shopify";
 
 export function CartSummary({ initialCart }: { initialCart: Cart }) {
@@ -50,16 +50,19 @@ export function CartSummary({ initialCart }: { initialCart: Cart }) {
   const checkoutUrlWithDiscount = () => {
     if (!cart.checkoutUrl) return "#";
     const discount = activeDiscountCode || getStoredDiscountCode();
-    if (!discount) return cart.checkoutUrl;
-    try {
-      const url = new URL(cart.checkoutUrl);
-      if (!url.searchParams.has("discount")) {
-        url.searchParams.set("discount", discount);
+    let finalUrl = cart.checkoutUrl;
+    if (discount) {
+      try {
+        const url = new URL(cart.checkoutUrl);
+        if (!url.searchParams.has("discount")) {
+          url.searchParams.set("discount", discount);
+        }
+        finalUrl = url.toString();
+      } catch {
+        finalUrl = cart.checkoutUrl;
       }
-      return url.toString();
-    } catch {
-      return cart.checkoutUrl;
     }
+    return appendAttributionToUrl(finalUrl);
   };
 
   return (
@@ -132,9 +135,25 @@ export function CartSummary({ initialCart }: { initialCart: Cart }) {
       <a
         href={checkoutUrlWithDiscount()}
         onClick={() => {
-          trackStorefrontEvent("begin_checkout", {
+          const total = parseFloat(cart.cost.totalAmount.amount) || 0;
+          const currency = cart.cost.totalAmount.currencyCode || "PKR";
+          const items = cart.lines.map((line) =>
+            formatEcommerceItem({
+              id: line.merchandise.id,
+              name: line.merchandise.product.title,
+              price: line.cost.totalAmount.amount,
+              quantity: line.quantity,
+              variant: line.merchandise.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(" / "),
+              currency,
+            }),
+          );
+
+          trackEvent({
+            event: "checkout_started",
             cart_id: cart.id,
-            total: cart.cost.totalAmount,
+            value: total,
+            currency,
+            items,
           });
         }}
         className="btn mt-4 block w-full text-center"

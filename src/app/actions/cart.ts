@@ -14,6 +14,7 @@ import {
   removeCartLines,
   updateCartLines,
   updateCartDiscountCodes,
+  updateCartAttributes,
   type Cart,
   type Product,
 } from "@/lib/shopify";
@@ -28,6 +29,31 @@ async function setCartCookie(cartId: string) {
     path: "/",
     maxAge: CART_COOKIE_MAX_AGE,
   });
+}
+
+async function syncCartAttribution(cartId: string) {
+  try {
+    const rawAttribution = (await cookies()).get("onvor_attribution")?.value;
+    if (rawAttribution) {
+      const data = JSON.parse(decodeURIComponent(rawAttribution));
+      const attributes: Array<{ key: string; value: string }> = [];
+      if (data.utm_source) attributes.push({ key: "_utm_source", value: String(data.utm_source) });
+      if (data.utm_medium) attributes.push({ key: "_utm_medium", value: String(data.utm_medium) });
+      if (data.utm_campaign) attributes.push({ key: "_utm_campaign", value: String(data.utm_campaign) });
+      if (data.utm_term) attributes.push({ key: "_utm_term", value: String(data.utm_term) });
+      if (data.utm_content) attributes.push({ key: "_utm_content", value: String(data.utm_content) });
+      if (data.gclid) attributes.push({ key: "_gclid", value: String(data.gclid) });
+      if (data.fbclid) attributes.push({ key: "_fbclid", value: String(data.fbclid) });
+      if (data.ttclid) attributes.push({ key: "_ttclid", value: String(data.ttclid) });
+      if (data.landing_page) attributes.push({ key: "_landing_page", value: String(data.landing_page) });
+      if (data.referrer) attributes.push({ key: "_referrer", value: String(data.referrer) });
+      if (attributes.length > 0) {
+        await updateCartAttributes(cartId, attributes);
+      }
+    }
+  } catch (err) {
+    console.debug("[Cart Attribution Sync Notice]", err);
+  }
 }
 
 /**
@@ -45,6 +71,7 @@ async function resolveCartId(): Promise<string> {
 
   const cart = await createCart();
   await setCartCookie(cart.id);
+  await syncCartAttribution(cart.id);
   return cart.id;
 }
 

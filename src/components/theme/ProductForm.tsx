@@ -6,7 +6,7 @@ import { addToCart } from "@/app/actions/cart";
 import { useCart } from "@/components/theme/CartContext";
 import type { CatalogProduct } from "@/lib/content/catalog";
 import { formatPkr } from "@/lib/money";
-import { trackStorefrontEvent } from "@/components/integrations/ShopifyAutomationScripts";
+import { formatEcommerceItem, trackEvent } from "@/lib/analytics";
 
 /**
  * Variant picker and add-to-cart.
@@ -52,12 +52,26 @@ export function ProductForm({ product }: Props) {
         // the mini-cart so the shopper sees what they just added.
         setCart(cart);
         openDrawer();
-        trackStorefrontEvent("add_to_cart", {
-          handle: product.handle,
-          title: product.title,
-          price: product.price,
-          selected_options: selected,
+
+        const unitPrice = parseFloat(product.price) || 0;
+        const variantLabel = Object.entries(selected)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(" / ");
+
+        const addedItem = formatEcommerceItem({
+          id: product.handle,
+          name: product.title,
+          price: unitPrice,
+          category: product.type,
+          variant: variantLabel,
           quantity,
+        });
+
+        trackEvent({
+          event: "product_added_to_cart",
+          currency: "PKR",
+          value: unitPrice * quantity,
+          items: [addedItem],
         });
       } catch {
         setMessage("Couldn't add to bag. Try again.");

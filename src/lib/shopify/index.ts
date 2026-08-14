@@ -24,6 +24,7 @@ export {
   removeCartLines,
   updateCartLines,
   updateCartDiscountCodes,
+  updateCartAttributes,
 } from "./cart";
 export type { CartLineInput } from "./cart";
 export { TAGS, collectionTag, productTag } from "./tags";

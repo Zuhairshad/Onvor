@@ -65,14 +65,18 @@ export function FeaturedCollection({ heading, products, viewAllHref }: Props) {
 
                 <Link href={`/products/${product.handle}`} className="block">
                   <span className="relative block aspect-[2/3] w-full overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      width={1000}
-                      height={1500}
-                      sizes="(min-width: 769px) 20vw, 39vw"
-                      className="h-full w-full object-cover transition-opacity duration-500 imp:group-hover:opacity-0"
-                    />
+                    {product.image ? (
+                      <Image
+                        src={product.image}
+                        alt={product.title}
+                        width={1000}
+                        height={1500}
+                        sizes="(min-width: 769px) 20vw, 39vw"
+                        className="h-full w-full object-cover transition-opacity duration-500 imp:group-hover:opacity-0"
+                      />
+                    ) : (
+                      <div className="bg-body-dim h-full w-full" />
+                    )}
                     {product.hoverImage ? (
                       <Image
                         src={product.hoverImage}

@@ -8,7 +8,7 @@ import { applyDiscountCode, removeDiscountCode, removeFromCart, updateCartLineQu
 import { useCart } from "@/components/theme/CartContext";
 import { formatMoney } from "@/lib/money";
 import { getStoredDiscountCode, setDiscountCookie } from "@/lib/discounts";
-import { trackStorefrontEvent } from "@/components/integrations/ShopifyAutomationScripts";
+import { appendAttributionToUrl, formatEcommerceItem, trackEvent } from "@/lib/analytics";
 
 /**
  * Mini-cart drawer. Slides in from the right, listing the current bag with
@@ -22,9 +22,32 @@ export function CartDrawer() {
   const [discountInput, setDiscountInput] = useState("");
   const [discountError, setDiscountError] = useState<string | null>(null);
 
-  // Lock page scroll + close on Escape while open.
+  // Lock page scroll + track cart_viewed on open + close on Escape.
   useEffect(() => {
     if (!drawerOpen) return;
+
+    if (cart && cart.lines.length > 0) {
+      const total = parseFloat(cart.cost.totalAmount.amount) || 0;
+      const currency = cart.cost.totalAmount.currencyCode || "PKR";
+      const items = cart.lines.map((line) =>
+        formatEcommerceItem({
+          id: line.merchandise.id,
+          name: line.merchandise.product.title,
+          price: line.cost.totalAmount.amount,
+          quantity: line.quantity,
+          variant: line.merchandise.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(" / "),
+          currency,
+        }),
+      );
+
+      trackEvent({
+        event: "cart_viewed",
+        value: total,
+        currency,
+        items,
+      });
+    }
+
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (event: KeyboardEvent) => {
@@ -35,7 +58,7 @@ export function CartDrawer() {
       document.body.style.overflow = previous;
       document.removeEventListener("keydown", onKey);
     };
-  }, [drawerOpen, closeDrawer]);
+  }, [drawerOpen, closeDrawer, cart]);
 
   const changeQty = useCallback(
     (lineId: string, quantity: number) => {
@@ -49,13 +72,30 @@ export function CartDrawer() {
 
   const remove = useCallback(
     (lineId: string) => {
+      const targetLine = cart?.lines.find((l) => l.id === lineId);
       startTransition(async () => {
         const next = await removeFromCart(lineId);
         setCart(next);
-        trackStorefrontEvent("remove_from_cart", { line_id: lineId });
+        if (targetLine) {
+          const unitPrice = parseFloat(targetLine.cost.totalAmount.amount) || 0;
+          trackEvent({
+            event: "product_removed_from_cart",
+            currency: targetLine.cost.totalAmount.currencyCode || "PKR",
+            value: unitPrice,
+            items: [
+              formatEcommerceItem({
+                id: targetLine.merchandise.id,
+                name: targetLine.merchandise.product.title,
+                price: unitPrice,
+                quantity: targetLine.quantity,
+                variant: targetLine.merchandise.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(" / "),
+              }),
+            ],
+          });
+        }
       });
     },
-    [setCart],
+    [cart, setCart],
   );
 
   const lines = cart?.lines ?? [];
@@ -94,16 +134,19 @@ export function CartDrawer() {
   const checkoutUrlWithDiscount = () => {
     if (!cart?.checkoutUrl) return "#";
     const discount = activeDiscountCode || getStoredDiscountCode();
-    if (!discount) return cart.checkoutUrl;
-    try {
-      const url = new URL(cart.checkoutUrl);
-      if (!url.searchParams.has("discount")) {
-        url.searchParams.set("discount", discount);
+    let finalUrl = cart.checkoutUrl;
+    if (discount) {
+      try {
+        const url = new URL(cart.checkoutUrl);
+        if (!url.searchParams.has("discount")) {
+          url.searchParams.set("discount", discount);
+        }
+        finalUrl = url.toString();
+      } catch {
+        finalUrl = cart.checkoutUrl;
       }
-      return url.toString();
-    } catch {
-      return cart.checkoutUrl;
     }
+    return appendAttributionToUrl(finalUrl);
   };
 
   return (
@@ -306,9 +349,25 @@ export function CartDrawer() {
             <a
               href={checkoutUrlWithDiscount()}
               onClick={() => {
-                trackStorefrontEvent("begin_checkout", {
+                const total = parseFloat(cart.cost.totalAmount.amount) || 0;
+                const currency = cart.cost.totalAmount.currencyCode || "PKR";
+                const items = cart.lines.map((line) =>
+                  formatEcommerceItem({
+                    id: line.merchandise.id,
+                    name: line.merchandise.product.title,
+                    price: line.cost.totalAmount.amount,
+                    quantity: line.quantity,
+                    variant: line.merchandise.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(" / "),
+                    currency,
+                  }),
+                );
+
+                trackEvent({
+                  event: "checkout_started",
                   cart_id: cart.id,
-                  total: cart.cost.totalAmount,
+                  value: total,
+                  currency,
+                  items,
                 });
               }}
               className="btn mt-2 block w-full border !bg-white !text-ink text-center hover:!bg-body-dim"

@@ -4,7 +4,7 @@ import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 
 import { subscribeToNewsletter, type FormResult } from "@/app/actions/contact";
-import { trackStorefrontEvent } from "@/components/integrations/ShopifyAutomationScripts";
+import { trackEvent } from "@/lib/analytics";
 import { IconEmail } from "@/components/theme/icons";
 import { NEWSLETTER } from "@/lib/content/onvor";
 
@@ -36,7 +36,10 @@ export function NewsletterForm() {
       } catch {
         // no-op
       }
-      trackStorefrontEvent("customer_subscribed");
+      trackEvent({
+        event: "customer_subscribed",
+        source: "footer_newsletter",
+      });
     }
   }, [state]);
 

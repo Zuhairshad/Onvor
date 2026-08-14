@@ -10,6 +10,7 @@ import { WishlistProvider } from "@/components/theme/WishlistContext";
 import { ShopifyAutomationScripts } from "@/components/integrations/ShopifyAutomationScripts";
 import { ShopifyFormsIntegration } from "@/components/integrations/ShopifyFormsIntegration";
 import { PushbotsIntegration } from "@/components/integrations/PushbotsIntegration";
+import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { BRAND } from "@/lib/content/onvor";
 import "./globals.css";
 
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ShopifyAutomationScripts />
         <ShopifyFormsIntegration />
         <PushbotsIntegration />
+        <AnalyticsProvider />
         <Analytics />
       </body>
     </html>

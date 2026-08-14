@@ -8,6 +8,7 @@ import { removeFromCart, updateCartLineQuantity } from "@/app/actions/cart";
 import { useCart } from "@/components/theme/CartContext";
 import type { Cart } from "@/lib/shopify";
 import { formatMoney } from "@/lib/money";
+import { formatEcommerceItem, trackEvent } from "@/lib/analytics";
 
 /** Quantity stepper and remove control for a cart line. */
 export function CartLines({ cart }: { cart: Cart }) {
@@ -85,6 +86,21 @@ export function CartLines({ cart }: { cart: Cart }) {
                   startTransition(async () => {
                     const next = await removeFromCart(line.id);
                     setCart(next);
+                    const unitPrice = parseFloat(line.cost.totalAmount.amount) || 0;
+                    trackEvent({
+                      event: "product_removed_from_cart",
+                      currency: line.cost.totalAmount.currencyCode || "PKR",
+                      value: unitPrice,
+                      items: [
+                        formatEcommerceItem({
+                          id: line.merchandise.id,
+                          name: line.merchandise.product.title,
+                          price: unitPrice,
+                          quantity: line.quantity,
+                          variant: line.merchandise.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(" / "),
+                        }),
+                      ],
+                    });
                   })
                 }
               >
