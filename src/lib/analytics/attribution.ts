@@ -1,3 +1,4 @@
+import { getConsentPreferences } from "./consent";
 import type { AttributionData } from "./types";
 
 const FIRST_TOUCH_KEY = "onvor_attribution_first";
@@ -6,6 +7,7 @@ const ATTRIBUTION_COOKIE = "onvor_attribution";
 
 /**
  * Parses attribution parameters from the current window location and referrer.
+ * Only stores data in persistent storage/cookies if marketing/analytics consent is granted.
  */
 export function captureAttribution(): AttributionData | null {
   if (typeof window === "undefined") return null;
@@ -48,6 +50,13 @@ export function captureAttribution(): AttributionData | null {
       referrer: referrer || null,
       timestamp: Date.now(),
     };
+
+    // Check user consent preferences before persisting
+    const consent = getConsentPreferences();
+    if (!consent.decided || (!consent.analytics && !consent.marketing)) {
+      // Consent not granted or undecided: do not persist to storage or cookie
+      return currentTouch;
+    }
 
     // Store first-touch if not already set
     if (!window.localStorage.getItem(FIRST_TOUCH_KEY)) {

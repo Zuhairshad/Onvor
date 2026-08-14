@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, Suspense } from "react";
+import { useEffect, Suspense, useSyncExternalStore } from "react";
 import Script from "next/script";
-import { captureAttribution, trackEvent } from "@/lib/analytics";
+import { captureAttribution, getConsentPreferences, subscribeConsent, trackEvent, type ConsentPreferences } from "@/lib/analytics";
 
 const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID || "G-JD6C3GXY26";
 const GADS_ID = process.env.NEXT_PUBLIC_GADS_ID || "AW-18302441675";
@@ -11,12 +11,22 @@ const GTAG_ID = process.env.NEXT_PUBLIC_GTAG_ID || "GT-WBLSRCZV";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1261670659444600";
 const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
 
+function getServerConsentSnapshot(): ConsentPreferences {
+  return {
+    essential: true,
+    analytics: false,
+    marketing: false,
+    decided: false,
+    timestamp: 0,
+  };
+}
+
 function RouteChangeListener() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // 1. Capture incoming marketing attribution (UTMs, gclid, fbclid, ttclid)
+    // 1. Capture incoming marketing attribution (conditionally saved based on consent)
     captureAttribution();
 
     // 2. Classify page type
@@ -28,7 +38,7 @@ function RouteChangeListener() {
     else if (pathname.startsWith("/search")) pageType = "search";
     else if (pathname.startsWith("/policies/")) pageType = "policy";
 
-    // 3. Track page_viewed across all providers
+    // 3. Track page_viewed (consent-gated inside trackEvent)
     const fullUrl = window.location.href;
     const title = document.title || "ONVOR";
 
@@ -45,10 +55,15 @@ function RouteChangeListener() {
 }
 
 export function AnalyticsProvider() {
+  const consent = useSyncExternalStore(subscribeConsent, getConsentPreferences, getServerConsentSnapshot);
+
   useEffect(() => {
-    // Capture attribution immediately on mount
     captureAttribution();
-  }, []);
+  }, [consent]);
+
+  const canLoadGA4 = consent.decided && consent.analytics;
+  const canLoadMeta = consent.decided && consent.marketing;
+  const canLoadTikTok = consent.decided && consent.marketing && Boolean(TIKTOK_PIXEL_ID);
 
   return (
     <>
@@ -56,8 +71,26 @@ export function AnalyticsProvider() {
         <RouteChangeListener />
       </Suspense>
 
-      {/* Google Analytics 4 / Google Tag */}
-      {GA4_ID && (
+      {/* Google Consent Mode v2 Bootstrap (Runs before GA4 load) */}
+      <script
+        id="google-consent-mode-v2"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('consent', 'default', {
+              'analytics_storage': '${consent.analytics ? "granted" : "denied"}',
+              'ad_storage': '${consent.marketing ? "granted" : "denied"}',
+              'ad_user_data': '${consent.marketing ? "granted" : "denied"}',
+              'ad_personalization': '${consent.marketing ? "granted" : "denied"}'
+            });
+          `,
+        }}
+      />
+
+      {/* Google Analytics 4 / Google Tag (Only loaded after Analytics consent) */}
+      {canLoadGA4 && GA4_ID && (
         <>
           <Script
             id="google-gtag"
@@ -69,12 +102,9 @@ export function AnalyticsProvider() {
             strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                window.gtag = gtag;
                 gtag('js', new Date());
                 gtag('config', '${GA4_ID}', { send_page_view: false });
-                ${GADS_ID ? `gtag('config', '${GADS_ID}', { send_page_view: false });` : ""}
+                ${GADS_ID && consent.marketing ? `gtag('config', '${GADS_ID}', { send_page_view: false });` : ""}
                 ${GTAG_ID && GTAG_ID !== GA4_ID ? `gtag('config', '${GTAG_ID}', { send_page_view: false });` : ""}
               `,
             }}
@@ -82,8 +112,8 @@ export function AnalyticsProvider() {
         </>
       )}
 
-      {/* Meta Pixel (Facebook Pixel) */}
-      {META_PIXEL_ID && (
+      {/* Meta Pixel (Only loaded after Marketing consent) */}
+      {canLoadMeta && META_PIXEL_ID && (
         <Script
           id="meta-pixel-init"
           strategy="afterInteractive"
@@ -98,13 +128,14 @@ export function AnalyticsProvider() {
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
               fbq('init', '${META_PIXEL_ID}');
+              fbq('consent', 'grant');
             `,
           }}
         />
       )}
 
-      {/* TikTok Pixel */}
-      {TIKTOK_PIXEL_ID && (
+      {/* TikTok Pixel (Only loaded after Marketing consent) */}
+      {canLoadTikTok && TIKTOK_PIXEL_ID && (
         <Script
           id="tiktok-pixel-init"
           strategy="afterInteractive"
@@ -113,6 +144,7 @@ export function AnalyticsProvider() {
               !function (w, d, t) {
                 w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var c=document.createElement("script");c.type="text/javascript",c.async=!0,c.src=r+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(c,a)};
                 ttq.load('${TIKTOK_PIXEL_ID}');
+                ttq.grantConsent();
               }(window, document, 'ttq');
             `,
           }}

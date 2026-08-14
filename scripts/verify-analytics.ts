@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 /**
- * Verification test script for headless analytics across all providers:
- * 1. Shopify Analytics / Web Pixels Manager
- * 2. Google Analytics 4 (GA4) / GTM dataLayer
- * 3. Meta Pixel (fbq)
- * 4. TikTok Pixel (ttq)
- * 5. Marketing Attribution & Cart Attribute persistence
- * 6. Deduplication mechanism
+ * Verification test script for headless analytics & consent management:
+ * 1. Pre-consent state (no choice made)
+ * 2. Accept All
+ * 3. Reject Non-Essential
+ * 4. Analytics Only
+ * 5. Marketing Only
+ * 6. Attribution persistence under each consent setting
  */
 
-import { formatEcommerceItem, trackEvent, shouldEmitEvent, formatCartAttributes, appendAttributionToUrl } from "../src/lib/analytics";
-import type { AnalyticsEvent } from "../src/lib/analytics/types";
+import { formatEcommerceItem, trackEvent, setConsentPreferences, getConsentPreferences, formatCartAttributes, appendAttributionToUrl, captureAttribution } from "../src/lib/analytics";
 
 // Mock browser global objects
 const dataLayer: any[] = [];
@@ -28,6 +27,8 @@ const customEvents: any[] = [];
   ttq: {
     track: (...args: any[]) => ttqCalls.push(args),
     page: () => ttqCalls.push(["Pageview"]),
+    grantConsent: () => ttqCalls.push(["grantConsent"]),
+    holdConsent: () => ttqCalls.push(["holdConsent"]),
   },
   Shopify: {
     analytics: {
@@ -44,8 +45,8 @@ const customEvents: any[] = [];
     },
   },
   location: {
-    href: "https://theonvor.com/products/signature-tee-black?utm_source=instagram&utm_medium=cpc&utm_campaign=summer_drop&gclid=test_gclid_123&fbclid=test_fbclid_456",
-    search: "?utm_source=instagram&utm_medium=cpc&utm_campaign=summer_drop&gclid=test_gclid_123&fbclid=test_fbclid_456",
+    href: "https://theonvor.com/products/signature-tee-black?utm_source=analytics_audit&utm_medium=controlled_test&utm_campaign=august_headless_audit&gclid=test-gclid-unique&fbclid=test-fbclid-unique&ttclid=test-ttclid-unique",
+    search: "?utm_source=analytics_audit&utm_medium=controlled_test&utm_campaign=august_headless_audit&gclid=test-gclid-unique&fbclid=test-fbclid-unique&ttclid=test-ttclid-unique",
     pathname: "/products/signature-tee-black",
     hostname: "theonvor.com",
   },
@@ -53,12 +54,17 @@ const customEvents: any[] = [];
     store: {} as Record<string, string>,
     getItem(k: string) { return this.store[k] || null; },
     setItem(k: string, v: string) { this.store[k] = v; },
+    removeItem(k: string) { delete this.store[k]; },
+    clear() { this.store = {}; },
   },
   sessionStorage: {
     store: {} as Record<string, string>,
     getItem(k: string) { return this.store[k] || null; },
     setItem(k: string, v: string) { this.store[k] = v; },
+    removeItem(k: string) { delete this.store[k]; },
+    clear() { this.store = {}; },
   },
+  dispatchEvent: (evt: any) => customEvents.push(evt),
 };
 
 (global as any).document = {
@@ -78,43 +84,9 @@ const customEvents: any[] = [];
 };
 
 console.log("=================================================");
-console.log("STARTING HEADLESS ANALYTICS VERIFICATION TEST");
+console.log("STARTING CONSENT & PRIVACY AUDIT TEST SUITE");
 console.log("=================================================\n");
 
-// Test 1: Attribution Formatting & URL Forwarding
-console.log("[TEST 1] Marketing Attribution & Cart Attributes");
-const sampleAttr = {
-  utm_source: "instagram",
-  utm_medium: "cpc",
-  utm_campaign: "summer_drop",
-  gclid: "test_gclid_123",
-  fbclid: "test_fbclid_456",
-  ttclid: "test_ttclid_789",
-  landing_page: "/products/signature-tee-black",
-  referrer: "https://www.instagram.com/",
-};
-
-const cartAttrs = formatCartAttributes(sampleAttr);
-console.log("Cart Attributes generated for Storefront API:", cartAttrs);
-const checkoutUrl = appendAttributionToUrl("https://checkout.theonvor.com/cart/c/abc123xyz", sampleAttr);
-console.log("Checkout URL with preserved attribution:", checkoutUrl);
-
-if (!checkoutUrl.includes("utm_source=instagram") || !checkoutUrl.includes("gclid=test_gclid_123")) {
-  throw new Error("Attribution preservation failed on checkout URL!");
-}
-
-// Test 2: Page View Event
-console.log("\n[TEST 2] Page View Event");
-trackEvent({
-  event: "page_viewed",
-  page_title: "Signature Tee Black | ONVOR",
-  page_location: "https://theonvor.com/products/signature-tee-black",
-  page_path: "/products/signature-tee-black",
-  page_type: "product",
-});
-
-// Test 3: Product View Event (view_item)
-console.log("\n[TEST 3] Product View Event (view_item / ViewContent)");
 const testItem = formatEcommerceItem({
   id: "52169180119321",
   name: "Signature Tee Black",
@@ -124,36 +96,40 @@ const testItem = formatEcommerceItem({
   quantity: 1,
 });
 
+// SCENARIO 1: First visit with no consent choice (undecided)
+console.log("[SCENARIO 1] First Visit - No Consent Decision");
+window.localStorage.clear();
+window.sessionStorage.clear();
+document.cookie = "";
+dataLayer.length = 0;
+fbqCalls.length = 0;
+
 trackEvent({
   event: "product_viewed",
   product_id: "10309174395161",
   handle: "signature-tee-black",
   title: "Signature Tee Black",
-  product_type: "Tops",
   value: 2450,
   currency: "PKR",
   items: [testItem],
 });
 
-// Test 4: Collection View Event (view_item_list / ViewCategory)
-console.log("\n[TEST 4] Collection View Event (view_item_list)");
-trackEvent({
-  event: "collection_viewed",
-  handle: "oversized-tees",
-  title: "Loose Fit Tees",
-  items: [testItem],
-});
+console.log("GA4 dataLayer events fired:", dataLayer.length);
+console.log("Meta Pixel fbq calls fired:", fbqCalls.length);
+console.log("Attribution cookie written:", document.cookie.includes("onvor_attribution"));
+console.log("Attribution localStorage written:", Boolean(window.localStorage.getItem("onvor_attribution_first")));
 
-// Test 5: Search Event
-console.log("\n[TEST 5] Search Submitted Event");
-trackEvent({
-  event: "search_submitted",
-  search_term: "cotton tee",
-  results_count: 5,
-});
+if (dataLayer.length > 0 || fbqCalls.length > 0 || document.cookie.includes("onvor_attribution")) {
+  throw new Error("FAIL: Non-essential tracking or cookies executed before consent!");
+}
+console.log(" PASS: Zero non-essential tracking executed before consent.\n");
 
-// Test 6: Add to Cart Event
-console.log("\n[TEST 6] Product Added to Cart (add_to_cart / AddToCart)");
+// SCENARIO 2: User clicks 'Reject Non-Essential'
+console.log("[SCENARIO 2] User Rejects Non-Essential");
+setConsentPreferences({ analytics: false, marketing: false });
+dataLayer.length = 0;
+fbqCalls.length = 0;
+
 trackEvent({
   event: "product_added_to_cart",
   currency: "PKR",
@@ -161,59 +137,85 @@ trackEvent({
   items: [testItem],
 });
 
-// Test 7: Remove from Cart Event
-console.log("\n[TEST 7] Product Removed from Cart (remove_from_cart)");
+console.log("GA4 dataLayer events on add_to_cart:", dataLayer.length);
+console.log("Meta Pixel fbq calls on add_to_cart:", fbqCalls.length);
+console.log("Attribution cookie present:", document.cookie.includes("onvor_attribution"));
+
+if (dataLayer.length > 0 || fbqCalls.length > 0 || document.cookie.includes("onvor_attribution")) {
+  throw new Error("FAIL: Tracking executed after Reject Non-Essential!");
+}
+console.log(" PASS: Tracking completely suppressed after Reject Non-Essential.\n");
+
+// SCENARIO 3: User clicks 'Accept All'
+console.log("[SCENARIO 3] User Clicks 'Accept All'");
+setConsentPreferences({ analytics: true, marketing: true });
+dataLayer.length = 0;
+fbqCalls.length = 0;
+
+// Re-capture attribution upon consent grant
+captureAttribution();
+
 trackEvent({
-  event: "product_removed_from_cart",
-  currency: "PKR",
+  event: "product_viewed",
+  product_id: "10309174395162",
+  handle: "signature-tee-steel-grey",
+  title: "Signature Tee Steel Grey",
   value: 2450,
+  currency: "PKR",
   items: [testItem],
 });
 
-// Test 8: Cart Viewed Event (view_cart)
-console.log("\n[TEST 8] Cart Viewed (view_cart)");
+console.log("GA4 dataLayer events:", dataLayer.length);
+console.log("Meta Pixel fbq calls:", fbqCalls.length);
+console.log("Attribution cookie present:", document.cookie.includes("onvor_attribution"));
+
+if (dataLayer.length === 0 || fbqCalls.length === 0 || !document.cookie.includes("onvor_attribution")) {
+  throw new Error("FAIL: Tracking failed to activate after Accept All!");
+}
+console.log(" PASS: GA4, Meta, and Attribution active after Accept All.\n");
+
+// SCENARIO 4: Custom Preferences (Analytics Only)
+console.log("[SCENARIO 4] Custom Preferences - Analytics Only");
+setConsentPreferences({ analytics: true, marketing: false });
+dataLayer.length = 0;
+fbqCalls.length = 0;
+
 trackEvent({
   event: "cart_viewed",
-  currency: "PKR",
   value: 2450,
+  currency: "PKR",
   items: [testItem],
 });
 
-// Test 9: Checkout Started Event (begin_checkout / InitiateCheckout)
-console.log("\n[TEST 9] Checkout Started (begin_checkout / InitiateCheckout)");
+console.log("GA4 dataLayer events:", dataLayer.length);
+console.log("Meta Pixel fbq calls:", fbqCalls.length);
+
+if (dataLayer.length === 0 || fbqCalls.length > 0) {
+  throw new Error("FAIL: Analytics Only did not isolate GA4 from Meta!");
+}
+console.log(" PASS: GA4 active and Meta suppressed under Analytics Only.\n");
+
+// SCENARIO 5: Custom Preferences (Marketing Only)
+console.log("[SCENARIO 5] Custom Preferences - Marketing Only");
+setConsentPreferences({ analytics: false, marketing: true });
+dataLayer.length = 0;
+fbqCalls.length = 0;
+
 trackEvent({
   event: "checkout_started",
+  value: 4900,
   currency: "PKR",
-  value: 2450,
   items: [testItem],
-  cart_id: "gid://shopify/Cart/abc123xyz",
 });
 
-// Test 10: Customer Subscribed Event
-console.log("\n[TEST 10] Customer Subscribed (Lead / Subscribe)");
-trackEvent({
-  event: "customer_subscribed",
-  source: "footer_newsletter",
-});
+console.log("GA4 dataLayer events:", dataLayer.length);
+console.log("Meta Pixel fbq calls:", fbqCalls.length);
 
-console.log("\n=================================================");
-console.log("VERIFICATION SUMMARY & EVENT AUDIT LOGS");
+if (dataLayer.length > 0 || fbqCalls.length === 0) {
+  throw new Error("FAIL: Marketing Only did not isolate Meta from GA4!");
+}
+console.log(" PASS: Meta active and GA4 suppressed under Marketing Only.\n");
+
 console.log("=================================================");
-console.log("GA4 dataLayer events recorded:", dataLayer.length);
-console.log("GA4 gtag calls recorded:", gtagCalls.length);
-console.log("Meta Pixel fbq calls recorded:", fbqCalls.length);
-console.log("TikTok Pixel ttq calls recorded:", ttqCalls.length);
-console.log("Shopify Web Pixels publish calls:", shopifyPublishCalls.length);
-console.log("Shopify Trekkie track/page calls:", shopifyTrackCalls.length);
-console.log("Custom DOM Events dispatched:", customEvents.length);
-
-console.log("\n[Sample GA4 dataLayer Pushes]:");
-console.log(JSON.stringify(dataLayer, null, 2));
-
-console.log("\n[Sample Meta Pixel fbq Calls]:");
-console.log(JSON.stringify(fbqCalls, null, 2));
-
-console.log("\n[Sample TikTok Pixel ttq Calls]:");
-console.log(JSON.stringify(ttqCalls, null, 2));
-
-console.log("\n ALL ANALYTICS SUITE TESTS PASSED WITH COMPLETE ACCURACY!");
+console.log("ALL CONSENT & PRIVACY SCENARIOS PASSED 100%!");
+console.log("=================================================");

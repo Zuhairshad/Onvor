@@ -1,4 +1,5 @@
 import { captureAttribution } from "./attribution";
+import { getConsentPreferences } from "./consent";
 import { shouldEmitEvent } from "./deduplication";
 import { emitGA4 } from "./providers/ga4";
 import { emitMeta } from "./providers/meta";
@@ -9,6 +10,7 @@ import type { AnalyticsEvent, EcommerceItem } from "./types";
 export * from "./types";
 export * from "./attribution";
 export * from "./deduplication";
+export * from "./consent";
 
 /**
  * Helper to construct an EcommerceItem with consistent formatting.
@@ -35,7 +37,7 @@ export function formatEcommerceItem(params: {
 }
 
 /**
- * Master event dispatcher for all analytics providers.
+ * Master event dispatcher for all analytics providers with consent gating.
  */
 export function trackEvent(event: AnalyticsEvent) {
   if (typeof window === "undefined") return;
@@ -58,16 +60,27 @@ export function trackEvent(event: AnalyticsEvent) {
     return;
   }
 
-  // Ensure attribution is captured
+  // Get current consent preferences
+  const consent = getConsentPreferences();
+
+  // Attribution is captured conditionally based on consent
   captureAttribution();
 
-  // Dispatch to all configured providers
+  // Essential / Shopify storefront shims
   emitShopifyAnalytics(event);
-  emitGA4(event);
-  emitMeta(event);
-  emitTikTok(event);
+
+  // Analytics Gating (GA4 / GTM)
+  if (consent.decided && consent.analytics) {
+    emitGA4(event);
+  }
+
+  // Marketing Gating (Meta Pixel & TikTok Pixel)
+  if (consent.decided && consent.marketing) {
+    emitMeta(event);
+    emitTikTok(event);
+  }
 
   if (process.env.NODE_ENV !== "production") {
-    console.debug(`[Analytics Track: ${event.event}]`, event);
+    console.debug(`[Analytics Track: ${event.event}]`, { event, consent });
   }
 }

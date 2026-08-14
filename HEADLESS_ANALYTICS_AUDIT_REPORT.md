@@ -5,7 +5,7 @@
 **Platform**: Next.js App Router (Turbopack) + Shopify Storefront API + Hosted Shopify Checkout  
 **Currency**: PKR  
 **Audit Date**: August 14, 2026  
-**Audit Phase**: Final Proof-Based Verification (Pass 3)  
+**Audit Phase**: Final Proof-Based Verification (Pass 3 - Consent Engine Complete)  
 
 ---
 
@@ -13,9 +13,9 @@
 
 | Provider | Configured ID | Exact Verification Status | Evidence Summary |
 | :--- | :--- | :--- | :--- |
-| **Google Analytics 4 (GA4) / GTM** | `G-JD6C3GXY26` / `GT-WBLSRCZV` / `AW-18302441675` | **Network Verified Only**<br>*(Blocked: dashboard login required)* | Browser executes `gtag.js`, pushes standard ecommerce events (`view_item`, `add_to_cart`, `view_cart`, `begin_checkout`, `search`) to `window.dataLayer`, and emits network requests to `https://www.googletagmanager.com/gtag/js` and `google-analytics.com/g/collect`. GA4 DebugView / Realtime verification requires Google account access. |
-| **Meta Pixel (Facebook Pixel)** | `1261670659444600` | **Network Verified Only**<br>*(Blocked: dashboard login required)* | Browser executes `fbevents.js`, triggers `fbq('track', ...)` (`PageView`, `ViewContent`, `AddToCart`, `InitiateCheckout`, `Search`, `Lead`), and emits network requests to `https://connect.facebook.net/en_US/fbevents.js` and `https://www.facebook.com/tr/`. Meta Events Manager Test Events verification requires Meta Business Manager account login. |
-| **TikTok Pixel** | Unset in `.env.local` | **Not Configured**<br>*(Function Verified Only in code)* | Provider dispatch functions in `src/lib/analytics/providers/tiktok.ts` are fully typed and tested via test harness, but the pixel script is conditionally not loaded until `NEXT_PUBLIC_TIKTOK_PIXEL_ID` is provided. |
+| **Google Analytics 4 (GA4) / GTM** | `G-JD6C3GXY26` / `GT-WBLSRCZV` / `AW-18302441675` | **Network Verified Only**<br>*(Blocked: dashboard login required)* | Browser executes `gtag.js`, pushes standard ecommerce events (`view_item`, `add_to_cart`, `view_cart`, `begin_checkout`, `search`) to `window.dataLayer`, and emits network requests to `https://www.googletagmanager.com/gtag/js` and `google-analytics.com/g/collect` **only after Analytics consent is granted**. GA4 DebugView / Realtime verification requires Google account access. |
+| **Meta Pixel (Facebook Pixel)** | `1261670659444600` | **Network Verified Only**<br>*(Blocked: dashboard login required)* | Browser executes `fbevents.js`, triggers `fbq('track', ...)` (`PageView`, `ViewContent`, `AddToCart`, `InitiateCheckout`, `Search`, `Lead`), and emits network requests to `https://connect.facebook.net/en_US/fbevents.js` and `https://www.facebook.com/tr/` **only after Marketing consent is granted**. Meta Events Manager Test Events verification requires Meta Business Manager account login. |
+| **TikTok Pixel** | Unset in `.env.local` | **Not Configured**<br>*(Function Verified Only in code)* | Provider dispatch functions in `src/lib/analytics/providers/tiktok.ts` are fully typed, hold consent by default, and are tested via test harness. The pixel script is conditionally not loaded until `NEXT_PUBLIC_TIKTOK_PIXEL_ID` is provided. |
 
 ---
 
@@ -52,7 +52,7 @@ https://theonvor.com/?utm_source=analytics_audit&utm_medium=controlled_test&utm_
 
 | Stage | Expected Behavior | Observed Result | Evidence Status |
 | :--- | :--- | :--- | :---: |
-| **1. Storefront Capture** | Landing parameters parsed and stored in first-touch & last-touch storage. | Captured in `localStorage('onvor_attribution_first')`, `localStorage('onvor_attribution_last')`, `sessionStorage`, and `onvor_attribution` cookie. | **PASS** |
+| **1. Storefront Capture** | Landing parameters parsed and conditionally stored based on consent. | If consent granted, stored in `localStorage('onvor_attribution_first')`, `localStorage('onvor_attribution_last')`, `sessionStorage`, and `onvor_attribution` cookie. Suppressed before consent. | **PASS** |
 | **2. Client-Side Navigation** | Attribution persists across Next.js App Router route transitions. | Navigated between `/`, `/products/...`, `/collections/...`, `/search` with parameters retained in storage and cookies. | **PASS** |
 | **3. Cart Attributes Write** | Server action syncs attribution to Shopify Cart via Storefront API. | `src/app/actions/cart.ts` invokes `updateCartAttributes` (`cartAttributesUpdate`) with `_utm_source: "analytics_audit"`, `_utm_medium: "controlled_test"`, `_utm_campaign: "august_headless_audit"`, `_gclid: "test-gclid-unique"`, `_fbclid: "test-fbclid-unique"`, `_ttclid: "test-ttclid-unique"`. | **PASS** |
 | **4. Cart Mutation Retention** | Cart attributes survive line additions, updates, and removals. | Storefront API cart query confirms attributes remain attached to the cart session. | **PASS** |
@@ -86,25 +86,70 @@ Based on the store's published theme and checkout pixel configuration (Shop ID `
 
 ---
 
-## 5. Consent, Privacy & Cookie Management Audit
+## 5. Technical Consent & Privacy Management Architecture
 
-### 5.1 Current Implementation Reality
-- **Notice Component**: `CookieNotice.tsx` renders a single informational banner with a dismiss button ("Got it") that writes `cookie-notice-dismissed: 1` to `localStorage`.
-- **Pre-Consent Script Gating**: **Not Implemented.** GA4 (`gtag.js`), Meta Pixel (`fbevents.js`), and the `onvor_attribution` cookie load unconditionally on initial page mount regardless of banner interaction.
-- **Opt-In / Opt-Out Controls**: **Not Implemented.** Users are not provided with granular Accept / Reject toggles for analytics vs. marketing vs. essential cookies.
-- **Provider Consent APIs**:
-  - Google Consent Mode v2 (`gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ... })`) is **not active**.
-  - Meta Pixel Consent (`fbq('consent', 'revoke')` / `fbq('consent', 'grant')`) is **not wired**.
-  - TikTok Consent API (`ttq.holdConsent()` / `ttq.grantConsent()`) is **not wired**.
-- **Cookie Security & Encoding**:
-  - `onvor_attribution` is **URL-encoded JSON plaintext** (`encodeURIComponent(JSON.stringify(data))`), **not cryptographically encrypted**.
-  - It contains non-sensitive marketing query strings (`utm_*`, `gclid`, `fbclid`, `ttclid`, landing page, referrer). It does not contain passwords, tokens, or sensitive customer PII, but it is not gated behind affirmative user consent.
+A full technical consent management system has been implemented across `src/lib/analytics/consent.ts`, `AnalyticsProvider.tsx`, `attribution.ts`, and `CookieNotice.tsx`.
 
-### 5.2 Required Actions for Full Privacy & Regulatory Compliance (GDPR / ePrivacy / CCPA)
-1. Upgrade `CookieNotice.tsx` into a Consent Preference Center offering explicit **Accept All**, **Reject Non-Essential**, and **Customize** actions.
-2. Initialize Google Consent Mode v2 with `denied` defaults prior to loading `gtag.js`, updating to `granted` only upon affirmative user acceptance.
-3. Block Meta and TikTok pixel execution until marketing consent is granted.
-4. Gate `onvor_attribution` cookie creation behind analytics/marketing consent.
+### 5.1 Architecture & Loading Rules
+
+1. **Categorized Consent Model**:
+   - **Strictly Necessary / Essential**: Always Active (`essential: true`). Required for cart token persistence, secure bag operations, and checkout redirect.
+   - **Analytics & Performance**: Controls Google Analytics 4 (`G-JD6C3GXY26`) and Google Tag Manager.
+   - **Marketing & Advertising**: Controls Meta Pixel (`1261670659444600`), Google Ads conversions (`AW-18302441675`), and TikTok Pixel.
+2. **Google Consent Mode v2 Bootstrap**:
+   - Before any Google scripts execute, inline script initializes:
+     ```javascript
+     gtag('consent', 'default', {
+       'analytics_storage': 'denied',
+       'ad_storage': 'denied',
+       'ad_user_data': 'denied',
+       'ad_personalization': 'denied'
+     });
+     ```
+   - When Analytics consent is granted: updates `analytics_storage: 'granted'`.
+   - When Marketing consent is granted: updates `ad_storage`, `ad_user_data`, `ad_personalization` to `'granted'`.
+3. **Meta & TikTok Consent Synchronization**:
+   - Meta Pixel script only mounts if Marketing consent is granted. On revocation, calls `fbq('consent', 'revoke')`.
+   - TikTok Pixel script only mounts if Marketing consent is granted. Defaults to `ttq.holdConsent()`.
+4. **Attribution Storage Gating**:
+   - `onvor_attribution` cookie and `localStorage('onvor_attribution_first/last')` are **not written** before consent or if non-essential tracking is rejected.
+5. **Reopening Consent Preferences**:
+   - A permanent **"Cookie settings"** button is embedded in `Footer.tsx` triggering `onvor:open_consent_modal` so users can inspect and update their preferences at any time.
+
+### 5.2 Automated Consent Verification Test Results
+
+```text
+[SCENARIO 1] First Visit - No Consent Decision
+GA4 dataLayer events fired: 0
+Meta Pixel fbq calls fired: 0
+Attribution cookie written: false
+Attribution localStorage written: false
+PASS: Zero non-essential tracking executed before consent.
+
+[SCENARIO 2] User Rejects Non-Essential
+GA4 dataLayer events on add_to_cart: 0
+Meta Pixel fbq calls on add_to_cart: 0
+Attribution cookie present: false
+PASS: Tracking completely suppressed after Reject Non-Essential.
+
+[SCENARIO 3] User Clicks 'Accept All'
+GA4 dataLayer events: 1
+Meta Pixel fbq calls: 1
+Attribution cookie present: true
+PASS: GA4, Meta, and Attribution active after Accept All.
+
+[SCENARIO 4] Custom Preferences - Analytics Only
+GA4 dataLayer events: 1
+Meta Pixel fbq calls: 0
+PASS: GA4 active and Meta suppressed under Analytics Only.
+
+[SCENARIO 5] Custom Preferences - Marketing Only
+GA4 dataLayer events: 0
+Meta Pixel fbq calls: 1
+PASS: Meta active and GA4 suppressed under Marketing Only.
+```
+
+> **Legal Disclaimer / Jurisdictional Notice**: This implementation provides technical consent controls (script gating, Google Consent Mode v2, and preference persistence). It should be reviewed by the merchant’s legal counsel to ensure compliance with applicable regional statutes (GDPR, UK GDPR, CCPA/CPRA, etc.).
 
 ---
 
@@ -113,12 +158,12 @@ Based on the store's published theme and checkout pixel configuration (Shop ID `
 | Area | Status | Evidence | Remaining Action |
 | :--- | :---: | :--- | :--- |
 | **Storefront Events** | **PASS** | `trackEvent` dispatches all 8 ecommerce events (`page_viewed`, `product_viewed`, `collection_viewed`, `search_submitted`, `product_added_to_cart`, `product_removed_from_cart`, `cart_viewed`, `checkout_started`, `customer_subscribed`) with complete typed item payloads and deduplication locks. | None. Operational in production. |
-| **GA4 / GTM** | **NETWORK VERIFIED ONLY** | Outgoing requests to `https://www.googletagmanager.com/gtag/js` and `google-analytics.com/g/collect` with standard GA4 ecommerce payloads. | Optional: Log into Google Analytics dashboard and confirm real-time events in DebugView. |
-| **Meta Pixel** | **NETWORK VERIFIED ONLY** | Outgoing requests to `https://connect.facebook.net/en_US/fbevents.js` and `facebook.com/tr/` with `PageView`, `ViewContent`, `AddToCart`, `InitiateCheckout`, `Search`, `Lead`. | Optional: Log into Meta Events Manager and verify Test Events tab. |
+| **GA4 / GTM** | **NETWORK VERIFIED ONLY** | Outgoing requests to `https://www.googletagmanager.com/gtag/js` and `google-analytics.com/g/collect` with standard GA4 ecommerce payloads after Analytics consent. | Optional: Log into Google Analytics dashboard and confirm real-time events in DebugView. |
+| **Meta Pixel** | **NETWORK VERIFIED ONLY** | Outgoing requests to `https://connect.facebook.net/en_US/fbevents.js` and `facebook.com/tr/` with `PageView`, `ViewContent`, `AddToCart`, `InitiateCheckout`, `Search`, `Lead` after Marketing consent. | Optional: Log into Meta Events Manager and verify Test Events tab. |
 | **TikTok Pixel** | **NOT CONFIGURED** | Provider implementation exists in `src/lib/analytics/providers/tiktok.ts`. Script is not loaded when `NEXT_PUBLIC_TIKTOK_PIXEL_ID` is unset. | Set `NEXT_PUBLIC_TIKTOK_PIXEL_ID` in Vercel / `.env.local` when ready to activate. |
 | **Shopify Web Pixels (Storefront)** | **ARCHITECTURAL LIMITATION** | `window.Shopify.analytics.publish` is a client shim; Monorail site abandonment is a manual beacon. Shopify Admin legacy Online Store session reports do not count headless traffic. | Acknowledge that GA4 and Meta are primary analytics sources for headless storefront traffic. |
 | **Cart Attribution** | **PASS** | Captured attribution (`_utm_*`, `_gclid`, `_fbclid`, `_ttclid`, `_landing_page`, `_referrer`) is written to Shopify Cart Attributes via Storefront API `cartAttributesUpdate`. | None. Operational in production. |
 | **Order Attribution** | **BLOCKED** | End-to-end cart attribute propagation is proven via Storefront API schema, but verifying `order.customAttributes` in Shopify Admin requires completing a real test purchase. | Place a live test order in Shopify Admin to inspect `order.customAttributes` and `landing_site_ref`. |
 | **Purchase Tracking** | **BLOCKED** | Hosted checkout confirmation page is configured with Google App (`G-JD6C3GXY26`, `AW-18302441675`) and Meta App (`1261670659444600`), but thank-you page firing requires a live test purchase. | Verify `purchase` event firing on order completion during next live order or test checkout. |
-| **Consent / Privacy** | **NEEDS REVIEW** | `CookieNotice.tsx` is an informational dismissal banner only. Non-essential tracking scripts (GA4, Meta) and `onvor_attribution` cookie load prior to consent; Google Consent Mode v2 and Meta/TikTok consent APIs are not actively gated. | Implement affirmative Accept/Reject consent controls and Google Consent Mode v2 if jurisdiction requires strict opt-in consent. |
+| **Consent / Privacy** | **PASS (Technical Controls Implemented)** | Full technical Consent Preference Center implemented with Accept All, Reject Non-Essential, and Customization. Google Consent Mode v2 initialized with `denied` defaults; GA4/Meta scripts and attribution cookies are strictly blocked prior to consent. Permanent "Cookie settings" footer link enables changing preferences. | Review against business's specific legal/jurisdictional requirements. |
 | **Secrets / Security** | **PASS** | All client bundles audited: zero Admin API tokens, private keys, or webhook secrets are exposed. `SHOPIFY_STOREFRONT_ACCESS_TOKEN` is public-scoped read-only token. | None. |

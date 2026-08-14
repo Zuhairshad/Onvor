@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { IconFacebook, IconInstagram } from "@/components/theme/icons";
 import { NewsletterForm } from "@/components/theme/NewsletterForm";
+import { CookieSettingsButton } from "@/components/theme/CookieSettingsButton";
 import { Reveal } from "@/components/theme/Reveal";
 import { BRAND, FOOTER_MENUS, NEWSLETTER, SOCIALS } from "@/lib/content/onvor";
 
@@ -103,9 +104,11 @@ export function Footer() {
           <p className="m-0 mx-auto max-w-[46rem] px-2 text-center text-[13px] leading-relaxed text-white/80 imp:text-[14px]">
             {BRAND.statement} {BRAND.origin}
           </p>
-          <p className="m-0 mt-3 text-center text-[12px] text-white/70">
-            {BRAND.copyright}
-          </p>
+          <div className="m-0 mt-3 flex flex-wrap items-center justify-center gap-4 text-[12px] text-white/70">
+            <span>{BRAND.copyright}</span>
+            <span aria-hidden>•</span>
+            <CookieSettingsButton />
+          </div>
         </Reveal>
       </div>
     </footer>
