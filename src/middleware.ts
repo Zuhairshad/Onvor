@@ -13,5 +13,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/web-pixels@:path*"],
+  // (.+) captures @hash/subpath including the @ sign — named params (:foo*)
+  // won't work because path-to-regexp expects a / before each segment.
+  matcher: ["/web-pixels(.+)"],
 };
