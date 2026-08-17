@@ -1,23 +1,18 @@
-import { sendShopifyPageView } from "../shopify-monorail";
+import { initShopifySessionCookies } from "../shopify-monorail";
 import type { AnalyticsEvent } from "../types";
 
 export function emitShopifyAnalytics(event: AnalyticsEvent) {
   if (typeof window === "undefined") return;
 
   try {
-    // Proxy page views through /api/shopify-analytics (server-to-server, no CORS)
+    // Ensure _shopify_y / _shopify_s cookies exist and are scoped to .theonvor.com
+    // so Shopify's checkout at checkout.theonvor.com can read them and record sessions.
     if (event.event === "page_viewed") {
-      sendShopifyPageView({
-        url: event.page_location,
-        referrer: document.referrer || "",
-        pageType: event.page_type,
-        resourceId: null,
-        customerId: null,
-      });
+      initShopifySessionCookies();
     }
 
     document.dispatchEvent(new CustomEvent(`shopify:${event.event}`, { detail: event }));
   } catch (err) {
-    console.debug("[Shopify Analytics Dispatch Notice]", err);
+    console.debug("[Shopify Analytics]", err);
   }
 }
