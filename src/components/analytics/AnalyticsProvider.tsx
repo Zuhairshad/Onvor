@@ -4,6 +4,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, Suspense, useSyncExternalStore } from "react";
 import Script from "next/script";
 import { captureAttribution, getConsentPreferences, subscribeConsent, trackEvent, type ConsentPreferences } from "@/lib/analytics";
+import { sendShopifyPageView } from "@/lib/analytics/shopify-monorail";
 
 const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID || "G-JD6C3GXY26";
 const GADS_ID = process.env.NEXT_PUBLIC_GADS_ID || "AW-18302441675";
@@ -51,6 +52,21 @@ function RouteChangeListener() {
       page_path: pathname,
       page_type: pageType,
     });
+
+    // 4. Heartbeat — re-ping Shopify Analytics every 2 min while the tab is
+    // visible so the visitor stays in the live view between navigations.
+    const heartbeat = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      sendShopifyPageView({
+        url: window.location.href,
+        referrer: document.referrer || "",
+        pageType,
+        resourceId: null,
+        customerId: null,
+      });
+    }, 2 * 60 * 1000);
+
+    return () => clearInterval(heartbeat);
   }, [pathname, searchParams]);
 
   return null;

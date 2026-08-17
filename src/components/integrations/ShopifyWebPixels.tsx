@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { getConsentPreferences } from "@/lib/analytics";
 
 // Shopify Web Pixels Manager for headless session tracking.
 // Config extracted from the Shopify Liquid store HTML.
@@ -123,6 +124,34 @@ export function ShopifyWebPixels() {
     // Without these, it sends shop_id: -1 and Shopify can't attribute sessions.
     shopify["shopId"] = WPM_CONFIG.shopId;
     shopify["shop"] = WPM_CONFIG.initData.shop.myshopifyDomain;
+
+    // Customer Privacy API bridge — WPM and STRICT-mode pixels (shopify-app-pixel,
+    // TikTok) call these methods to determine whether the visitor can be tracked.
+    // Without this, WPM logs customer_privacy_api_events failures and STRICT pixels
+    // may default to not recording sessions.
+    shopify["customerPrivacy"] = {
+      userCanBeTracked: () => {
+        const c = getConsentPreferences();
+        // Session tracking is essential; analytics consent enables full tracking.
+        return !c.decided || c.analytics;
+      },
+      currentVisitorConsent: () => {
+        const c = getConsentPreferences();
+        return {
+          analytics: c.analytics ? "yes" : "no",
+          marketing: c.marketing ? "yes" : "no",
+          preferences: "no",
+          sale_of_data: "no",
+        };
+      },
+      setTrackingConsent: (_: unknown, cb?: () => void) => cb?.(),
+      shouldShowBanner: () => false,
+      shouldShowGDPRBanner: () => false,
+      shouldShowCCPAOptOut: () => false,
+      // navigationServerTiming reads Server-Timing response headers; Next.js
+      // doesn't emit them so we return null to silence the WPM failure event.
+      navigationServerTiming: () => null,
+    };
 
     if (!(shopify["analytics"] as Record<string, unknown> | undefined)?.["replayQueue"]) {
       const replayQueue: Array<[string, unknown, unknown]> = [];
