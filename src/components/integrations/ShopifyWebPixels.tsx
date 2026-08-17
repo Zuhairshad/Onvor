@@ -2,21 +2,110 @@
 
 import { useEffect } from "react";
 
-// Loads Shopify's Web Pixels Manager on the headless store.
-// The WPM runs the shopify-app-pixel (Shopify's built-in analytics) in a
-// sandboxed iframe. When page_viewed is published, the pixel sends to Monorail
-// through Shopify's own infrastructure — correctly recording sessions in
-// Shopify Analytics. This is the only supported headless session tracking path.
+// Shopify Web Pixels Manager for headless session tracking.
+// Config extracted from the Shopify Liquid store HTML.
+// The shopify-app-pixel inside WPM is Shopify's built-in analytics
+// pixel — when page_viewed is published it records a session in
+// Shopify Analytics via Shopify's own sandboxed infrastructure.
+//
+// hashVersion changes when Shopify updates WPM (~monthly).
+// Update BUNDLE_URL when that happens by checking:
+// checkout.theonvor.com → view source → search "wpm/b" → copy hash.
 
-const SHOP_ID = 99646538009;
-const STOREFRONT_BASE_URL = "https://checkout.theonvor.com";
-const EXTENSIONS_BASE_URL = "https://extensions.shopifycdn.com/cdn/shopifycloud/web-pixels-manager";
-const MONORAIL_ENDPOINT = "https://checkout.theonvor.com/.well-known/shopify/monorail/unstable/produce_batch";
-const WPM_BASE_URL = "https://checkout.theonvor.com/cdn";
+const BUNDLE_URL =
+  "https://checkout.theonvor.com/cdn/wpm/b979a3e2fw137e9400p4daec9d4mf64d2306m.js";
+
+const WPM_CONFIG = {
+  shopId: 99646538009,
+  storefrontBaseUrl: "https://checkout.theonvor.com",
+  extensionsBaseUrl:
+    "https://extensions.shopifycdn.com/cdn/shopifycloud/web-pixels-manager",
+  monorailEndpoint:
+    "https://checkout.theonvor.com/.well-known/shopify/monorail/unstable/produce_batch",
+  surface: "storefront-renderer",
+  isMerchantRequest: false,
+  enabledBetaFlags: ["d5bdd5d0", "656605ce"],
+  webPixelsConfigList: [
+    {
+      id: "3071443225",
+      configuration: '{"pixel_id":"1261670659444600","pixel_type":"facebook_pixel"}',
+      eventPayloadVersion: "v1",
+      runtimeContext: "OPEN",
+      scriptVersion: "abff2a8add143ccb04deb20f0ebd74a9",
+      type: "APP",
+      apiClientId: 2329312,
+      privacyPurposes: ["ANALYTICS", "MARKETING", "SALE_OF_DATA"],
+    },
+    {
+      id: "2948202777",
+      configuration: '{"accountID":"786"}',
+      eventPayloadVersion: "v1",
+      runtimeContext: "STRICT",
+      scriptVersion: "855ef7b99d818cb428c1ee25e2d96a95",
+      type: "APP",
+      apiClientId: 34264940545,
+      privacyPurposes: ["ANALYTICS", "MARKETING", "SALE_OF_DATA"],
+    },
+    {
+      id: "2943713561",
+      configuration:
+        '{"config":"{\\"google_tag_ids\\":[\\"G-JD6C3GXY26\\",\\"AW-18302441675\\",\\"GT-WBLSRCZV\\"]}"}',
+      eventPayloadVersion: "v1",
+      runtimeContext: "OPEN",
+      scriptVersion: "cbf49bd7815008e05e438bca15440d34",
+      type: "APP",
+      apiClientId: 1780363,
+      privacyPurposes: [],
+    },
+    {
+      id: "2837414169",
+      configuration: '{"webPixelName":"Judge.me"}',
+      eventPayloadVersion: "v1",
+      runtimeContext: "STRICT",
+      scriptVersion: "34ad157958823915625854214640f0bf",
+      type: "APP",
+      apiClientId: 683015,
+      privacyPurposes: ["ANALYTICS"],
+    },
+    {
+      id: "shopify-app-pixel",
+      configuration: "{}",
+      eventPayloadVersion: "v1",
+      runtimeContext: "STRICT",
+      scriptVersion: "0510",
+      apiClientId: "shopify-pixel",
+      type: "APP",
+      privacyPurposes: ["ANALYTICS", "MARKETING"],
+    },
+    {
+      id: "shopify-custom-pixel",
+      eventPayloadVersion: "v1",
+      runtimeContext: "LAX",
+      scriptVersion: "0510",
+      apiClientId: "shopify-pixel",
+      type: "CUSTOM",
+      privacyPurposes: ["ANALYTICS", "MARKETING"],
+    },
+  ],
+  initData: {
+    shop: {
+      name: "ONVOR",
+      paymentSettings: { currencyCode: "PKR" },
+      myshopifyDomain: "jtszju-ha.myshopify.com",
+      countryCode: "PK",
+      storefrontUrl: "https://checkout.theonvor.com",
+    },
+    customer: null,
+    cart: null,
+    checkout: null,
+    productVariants: [],
+    products: [],
+    purchasingCompany: null,
+  },
+};
 
 function loadScript(src: string, onLoad: () => void, onError: () => void) {
-  const existing = document.querySelector(`script[src="${src}"]`);
-  if (existing) { onLoad(); return; }
+  if (document.querySelector(`script[src="${src}"]`)) { onLoad(); return; }
   const s = document.createElement("script");
   s.src = src;
   s.async = true;
@@ -27,10 +116,9 @@ function loadScript(src: string, onLoad: () => void, onError: () => void) {
 
 export function ShopifyWebPixels() {
   useEffect(() => {
-    // Set up the analytics.publish replay queue immediately so early publish()
-    // calls are preserved and replayed once WPM initialises.
     window.Shopify = window.Shopify || {};
     const shopify = window.Shopify as Record<string, unknown>;
+
     if (!(shopify["analytics"] as Record<string, unknown> | undefined)?.["replayQueue"]) {
       const replayQueue: Array<[string, unknown, unknown]> = [];
       shopify["analytics"] = {
@@ -39,62 +127,28 @@ export function ShopifyWebPixels() {
       };
     }
 
-    // Fetch WPM config (hash + pixel list) from our server-side cache route
-    fetch("/api/shopify-wpm-config")
-      .then((r) => r.json())
-      .then((cfg) => {
-        if (!cfg.bundleUrl) return;
+    loadScript(
+      BUNDLE_URL,
+      () => {
+        const wpm = (window as unknown as Record<string, unknown>)["webPixelsManager"] as
+          | { init: (c: unknown) => { publishCustomEvent: (e: string, r: unknown, o: unknown) => void; visitor: unknown } | null }
+          | undefined;
 
-        // Wire up window.webPixelsManager config before bundle loads
-        (window as unknown as Record<string, unknown>)["wpmDataLayer"] = {
-          shopId: SHOP_ID,
-          storefrontBaseUrl: STOREFRONT_BASE_URL,
-          extensionsBaseUrl: EXTENSIONS_BASE_URL,
-          monorailEndpoint: MONORAIL_ENDPOINT,
-          surface: "storefront-renderer",
-          enabledBetaFlags: cfg.enabledBetaFlags ?? [],
-          webPixelsConfigList: cfg.webPixelsConfigList ?? [],
-          isMerchantRequest: false,
-          initData: cfg.initData ?? {},
-        };
+        if (!wpm?.init) return;
 
-        loadScript(
-          cfg.bundleUrl,
-          () => {
-            // WPM bundle loaded — initialise with our config
-            const wpm = (window as unknown as Record<string, unknown>)["webPixelsManager"] as
-              | { init: (c: unknown) => { publishCustomEvent: (e: string, r: unknown, o: unknown) => void; visitor: unknown; } | null }
-              | undefined;
+        const instance = wpm.init(WPM_CONFIG);
+        if (!instance) return;
 
-            if (!wpm?.init) return;
-
-            const instance = wpm.init({
-              shopId: SHOP_ID,
-              storefrontBaseUrl: STOREFRONT_BASE_URL,
-              extensionsBaseUrl: EXTENSIONS_BASE_URL,
-              monorailEndpoint: MONORAIL_ENDPOINT,
-              surface: "storefront-renderer",
-              enabledBetaFlags: cfg.enabledBetaFlags ?? [],
-              webPixelsConfigList: cfg.webPixelsConfigList ?? [],
-              isMerchantRequest: false,
-              initData: cfg.initData ?? {},
-            });
-
-            if (!instance) return;
-
-            // Drain the replay queue then hand off publish to the live WPM instance
-            const analytics = (window.Shopify as Record<string, unknown>)["analytics"] as Record<string, unknown>;
-            const queue = analytics["replayQueue"] as Array<[string, unknown, unknown]>;
-            queue?.forEach(([e, r, o]) => instance.publishCustomEvent(e, r, o));
-            analytics["replayQueue"] = [];
-            analytics["publish"] = instance.publishCustomEvent;
-            analytics["visitor"] = instance.visitor;
-            analytics["initialized"] = true;
-          },
-          () => console.debug("[ShopifyWebPixels] WPM bundle failed to load")
-        );
-      })
-      .catch(() => {});
+        const analytics = shopify["analytics"] as Record<string, unknown>;
+        const queue = analytics["replayQueue"] as Array<[string, unknown, unknown]>;
+        queue?.forEach(([e, r, o]) => instance.publishCustomEvent(e, r, o));
+        analytics["replayQueue"] = [];
+        analytics["publish"] = instance.publishCustomEvent;
+        analytics["visitor"] = instance.visitor;
+        analytics["initialized"] = true;
+      },
+      () => console.debug("[ShopifyWebPixels] WPM bundle failed to load")
+    );
   }, []);
 
   return null;

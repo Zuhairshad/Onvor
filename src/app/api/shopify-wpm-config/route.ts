@@ -13,7 +13,8 @@ export async function GET() {
     });
 
     if (!res.ok) {
-      return Response.json({ error: "fetch failed" }, { status: 502 });
+      console.error(`[shopify-wpm-config] fetch returned ${res.status} from ${LIQUID_STORE_URL}`);
+      return Response.json({ error: "fetch failed", fetchStatus: res.status, url: res.url }, { status: 502 });
     }
 
     const html = await res.text();
