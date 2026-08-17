@@ -17,10 +17,44 @@ export function ShoppableHero() {
     const video = videoRef.current;
     if (!video) return;
 
+    // Safari/WebKit requires explicit DOM-level property assignment for autoplay
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
+
+    const tryPlay = () => {
+      if (video && video.paused) {
+        const promise = video.play();
+        if (promise !== undefined) {
+          promise.catch(() => {
+            // Autoplay policy prevented immediate playback; waiting for user gesture/interaction
+          });
+        }
+      }
+    };
+
+    // Immediate attempt
+    tryPlay();
+
+    // Event hooks for when media buffer arrives
+    video.addEventListener("loadeddata", tryPlay, { once: true });
+    video.addEventListener("canplay", tryPlay, { once: true });
+
+    // Fallback on first user interaction (touch/click/scroll) if blocked by Low Power Mode
+    const onUserInteraction = () => {
+      tryPlay();
+      window.removeEventListener("touchstart", onUserInteraction);
+      window.removeEventListener("click", onUserInteraction);
+      window.removeEventListener("scroll", onUserInteraction);
+    };
+    window.addEventListener("touchstart", onUserInteraction, { passive: true, once: true });
+    window.addEventListener("click", onUserInteraction, { passive: true, once: true });
+    window.addEventListener("scroll", onUserInteraction, { passive: true, once: true });
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          void video.play().catch(() => {});
+          tryPlay();
         } else {
           video.pause();
         }
@@ -29,7 +63,15 @@ export function ShoppableHero() {
     );
 
     observer.observe(video);
-    return () => observer.disconnect();
+
+    return () => {
+      observer.disconnect();
+      video.removeEventListener("loadeddata", tryPlay);
+      video.removeEventListener("canplay", tryPlay);
+      window.removeEventListener("touchstart", onUserInteraction);
+      window.removeEventListener("click", onUserInteraction);
+      window.removeEventListener("scroll", onUserInteraction);
+    };
   }, []);
 
   return (
