@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
 
 const MONORAIL_ENDPOINT =
   "https://jtszju-ha.myshopify.com/cdn/shop/monorail/unstable/produce_batch";
 
-// Server-side proxy for Shopify's Monorail analytics endpoint.
-// Shopify blocks cross-origin POST from browser (CORS), but server-to-server
-// has no CORS restrictions — the request originates from Vercel, not the browser.
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const body = await request.text();
 
@@ -16,8 +13,8 @@ export async function POST(request: NextRequest) {
       body,
     });
 
-    return new NextResponse(null, { status: res.ok ? 200 : res.status });
+    return new Response(null, { status: res.ok ? 200 : res.status });
   } catch {
-    return new NextResponse(null, { status: 500 });
+    return new Response(null, { status: 500 });
   }
 }
