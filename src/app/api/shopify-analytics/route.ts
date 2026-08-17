@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 const MONORAIL_ENDPOINT =
   "https://jtszju-ha.myshopify.com/cdn/shop/monorail/unstable/produce_batch";
 
