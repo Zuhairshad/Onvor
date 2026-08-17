@@ -131,7 +131,7 @@ export function AnalyticsProvider() {
             dangerouslySetInnerHTML={{
               __html: `
                 gtag('js', new Date());
-                gtag('config', '${GA4_ID}', { send_page_view: false });
+                gtag('config', '${GA4_ID}');
                 ${GADS_ID && consent.marketing ? `gtag('config', '${GADS_ID}', { send_page_view: false });` : ""}
                 ${GTAG_ID && GTAG_ID !== GA4_ID ? `gtag('config', '${GTAG_ID}', { send_page_view: false });` : ""}
               `,
