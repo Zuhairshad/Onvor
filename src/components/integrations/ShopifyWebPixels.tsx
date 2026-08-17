@@ -119,6 +119,11 @@ export function ShopifyWebPixels() {
     window.Shopify = window.Shopify || {};
     const shopify = window.Shopify as Record<string, unknown>;
 
+    // WPM reads shop identity from window.Shopify for its internal telemetry.
+    // Without these, it sends shop_id: -1 and Shopify can't attribute sessions.
+    shopify["shopId"] = WPM_CONFIG.shopId;
+    shopify["shop"] = WPM_CONFIG.initData.shop.myshopifyDomain;
+
     if (!(shopify["analytics"] as Record<string, unknown> | undefined)?.["replayQueue"]) {
       const replayQueue: Array<[string, unknown, unknown]> = [];
       shopify["analytics"] = {
