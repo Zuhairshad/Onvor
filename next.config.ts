@@ -38,13 +38,9 @@ const nextConfig: NextConfig = {
   // match 1:1 with the Next routes and need no rewrite.
   async rewrites() {
     return [
-      // WPM loads pixel sandbox workers and the monorail endpoint relative to
-      // the current page origin (www.theonvor.com). Proxy them to Shopify's
-      // checkout domain so WPM can operate identically to a Liquid store.
-      {
-        source: "/web-pixels/:path*",
-        destination: "https://checkout.theonvor.com/web-pixels/:path*",
-      },
+      // WPM posts monorail events to this path relative to the current page
+      // origin. Proxy them through our server-side analytics API route which
+      // forwards to the real Shopify monorail endpoint.
       {
         source: "/.well-known/shopify/monorail/unstable/produce_batch",
         destination: "/api/shopify-analytics",
