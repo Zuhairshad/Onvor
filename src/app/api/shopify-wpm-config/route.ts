@@ -2,8 +2,6 @@
 // to the headless frontend. The WPM hash changes with Shopify updates, so we fetch
 // it dynamically rather than hardcoding. Cached for 1 hour.
 
-export const revalidate = 3600;
-
 const LIQUID_STORE_URL = "https://jtszju-ha.myshopify.com/";
 
 export async function GET() {
