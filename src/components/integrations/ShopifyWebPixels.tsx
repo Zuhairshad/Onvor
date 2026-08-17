@@ -47,17 +47,6 @@ const WPM_CONFIG = {
       privacyPurposes: ["ANALYTICS", "MARKETING", "SALE_OF_DATA"],
     },
     {
-      id: "2943713561",
-      configuration:
-        '{"config":"{\\"google_tag_ids\\":[\\"G-JD6C3GXY26\\",\\"AW-18302441675\\",\\"GT-WBLSRCZV\\"]}"}',
-      eventPayloadVersion: "v1",
-      runtimeContext: "OPEN",
-      scriptVersion: "cbf49bd7815008e05e438bca15440d34",
-      type: "APP",
-      apiClientId: 1780363,
-      privacyPurposes: [],
-    },
-    {
       id: "2837414169",
       configuration: '{"webPixelName":"Judge.me"}',
       eventPayloadVersion: "v1",
