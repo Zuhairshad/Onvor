@@ -2,7 +2,8 @@
 // to the headless frontend. The WPM hash changes with Shopify updates, so we fetch
 // it dynamically rather than hardcoding. Cached for 1 hour.
 
-const LIQUID_STORE_URL = "https://jtszju-ha.myshopify.com/";
+// myshopify.com redirects to the primary domain — fetch directly from it
+const LIQUID_STORE_URL = "https://checkout.theonvor.com/";
 
 export async function GET() {
   try {
