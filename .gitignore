@@ -44,6 +44,8 @@ next-env.d.ts
 # local assets
 *.mp4
 !public/**/*.mp4
+*.webm
+!public/**/*.webm
 *.MOV
 *.xlsx
 *.csv
