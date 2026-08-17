@@ -4,7 +4,9 @@
 // Payload matches Hydrogen's trekkie_storefront_page_view/1.4 schema exactly.
 
 const SHOP_ID = 99646538009;
-const HEADLESS_APP_CLIENT_ID = "12875497473"; // ShopifyAppId.headless from @shopify/hydrogen-react
+// "580111" is the online store channel client ID (confirmed from this shop's Trekkie config).
+// The headless ID "12875497473" routes to a separate bucket not shown in Shopify Analytics.
+const HEADLESS_APP_CLIENT_ID = "580111";
 const VISITOR_COOKIE = "_shopify_y";
 const SESSION_COOKIE = "_shopify_s";
 const SESSION_MAX_AGE = 30 * 60;
