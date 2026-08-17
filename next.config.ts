@@ -36,6 +36,22 @@ const nextConfig: NextConfig = {
   // headless build has no blog, so redirect the one legacy URL search engines
   // may have indexed to the homepage. `/pages/*` and `/policies/*` structures
   // match 1:1 with the Next routes and need no rewrite.
+  async rewrites() {
+    return [
+      // WPM loads pixel sandbox workers and the monorail endpoint relative to
+      // the current page origin (www.theonvor.com). Proxy them to Shopify's
+      // checkout domain so WPM can operate identically to a Liquid store.
+      {
+        source: "/web-pixels:path*",
+        destination: "https://checkout.theonvor.com/web-pixels:path*",
+      },
+      {
+        source: "/.well-known/shopify/monorail/unstable/produce_batch",
+        destination: "/api/shopify-analytics",
+      },
+    ];
+  },
+
   async redirects() {
     return [
       { source: "/blogs/news", destination: "/", permanent: true },
