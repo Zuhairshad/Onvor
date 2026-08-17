@@ -17,10 +17,6 @@ export function ShoppableHero() {
     const video = videoRef.current;
     if (!video) return;
 
-    // Buffer video at top priority immediately on mount
-    video.preload = "auto";
-    video.load();
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -29,7 +25,7 @@ export function ShoppableHero() {
           video.pause();
         }
       },
-      { threshold: 0.05 }
+      { threshold: 0 }
     );
 
     observer.observe(video);
@@ -45,6 +41,7 @@ export function ShoppableHero() {
       <div className="relative w-full aspect-[9/16] min-h-[720px] max-h-[96vh] imp:aspect-[16/9] imp:min-h-[880px] imp:max-h-[95vh]">
         <video
           ref={videoRef}
+          src="/onvor/hero/hero-video-mobile.mp4"
           poster="/onvor/hero/hero-video-poster.jpg"
           autoPlay
           muted
@@ -53,10 +50,7 @@ export function ShoppableHero() {
           preload="auto"
           aria-label="ONVOR Motion Collection Hero Video"
           className="absolute inset-0 h-full w-full object-cover object-center"
-        >
-          <source src="/onvor/hero/hero-video-mobile.webm" type="video/webm" />
-          <source src="/onvor/hero/hero-video-mobile.mp4" type="video/mp4" />
-        </video>
+        />
 
         {/* Cinematic gradient overlays for header & CTA readability */}
         <div
