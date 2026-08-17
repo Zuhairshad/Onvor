@@ -90,10 +90,12 @@ export function sendShopifyPageView(params: MonorailPageViewParams): void {
       ],
     });
 
-    // POST to our own API route — server proxies to Shopify, bypassing browser CORS.
-    fetch("/api/shopify-analytics", {
+    // Send directly to Shopify's CDN Monorail endpoint using text/plain Content-Type.
+    // text/plain avoids the CORS preflight; Shopify accepts the JSON body regardless.
+    // This is the same pattern Shopify Hydrogen uses for headless storefronts.
+    fetch("https://jtszju-ha.myshopify.com/cdn/shop/monorail/unstable/produce_batch", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "text/plain" },
       body,
       keepalive: true,
     }).catch(() => {});
