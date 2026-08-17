@@ -81,6 +81,8 @@ export function sendShopifyPageView(params: MonorailPageViewParams): void {
             shopId: SHOP_ID,
             currency: "PKR",
             isPersistentCookieSet: true,
+            uniqToken: cookies.y,
+            visitToken: cookies.s,
             shopifyCookies: {
               y: cookies.y,
               s: cookies.s,
