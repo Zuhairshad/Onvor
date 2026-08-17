@@ -8,8 +8,6 @@ import { CookieNotice } from "@/components/theme/CookieNotice";
 import { SiteJsonLd } from "@/components/theme/JsonLd";
 import { WishlistProvider } from "@/components/theme/WishlistContext";
 import { ShopifyAutomationScripts } from "@/components/integrations/ShopifyAutomationScripts";
-import { ShopifyFormsIntegration } from "@/components/integrations/ShopifyFormsIntegration";
-import { PushbotsIntegration } from "@/components/integrations/PushbotsIntegration";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { BRAND } from "@/lib/content/onvor";
 import "./globals.css";
@@ -63,12 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${cormorant.variable} ${hostGrotesk.variable} ${fustat.variable} h-full antialiased`}
     >
       <head>
-        <link
-          rel="preload"
-          href="/onvor/hero/hero-video-mobile.mp4"
-          as="video"
-          type="video/mp4"
-        />
+        {/* as="video" is unsupported in Safari/Firefox; <video preload="auto"> handles buffering */}
         <link
           rel="preload"
           href="/onvor/hero/hero-video-poster.jpg"
@@ -85,8 +78,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </WishlistProvider>
         </CartProvider>
         <ShopifyAutomationScripts />
-        <ShopifyFormsIntegration />
-        <PushbotsIntegration />
         <AnalyticsProvider />
         <Analytics />
       </body>
