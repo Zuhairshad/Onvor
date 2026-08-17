@@ -104,11 +104,22 @@ const WPM_CONFIG = {
   },
 };
 
-function loadScript(src: string, onLoad: () => void, onError: () => void) {
+function loadWpmScript(src: string, config: typeof WPM_CONFIG, onLoad: () => void, onError: () => void) {
   if (document.querySelector(`script[src="${src}"]`)) { onLoad(); return; }
   const s = document.createElement("script");
   s.src = src;
-  s.async = true;
+  // WPM's il() reads config from document.currentScript.dataset at bundle
+  // execution time. async=true makes currentScript null — set it to false so
+  // the browser executes the script synchronously (inline order) and
+  // currentScript points to this element. Data attributes mirror what the
+  // Liquid store sets on its wpmLoader call.
+  s.async = false;
+  s.dataset.shopId = String(config.shopId);
+  s.dataset.storefrontBaseUrl = config.storefrontBaseUrl;
+  s.dataset.monorailEndpoint = config.monorailEndpoint;
+  s.dataset.surface = config.surface;
+  s.dataset.isMerchantRequest = String(config.isMerchantRequest);
+  s.dataset.enabledBetaFlags = JSON.stringify(config.enabledBetaFlags);
   s.addEventListener("load", onLoad);
   s.addEventListener("error", onError);
   document.head.appendChild(s);
@@ -132,8 +143,9 @@ export function ShopifyWebPixels() {
       };
     }
 
-    loadScript(
+    loadWpmScript(
       BUNDLE_URL,
+      WPM_CONFIG,
       () => {
         const wpm = (window as unknown as Record<string, unknown>)["webPixelsManager"] as
           | { init: (c: unknown) => { publish: (e: string, r: unknown, o: unknown) => void; publishCustomEvent: (e: string, r: unknown, o: unknown) => void; visitor: unknown } | null }
