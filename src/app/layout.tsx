@@ -62,6 +62,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${cormorant.variable} ${hostGrotesk.variable} ${fustat.variable} h-full antialiased`}
     >
+      <head>
+        <link
+          rel="preload"
+          href="/onvor/hero/hero-video-mobile.mp4"
+          as="video"
+          type="video/mp4"
+        />
+        <link
+          rel="preload"
+          href="/onvor/hero/hero-video-poster.jpg"
+          as="image"
+        />
+      </head>
       <body className="flex min-h-full flex-col overflow-x-hidden">
         <CartProvider>
           <WishlistProvider>

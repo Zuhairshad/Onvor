@@ -3,14 +3,16 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { getConsentPreferences, setConsentPreferences, subscribeConsent, type ConsentPreferences } from "@/lib/analytics";
 
+const SERVER_SNAPSHOT: ConsentPreferences = {
+  essential: true,
+  analytics: false,
+  marketing: false,
+  decided: true,
+  timestamp: 0,
+};
+
 function getServerSnapshot(): ConsentPreferences {
-  return {
-    essential: true,
-    analytics: false,
-    marketing: false,
-    decided: true,
-    timestamp: 0,
-  };
+  return SERVER_SNAPSHOT;
 }
 
 function emptySubscribe() {

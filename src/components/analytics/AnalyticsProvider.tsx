@@ -11,14 +11,16 @@ const GTAG_ID = process.env.NEXT_PUBLIC_GTAG_ID || "GT-WBLSRCZV";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1261670659444600";
 const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
 
+const SERVER_CONSENT_SNAPSHOT: ConsentPreferences = {
+  essential: true,
+  analytics: false,
+  marketing: false,
+  decided: false,
+  timestamp: 0,
+};
+
 function getServerConsentSnapshot(): ConsentPreferences {
-  return {
-    essential: true,
-    analytics: false,
-    marketing: false,
-    decided: false,
-    timestamp: 0,
-  };
+  return SERVER_CONSENT_SNAPSHOT;
 }
 
 function RouteChangeListener() {

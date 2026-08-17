@@ -43,6 +43,8 @@ next-env.d.ts
 
 # local assets
 *.mp4
+!public/**/*.mp4
+*.MOV
 *.xlsx
 *.csv
 Screenshot*

@@ -154,11 +154,11 @@ export function Header({ overlay = false }: HeaderProps) {
         // Sticky and in flow below 769px, where nothing is overlaid.
         overlay
           ? scrolled
-            ? "sticky top-0 imp:fixed imp:top-0"
-            : "sticky top-0 imp:absolute imp:top-[45px]"
+            ? "fixed top-0"
+            : "absolute top-0 imp:top-[45px]"
           : "sticky top-0",
         isLight
-          ? "text-ink bg-announcement shadow-[0_0_1px_rgba(0,0,0,0.2)] imp:bg-transparent imp:text-white imp:shadow-none"
+          ? "bg-transparent text-white shadow-none"
           : "text-ink bg-announcement shadow-[0_0_1px_rgba(0,0,0,0.2)]",
       ].join(" ")}
     >
@@ -220,7 +220,7 @@ export function Header({ overlay = false }: HeaderProps) {
                 // The wordmark is solid black on transparent, so it inverts to
                 // white cleanly while the header rides over the hero - which it
                 // only does from 769px up, hence the breakpoint on the filter.
-                className={`h-auto w-[104px] wide:w-[128px] ${isLight ? "imp:brightness-0 imp:invert" : ""}`}
+                className={`h-auto w-[104px] wide:w-[128px] ${isLight ? "brightness-0 invert" : ""}`}
               />
             </Link>
 
