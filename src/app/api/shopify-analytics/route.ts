@@ -9,9 +9,16 @@ export async function POST(request: Request) {
   try {
     const body = await request.text();
 
+    const origin = request.headers.get("origin") ?? "https://www.theonvor.com";
+    const referer = request.headers.get("referer") ?? "https://www.theonvor.com/";
+
     const res = await fetch(MONORAIL_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Origin": origin,
+        "Referer": referer,
+      },
       body,
     });
 
