@@ -42,8 +42,8 @@ const nextConfig: NextConfig = {
       // the current page origin (www.theonvor.com). Proxy them to Shopify's
       // checkout domain so WPM can operate identically to a Liquid store.
       {
-        source: "/web-pixels:path*",
-        destination: "https://checkout.theonvor.com/web-pixels:path*",
+        source: "/web-pixels/:path*",
+        destination: "https://checkout.theonvor.com/web-pixels/:path*",
       },
       {
         source: "/.well-known/shopify/monorail/unstable/produce_batch",
