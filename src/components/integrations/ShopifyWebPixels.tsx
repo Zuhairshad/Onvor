@@ -136,7 +136,7 @@ export function ShopifyWebPixels() {
       BUNDLE_URL,
       () => {
         const wpm = (window as unknown as Record<string, unknown>)["webPixelsManager"] as
-          | { init: (c: unknown) => { publishCustomEvent: (e: string, r: unknown, o: unknown) => void; visitor: unknown } | null }
+          | { init: (c: unknown) => { publish: (e: string, r: unknown, o: unknown) => void; publishCustomEvent: (e: string, r: unknown, o: unknown) => void; visitor: unknown } | null }
           | undefined;
 
         if (!wpm?.init) return;
@@ -146,11 +146,19 @@ export function ShopifyWebPixels() {
 
         const analytics = shopify["analytics"] as Record<string, unknown>;
         const queue = analytics["replayQueue"] as Array<[string, unknown, unknown]>;
-        queue?.forEach(([e, r, o]) => instance.publishCustomEvent(e, r, o));
         analytics["replayQueue"] = [];
-        analytics["publish"] = instance.publishCustomEvent;
+        // publish is for standard Shopify events (page_viewed, etc.) that the
+        // shopify-app-pixel subscribes to. publishCustomEvent is for merchant
+        // custom events and does NOT reach the shopify-app-pixel subscriber.
+        analytics["publish"] = instance.publish;
         analytics["visitor"] = instance.visitor;
         analytics["initialized"] = true;
+
+        // Drain the pre-init queue after a brief delay so pixel sandbox workers
+        // have time to load and register their event subscribers before replay.
+        setTimeout(() => {
+          queue?.forEach(([e, r, o]) => instance.publish(e, r, o));
+        }, 500);
       },
       () => console.debug("[ShopifyWebPixels] WPM bundle failed to load")
     );
