@@ -83,6 +83,8 @@ export function sendShopifyPageView(params: MonorailPageViewParams): void {
             isPersistentCookieSet: true,
             uniqToken: cookies.y,
             visitToken: cookies.s,
+            microSessionId: generateUUID(),
+            microSessionCount: 1,
             shopifyCookies: {
               y: cookies.y,
               s: cookies.s,
