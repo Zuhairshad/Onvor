@@ -1,5 +1,7 @@
+// The correct headless endpoint uses the shop's primary domain, not myshopify.com.
+// Confirmed via curl: returns 207 for server-side POST (not 405).
 const MONORAIL_ENDPOINT =
-  "https://jtszju-ha.myshopify.com/cdn/shop/monorail/unstable/produce_batch";
+  "https://checkout.theonvor.com/.well-known/shopify/monorail/unstable/produce_batch";
 
 export async function GET() {
   return new Response("shopify-analytics proxy alive", { status: 200 });
