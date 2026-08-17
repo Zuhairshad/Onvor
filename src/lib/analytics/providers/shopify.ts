@@ -1,4 +1,4 @@
-import { initShopifySessionCookies } from "../shopify-monorail";
+import { initShopifySessionCookies, sendShopifyPageView } from "../shopify-monorail";
 import type { AnalyticsEvent } from "../types";
 
 export function emitShopifyAnalytics(event: AnalyticsEvent) {
@@ -9,15 +9,20 @@ export function emitShopifyAnalytics(event: AnalyticsEvent) {
       // Ensure session cookies exist on .theonvor.com for checkout attribution
       initShopifySessionCookies();
 
-      // Publish through Shopify's Web Pixels Manager (loaded by ShopifyWebPixels).
-      // The shopify-app-pixel inside WPM records this as a session in Shopify Analytics.
+      // Direct trekkie_storefront_page_view → Shopify Analytics session recording.
+      // This is the primary path for Shopify Analytics live visitors / session counts.
+      sendShopifyPageView({
+        url: event.page_location ?? window.location.href,
+        referrer: document.referrer || "",
+        pageType: event.page_type ?? "home",
+        resourceId: null,
+        customerId: null,
+      });
+
+      // Also publish through WPM so pixel subscribers (Meta, TikTok, etc.) receive it.
       const analytics = (window.Shopify as Record<string, unknown> | undefined)?.["analytics"] as
         | { publish: (e: string, p: Record<string, unknown>) => void }
         | undefined;
-
-      // WPM automatically adds document.location and referrer via event context.
-      // Passing custom fields (pageType, resourceId) causes the Google WPM pixel
-      // to call .find() on an undefined field and fail.
       analytics?.publish("page_viewed", {});
     }
 
