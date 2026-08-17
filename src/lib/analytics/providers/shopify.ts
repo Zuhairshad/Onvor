@@ -15,12 +15,10 @@ export function emitShopifyAnalytics(event: AnalyticsEvent) {
         | { publish: (e: string, p: Record<string, unknown>) => void }
         | undefined;
 
-      analytics?.publish("page_viewed", {
-        url: event.page_location,
-        referrer: document.referrer || "",
-        pageType: event.page_type ?? "home",
-        resourceId: null,
-      });
+      // WPM automatically adds document.location and referrer via event context.
+      // Passing custom fields (pageType, resourceId) causes the Google WPM pixel
+      // to call .find() on an undefined field and fail.
+      analytics?.publish("page_viewed", {});
     }
 
     document.dispatchEvent(new CustomEvent(`shopify:${event.event}`, { detail: event }));
