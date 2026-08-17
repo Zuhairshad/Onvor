@@ -94,18 +94,16 @@ export function sendShopifyPageView(params: MonorailPageViewParams): void {
 
     const endpoint = `https://${SHOP_DOMAIN}/cdn/shop/monorail/unstable/produce_batch`;
 
-    // sendBeacon must use Blob to set Content-Type: application/json.
-    // Passing a plain string sends text/plain which Shopify's endpoint rejects silently.
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
-    } else {
-      fetch(endpoint, {
-        method: "POST",
-        body,
-        headers: { "Content-Type": "application/json" },
-        keepalive: true,
-      }).catch(() => {});
-    }
+    // credentials: "omit" is required — Shopify's endpoint returns Access-Control-Allow-Origin: *
+    // which browsers reject when credentials (cookies) are included in the request.
+    // The _shopify_y/_shopify_s values are already in the JSON body, not needed as cookie headers.
+    fetch(endpoint, {
+      method: "POST",
+      body,
+      headers: { "Content-Type": "application/json" },
+      credentials: "omit",
+      keepalive: true,
+    }).catch(() => {});
   } catch {
     // non-critical
   }
