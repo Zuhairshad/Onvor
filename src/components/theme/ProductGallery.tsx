@@ -11,9 +11,11 @@ import { useState } from "react";
  * treatment used by the Impulse reference PDP.
  */
 export function ProductGallery({ images, title }: { images: string[]; title: string }) {
+  // A product is strictly allowed 1 main picture and at most 4 side pictures (max 5 total)
+  const galleryImages = images.slice(0, 5);
   const [active, setActive] = useState(0);
-  const src = images[active];
-  const showThumbs = images.length > 1;
+  const src = galleryImages[active] ?? galleryImages[0];
+  const showThumbs = galleryImages.length > 1;
 
   return (
     <div className="min-w-0 imp:flex imp:gap-4">
@@ -22,7 +24,7 @@ export function ProductGallery({ images, title }: { images: string[]; title: str
           className="order-1 hidden shrink-0 list-none flex-col gap-3 p-0 imp:m-0 imp:flex imp:w-[72px] wide:w-[84px]"
           aria-label="Product image thumbnails"
         >
-          {images.map((thumb, i) => (
+          {galleryImages.map((thumb, i) => (
             <li key={thumb}>
               <button
                 type="button"
@@ -65,12 +67,12 @@ export function ProductGallery({ images, title }: { images: string[]; title: str
 
         {showThumbs ? (
           <ul className="m-0 mt-3 flex list-none flex-wrap gap-3 p-0 imp:hidden">
-            {images.map((thumb, i) => (
+            {galleryImages.map((thumb, i) => (
               <li key={thumb} className="w-[72px] shrink-0">
                 <button
                   type="button"
                   onClick={() => setActive(i)}
-                  aria-label={`View image ${i + 1} of ${images.length}`}
+                  aria-label={`View image ${i + 1} of ${galleryImages.length}`}
                   aria-current={i === active}
                   className={[
                     "relative block aspect-[2/3] w-full overflow-hidden border transition-colors",

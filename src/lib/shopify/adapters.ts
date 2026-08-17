@@ -20,9 +20,12 @@ function pickPrice(product: Product): { price: string; compareAt: string | null 
 }
 
 export function toCatalogProduct(product: Product): CatalogProduct {
-  const images = product.images.map((image) => image.url).slice(0, 20);
-  if (images.length === 1) images.push(images[0]);
-  if (images.length === 0 && product.featuredImage) images.push(product.featuredImage.url);
+  const rawImages = product.images.map((image) => image.url);
+  if (rawImages.length === 0 && product.featuredImage) {
+    rawImages.push(product.featuredImage.url);
+  }
+  // Enforce max 1 main picture and 4 side pictures (5 total)
+  const images = rawImages.slice(0, 5);
 
   const options = Object.fromEntries(
     product.options.map((option) => [option.name, option.optionValues.map((value) => value.name)]),
