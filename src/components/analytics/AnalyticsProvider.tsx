@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, Suspense, useSyncExternalStore } from "react";
+import { useEffect, useRef, Suspense, useSyncExternalStore } from "react";
 import Script from "next/script";
 import { captureAttribution, getConsentPreferences, subscribeConsent, trackEvent, type ConsentPreferences } from "@/lib/analytics";
 
@@ -58,6 +58,34 @@ function RouteChangeListener() {
 
 export function AnalyticsProvider() {
   const consent = useSyncExternalStore(subscribeConsent, getConsentPreferences, getServerConsentSnapshot);
+  const consentInitialized = useRef(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    window.dataLayer = window.dataLayer || [];
+    if (!window.gtag) {
+      window.gtag = function (...args: unknown[]) {
+        window.dataLayer!.push(args);
+      };
+    }
+
+    const consentParams = {
+      analytics_storage: consent.analytics ? "granted" : "denied",
+      ad_storage: consent.marketing ? "granted" : "denied",
+      ad_user_data: consent.marketing ? "granted" : "denied",
+      ad_personalization: consent.marketing ? "granted" : "denied",
+    };
+
+    // 'default' sets the baseline before GA4 loads (called once).
+    // 'update' propagates changes after GA4 is already running.
+    if (!consentInitialized.current) {
+      window.gtag("consent", "default", consentParams);
+      consentInitialized.current = true;
+    } else {
+      window.gtag("consent", "update", consentParams);
+    }
+  }, [consent.analytics, consent.marketing]);
 
   useEffect(() => {
     captureAttribution();
@@ -72,24 +100,6 @@ export function AnalyticsProvider() {
       <Suspense fallback={null}>
         <RouteChangeListener />
       </Suspense>
-
-      {/* Google Consent Mode v2 Bootstrap (Runs before GA4 load) */}
-      <script
-        id="google-consent-mode-v2"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            window.gtag = gtag;
-            gtag('consent', 'default', {
-              'analytics_storage': '${consent.analytics ? "granted" : "denied"}',
-              'ad_storage': '${consent.marketing ? "granted" : "denied"}',
-              'ad_user_data': '${consent.marketing ? "granted" : "denied"}',
-              'ad_personalization': '${consent.marketing ? "granted" : "denied"}'
-            });
-          `,
-        }}
-      />
 
       {/* Google Analytics 4 / Google Tag (Only loaded after Analytics consent) */}
       {canLoadGA4 && GA4_ID && (
