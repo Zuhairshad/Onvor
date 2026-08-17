@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useRef, Suspense, useSyncExternalStore } from "react";
+import { useEffect, Suspense, useSyncExternalStore } from "react";
 import Script from "next/script";
 import { captureAttribution, getConsentPreferences, subscribeConsent, trackEvent, type ConsentPreferences } from "@/lib/analytics";
 import { sendShopifyPageView } from "@/lib/analytics/shopify-monorail";
@@ -11,6 +11,9 @@ const GADS_ID = process.env.NEXT_PUBLIC_GADS_ID || "AW-18302441675";
 const GTAG_ID = process.env.NEXT_PUBLIC_GTAG_ID || "GT-WBLSRCZV";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1261670659444600";
 const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
+
+// localStorage key must match consent.ts
+const CONSENT_KEY = "onvor_consent_preferences";
 
 const SERVER_CONSENT_SNAPSHOT: ConsentPreferences = {
   essential: true,
@@ -29,10 +32,8 @@ function RouteChangeListener() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // 1. Capture incoming marketing attribution (conditionally saved based on consent)
     captureAttribution();
 
-    // 2. Classify page type
     let pageType: "home" | "product" | "collection" | "cart" | "search" | "page" | "policy" = "page";
     if (pathname === "/") pageType = "home";
     else if (pathname.startsWith("/products/")) pageType = "product";
@@ -41,7 +42,6 @@ function RouteChangeListener() {
     else if (pathname.startsWith("/search")) pageType = "search";
     else if (pathname.startsWith("/policies/")) pageType = "policy";
 
-    // 3. Track page_viewed (consent-gated inside trackEvent)
     const fullUrl = window.location.href;
     const title = document.title || "ONVOR";
 
@@ -53,8 +53,6 @@ function RouteChangeListener() {
       page_type: pageType,
     });
 
-    // 4. Heartbeat — re-ping Shopify Analytics every 2 min while the tab is
-    // visible so the visitor stays in the live view between navigations.
     const heartbeat = setInterval(() => {
       if (document.visibilityState !== "visible") return;
       sendShopifyPageView({
@@ -74,40 +72,26 @@ function RouteChangeListener() {
 
 export function AnalyticsProvider() {
   const consent = useSyncExternalStore(subscribeConsent, getConsentPreferences, getServerConsentSnapshot);
-  const consentInitialized = useRef(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    window.dataLayer = window.dataLayer || [];
-    if (!window.gtag) {
-      window.gtag = function (...args: unknown[]) {
-        window.dataLayer!.push(args);
-      };
-    }
-
-    const consentParams = {
-      analytics_storage: consent.analytics ? "granted" : "denied",
-      ad_storage: consent.marketing ? "granted" : "denied",
-      ad_user_data: consent.marketing ? "granted" : "denied",
-      ad_personalization: consent.marketing ? "granted" : "denied",
-    };
-
-    // 'default' sets the baseline before GA4 loads (called once).
-    // 'update' propagates changes after GA4 is already running.
-    if (!consentInitialized.current) {
-      window.gtag("consent", "default", consentParams);
-      consentInitialized.current = true;
-    } else {
-      window.gtag("consent", "update", consentParams);
-    }
-  }, [consent.analytics, consent.marketing]);
 
   useEffect(() => {
     captureAttribution();
   }, [consent]);
 
-  const canLoadGA4 = consent.decided && consent.analytics;
+  // Propagate consent changes to GA4 after it has loaded.
+  // The initial consent default is handled inside the google-gtag-init inline
+  // script by reading localStorage synchronously — that avoids the useEffect
+  // timing problem where the server snapshot (decided:false) would fire first
+  // and push consent=denied into dataLayer before GA4 even loads.
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.gtag !== "function") return;
+    window.gtag("consent", "update", {
+      analytics_storage: consent.analytics ? "granted" : "denied",
+      ad_storage: consent.marketing ? "granted" : "denied",
+      ad_user_data: consent.marketing ? "granted" : "denied",
+      ad_personalization: consent.marketing ? "granted" : "denied",
+    });
+  }, [consent.analytics, consent.marketing]);
+
   const canLoadMeta = consent.decided && consent.marketing;
   const canLoadTikTok = consent.decided && consent.marketing && Boolean(TIKTOK_PIXEL_ID);
 
@@ -117,8 +101,10 @@ export function AnalyticsProvider() {
         <RouteChangeListener />
       </Suspense>
 
-      {/* Google Analytics 4 / Google Tag (Only loaded after Analytics consent) */}
-      {canLoadGA4 && GA4_ID && (
+      {/* Google Analytics 4 — always loaded so GA4 initialises cleanly on every
+          page load. Consent mode (set inline below) controls whether full hits or
+          cookieless pings are sent; the React useEffect above propagates updates. */}
+      {GA4_ID && (
         <>
           <Script
             id="google-gtag"
@@ -130,9 +116,22 @@ export function AnalyticsProvider() {
             strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){window.dataLayer.push(arguments);}
+                window.gtag = gtag;
+                var _c = {};
+                try { _c = JSON.parse(localStorage.getItem('${CONSENT_KEY}') || '{}'); } catch(e) {}
+                var _analytics = !!(_c.decided && _c.analytics);
+                var _marketing = !!(_c.decided && _c.marketing);
+                gtag('consent', 'default', {
+                  analytics_storage: _analytics ? 'granted' : 'denied',
+                  ad_storage: _marketing ? 'granted' : 'denied',
+                  ad_user_data: _marketing ? 'granted' : 'denied',
+                  ad_personalization: _marketing ? 'granted' : 'denied'
+                });
                 gtag('js', new Date());
                 gtag('config', '${GA4_ID}');
-                ${GADS_ID && consent.marketing ? `gtag('config', '${GADS_ID}', { send_page_view: false });` : ""}
+                ${GADS_ID ? `if (_marketing) gtag('config', '${GADS_ID}', { send_page_view: false });` : ""}
                 ${GTAG_ID && GTAG_ID !== GA4_ID ? `gtag('config', '${GTAG_ID}', { send_page_view: false });` : ""}
               `,
             }}
