@@ -1,5 +1,18 @@
 import type { NextConfig } from "next";
 
+// Build-time guard — missing analytics vars produce silent runtime failures.
+// These are warnings, not errors, so a missing var never breaks the build.
+if (!process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ID) {
+  console.warn(
+    "⚠  NEXT_PUBLIC_SHOPIFY_STOREFRONT_ID is not set. Shopify Analytics will be disabled at runtime.",
+  );
+}
+if (!process.env.NEXT_PUBLIC_SHOPIFY_PUBLIC_STOREFRONT_TOKEN) {
+  console.warn(
+    "⚠  NEXT_PUBLIC_SHOPIFY_PUBLIC_STOREFRONT_TOKEN is not set. useShopifyCookies will not fetch tracking values.",
+  );
+}
+
 const nextConfig: NextConfig = {
   // Partial Prerendering + `use cache`. The Shopify data layer in
   // src/lib/shopify leans on this: catalog reads are cached and tagged so

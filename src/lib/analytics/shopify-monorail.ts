@@ -1,52 +1,25 @@
-// Session cookies scoped to .theonvor.com so checkout.theonvor.com can read them.
-// Page view events proxy through /api/shopify-analytics → server POSTs to:
-//   checkout.theonvor.com/.well-known/shopify/monorail/unstable/produce_batch
-// Payload matches Hydrogen's trekkie_storefront_page_view/1.4 schema exactly.
+// Adapter: maps the sendShopifyPageView signature used by AnalyticsProvider's
+// 2-minute heartbeat onto hydrogen-react's sendShopifyAnalytics.
+//
+// Cookie management was removed: useShopifyCookies in ShopifyWebPixels now
+// fetches Shopify-issued uniqueToken / visitToken via the /api/unstable/graphql.json
+// proxy and persists them to _shopify_y / _shopify_s. getClientBrowserParameters()
+// reads those values; no self-minted UUIDs exist anywhere in this codebase.
 
-const SHOP_ID = 99646538009;
-// "580111" is the online store channel client ID (confirmed from this shop's Trekkie config).
-// The headless ID "12875497473" routes to a separate bucket not shown in Shopify Analytics.
-const HEADLESS_APP_CLIENT_ID = "580111";
-const VISITOR_COOKIE = "_shopify_y";
-const SESSION_COOKIE = "_shopify_s";
-const SESSION_MAX_AGE = 30 * 60;
-const VISITOR_MAX_AGE = 365 * 24 * 60 * 60;
-const COOKIE_DOMAIN = ".theonvor.com";
-
-function generateUUID(): string {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-  });
-}
-
-function getCookie(name: string): string | null {
-  const m = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
-  return m ? decodeURIComponent(m[1]) : null;
-}
-
-function setCookie(name: string, value: string, maxAge: number) {
-  document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Domain=${COOKIE_DOMAIN}; Max-Age=${maxAge}; SameSite=Lax`;
-}
-
-export function initShopifySessionCookies(): { y: string; s: string } {
-  let y = getCookie(VISITOR_COOKIE);
-  if (!y) {
-    y = generateUUID();
-    setCookie(VISITOR_COOKIE, y, VISITOR_MAX_AGE);
-  }
-
-  let s = getCookie(SESSION_COOKIE);
-  if (!s) {
-    s = generateUUID();
-  }
-  setCookie(SESSION_COOKIE, s, SESSION_MAX_AGE);
-
-  return { y, s };
-}
+import {
+  AnalyticsEventName,
+  AnalyticsPageType,
+  getClientBrowserParameters,
+  sendShopifyAnalytics,
+} from "@shopify/hydrogen-react";
+import {
+  SHOPIFY_ANALYTICS_ENABLED,
+  SHOPIFY_CHECKOUT_DOMAIN,
+  SHOPIFY_CURRENCY,
+  SHOPIFY_SHOP_GID,
+  SHOPIFY_STOREFRONT_ID,
+} from "@/lib/shopify/analytics-config";
+import { getConsentPreferences } from "@/lib/analytics/consent";
 
 export interface MonorailPageViewParams {
   url: string;
@@ -58,56 +31,44 @@ export interface MonorailPageViewParams {
 
 export function sendShopifyPageView(params: MonorailPageViewParams): void {
   if (typeof window === "undefined") return;
+  if (!SHOPIFY_ANALYTICS_ENABLED) return;
+  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") return;
 
-  const hostname = window.location.hostname;
-  if (hostname === "localhost" || hostname === "127.0.0.1") return;
+  const cpApi = (window.Shopify as Record<string, unknown> | undefined)
+    ?.["customerPrivacy"] as { analyticsProcessingAllowed?: () => boolean } | undefined;
+  const consent = getConsentPreferences();
+  const hasUserConsent =
+    cpApi?.analyticsProcessingAllowed?.() ?? (!consent.decided || consent.analytics);
 
-  try {
-    const cookies = initShopifySessionCookies();
-    const now = Date.now();
-    const loc = window.location;
+  const browserParams = getClientBrowserParameters();
 
-    const body = JSON.stringify({
-      events: [
-        {
-          schema_id: "trekkie_storefront_page_view/1.4",
-          payload: {
-            appClientId: HEADLESS_APP_CLIENT_ID,
-            hydrogenSubchannelId: "0",
-            isMerchantRequest: false,
-            isPersistentCookie: true,
-            pageType: params.pageType,
-            resourceType: params.pageType === "product" ? "product" : undefined,
-            resourceId: undefined,
-            customerId: 0,
-            url: params.url,
-            path: loc.pathname,
-            search: loc.search || "",
-            referrer: params.referrer,
-            title: document.title,
-            shopId: SHOP_ID,
-            currency: "PKR",
-            contentLanguage: "en",
-            uniqToken: cookies.y,
-            visitToken: cookies.s,
-            microSessionId: generateUUID(),
-            microSessionCount: 1,
-          },
-          metadata: {
-            event_created_at_ms: now,
-            event_sent_at_ms: now,
-          },
-        },
-      ],
-    });
+  sendShopifyAnalytics(
+    {
+      eventName: AnalyticsEventName.PAGE_VIEW,
+      payload: {
+        ...browserParams,
+        url: params.url,
+        referrer: params.referrer,
+        hasUserConsent,
+        shopifySalesChannel: "headless",
+        storefrontId: SHOPIFY_STOREFRONT_ID,
+        shopId: SHOPIFY_SHOP_GID,
+        currency: SHOPIFY_CURRENCY,
+        pageType: toAnalyticsPageType(params.pageType),
+      },
+    },
+    SHOPIFY_CHECKOUT_DOMAIN,
+  ).catch(() => {});
+}
 
-    fetch("/api/shopify-analytics", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body,
-      keepalive: true,
-    }).catch(() => {});
-  } catch {
-    // non-critical
+function toAnalyticsPageType(pageType: string): string {
+  switch (pageType) {
+    case "home":       return AnalyticsPageType.home;
+    case "product":    return AnalyticsPageType.product;
+    case "collection": return AnalyticsPageType.collection;
+    case "cart":       return AnalyticsPageType.cart;
+    case "search":     return AnalyticsPageType.search;
+    case "policy":     return AnalyticsPageType.policy;
+    default:           return AnalyticsPageType.page;
   }
 }

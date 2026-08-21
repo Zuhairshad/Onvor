@@ -26,6 +26,13 @@ type FetchOptions<V> = {
   cache?: RequestCache;
   /** Buyer country/language for Shopify's @inContext directive. */
   headers?: Record<string, string>;
+  /**
+   * When true, forwards the incoming browser Cookie header to Shopify.
+   * Use only for cart mutations (create / add / update) so Shopify can
+   * correlate the cart with the visitor's _shopify_y / _shopify_s identity.
+   * Never set on catalog reads — cookies are irrelevant there.
+   */
+  forwardCookies?: boolean;
 };
 
 export async function storefront<T, V = Record<string, unknown>>({
@@ -33,14 +40,29 @@ export async function storefront<T, V = Record<string, unknown>>({
   variables,
   cache,
   headers,
+  forwardCookies,
 }: FetchOptions<V>): Promise<T> {
   const { endpoint, accessToken } = shopifyConfig();
+
+  let cookieHeader: string | undefined;
+  if (forwardCookies) {
+    try {
+      const { headers: getHeaders } = await import("next/headers");
+      const incoming = await getHeaders();
+      cookieHeader = incoming.get("cookie") ?? undefined;
+    } catch {
+      // headers() throws outside a request context (e.g. during static
+      // generation or unit tests). Silently omit — identity correlation is
+      // best-effort and never blocks the cart mutation itself.
+    }
+  }
 
   const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Shopify-Storefront-Private-Token": accessToken,
+      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
       ...headers,
     },
     body: JSON.stringify({ query, variables }),

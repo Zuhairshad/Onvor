@@ -66,6 +66,7 @@ export async function createCart(lines: CartLineInput[] = []): Promise<Cart> {
     query: CREATE_CART_MUTATION,
     variables: { lines },
     cache: "no-store",
+    forwardCookies: true,
   });
 
   assertNoUserErrors(data.cartCreate.userErrors, "Creating cart");
@@ -82,6 +83,7 @@ export async function addCartLines(cartId: string, lines: CartLineInput[]): Prom
     query: ADD_CART_LINES_MUTATION,
     variables: { cartId, lines },
     cache: "no-store",
+    forwardCookies: true,
   });
 
   assertNoUserErrors(data.cartLinesAdd.userErrors, "Adding to cart");
@@ -101,6 +103,7 @@ export async function updateCartLines(
     query: UPDATE_CART_LINES_MUTATION,
     variables: { cartId, lines },
     cache: "no-store",
+    forwardCookies: true,
   });
 
   assertNoUserErrors(data.cartLinesUpdate.userErrors, "Updating cart");

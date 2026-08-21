@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
-import { getConsentPreferences } from "@/lib/analytics";
+import { useEffect, useSyncExternalStore } from "react";
+import Script from "next/script";
+import { useShopifyCookies } from "@shopify/hydrogen-react";
+import { getConsentPreferences, subscribeConsent } from "@/lib/analytics";
+import type { ConsentPreferences } from "@/lib/analytics";
+import {
+  SHOPIFY_CHECKOUT_DOMAIN,
+  SHOPIFY_PUBLIC_STOREFRONT_TOKEN,
+  SHOPIFY_STOREFRONT_ROOT_DOMAIN,
+} from "@/lib/shopify/analytics-config";
 
 // Shopify Web Pixels Manager for headless session tracking.
 // Config extracted from the Shopify Liquid store HTML.
@@ -115,43 +123,87 @@ function loadWpmScript(src: string, config: typeof WPM_CONFIG, onLoad: () => voi
   document.head.appendChild(s);
 }
 
+const SERVER_CONSENT_SNAPSHOT: ConsentPreferences = {
+  essential: true,
+  analytics: false,
+  marketing: false,
+  decided: false,
+  timestamp: 0,
+};
+function getServerConsentSnapshot() { return SERVER_CONSENT_SNAPSHOT; }
+
 export function ShopifyWebPixels() {
+  const consent = useSyncExternalStore(
+    subscribeConsent,
+    getConsentPreferences,
+    getServerConsentSnapshot,
+  );
+
+  // Fetch Shopify-issued tracking values via the /api/unstable/graphql.json
+  // same-origin proxy, then persist them to _shopify_y / _shopify_s cookies
+  // scoped to .theonvor.com so checkout.theonvor.com shares the same identity.
+  useShopifyCookies({
+    hasUserConsent: !consent.decided || consent.analytics,
+    fetchTrackingValues: true,
+    checkoutDomain: SHOPIFY_CHECKOUT_DOMAIN,
+    storefrontAccessToken: SHOPIFY_PUBLIC_STOREFRONT_TOKEN,
+  });
+
+  // Propagate our consent decisions to Shopify's Customer Privacy API once
+  // the user has made a choice. storefront-banner.js sets up
+  // window.Shopify.customerPrivacy — this fires after that script loads.
+  useEffect(() => {
+    if (!consent.decided) return;
+    const cpApi = (window.Shopify as Record<string, unknown> | undefined)
+      ?.["customerPrivacy"] as
+      | { setTrackingConsent?: (c: Record<string, unknown>, cb?: () => void) => void }
+      | undefined;
+    cpApi?.setTrackingConsent?.({
+      analytics: consent.analytics,
+      marketing: consent.marketing,
+      preferences: false,
+      sale_of_data: false,
+      headlessStorefront: true,
+      checkoutRootDomain: SHOPIFY_CHECKOUT_DOMAIN,
+      storefrontRootDomain: SHOPIFY_STOREFRONT_ROOT_DOMAIN,
+      storefrontAccessToken: SHOPIFY_PUBLIC_STOREFRONT_TOKEN,
+    });
+  }, [consent.decided, consent.analytics, consent.marketing]);
+
+  // WPM initialisation — runs once on mount.
   useEffect(() => {
     window.Shopify = window.Shopify || {};
     const shopify = window.Shopify as Record<string, unknown>;
 
     // WPM reads shop identity from window.Shopify for its internal telemetry.
-    // Without these, it sends shop_id: -1 and Shopify can't attribute sessions.
     shopify["shopId"] = WPM_CONFIG.shopId;
     shopify["shop"] = WPM_CONFIG.initData.shop.myshopifyDomain;
 
-    // Customer Privacy API bridge — WPM and STRICT-mode pixels (shopify-app-pixel,
-    // TikTok) call these methods to determine whether the visitor can be tracked.
-    // Without this, WPM logs customer_privacy_api_events failures and STRICT pixels
-    // may default to not recording sessions.
-    shopify["customerPrivacy"] = {
-      userCanBeTracked: () => {
-        const c = getConsentPreferences();
-        // Session tracking is essential; analytics consent enables full tracking.
-        return !c.decided || c.analytics;
-      },
-      currentVisitorConsent: () => {
-        const c = getConsentPreferences();
-        return {
-          analytics: c.analytics ? "yes" : "no",
-          marketing: c.marketing ? "yes" : "no",
+    // Consent bridge: give WPM and STRICT-mode pixels (shopify-app-pixel) a
+    // customerPrivacy reference before storefront-banner.js finishes loading.
+    // Without this, analyticsProcessingAllowed() is undefined and the pixel
+    // defaults to blocked — no session is recorded in Live View.
+    // storefront-banner.js replaces this object with the real implementation
+    // once loadBanner() resolves. The bridge uses opt-out semantics: undecided
+    // visitors are treated as consenting (correct for non-GDPR regions).
+    if (!shopify["customerPrivacy"]) {
+      const c = getConsentPreferences();
+      const analyticsOk = !c.decided || c.analytics;
+      const marketingOk = !c.decided || c.marketing;
+      shopify["customerPrivacy"] = {
+        analyticsProcessingAllowed: () => analyticsOk,
+        marketingAllowed: () => marketingOk,
+        saleOfDataAllowed: () => false,
+        shouldShowBanner: () => !c.decided,
+        currentVisitorConsent: () => ({
+          analytics: analyticsOk ? "yes" : "no",
+          marketing: marketingOk ? "yes" : "no",
           preferences: "no",
           sale_of_data: "no",
-        };
-      },
-      setTrackingConsent: (_: unknown, cb?: () => void) => cb?.(),
-      shouldShowBanner: () => false,
-      shouldShowGDPRBanner: () => false,
-      shouldShowCCPAOptOut: () => false,
-      // navigationServerTiming reads Server-Timing response headers; Next.js
-      // doesn't emit them so we return null to silence the WPM failure event.
-      navigationServerTiming: () => null,
-    };
+        }),
+        setTrackingConsent: (_consent: unknown, cb?: () => void) => cb?.(),
+      };
+    }
 
     if (!(shopify["analytics"] as Record<string, unknown> | undefined)?.["replayQueue"]) {
       const replayQueue: Array<[string, unknown, unknown]> = [];
@@ -194,5 +246,83 @@ export function ShopifyWebPixels() {
     );
   }, []);
 
-  return null;
+  return (
+    // Shopify Customer Privacy API — sets up window.Shopify.customerPrivacy
+    // with real consent management backed by Shopify's infrastructure.
+    // Headless init: after the script loads, call privacyBanner.loadBanner()
+    // with the three required identifiers. data-* attributes are for Liquid
+    // stores; they have no effect in headless.
+    // Ref: https://shopify.dev/docs/api/customer-privacy
+    <Script
+      id="shopify-privacy-banner"
+      src="https://cdn.shopify.com/shopifycloud/privacy-banner/storefront-banner.js"
+      strategy="afterInteractive"
+      onLoad={() => {
+        const banner = (window as unknown as { privacyBanner?: {
+          loadBanner: (config: {
+            storefrontAccessToken: string;
+            checkoutRootDomain: string;
+            storefrontRootDomain: string;
+          }) => Promise<void>;
+        } }).privacyBanner;
+
+        if (!banner) {
+          console.debug("[ShopifyWebPixels] privacyBanner not found after script load");
+          return;
+        }
+
+        banner.loadBanner({
+          storefrontAccessToken: SHOPIFY_PUBLIC_STOREFRONT_TOKEN,
+          checkoutRootDomain: SHOPIFY_CHECKOUT_DOMAIN,
+          storefrontRootDomain: SHOPIFY_STOREFRONT_ROOT_DOMAIN,
+        }).then(() => {
+          // loadBanner() resolves when the banner is initialised, but
+          // window.Shopify.customerPrivacy may be populated asynchronously
+          // after the promise resolves. Poll for it rather than calling
+          // setTrackingConsent immediately and silently no-oping.
+          const POLL_INTERVAL_MS = 100;
+          const POLL_TIMEOUT_MS = 10_000;
+          let elapsed = 0;
+          const id = setInterval(() => {
+            const cpApi = (window.Shopify as Record<string, unknown> | undefined)
+              ?.["customerPrivacy"] as
+              | { setTrackingConsent?: (consent: Record<string, unknown>, cb?: () => void) => void }
+              | undefined;
+
+            if (!cpApi?.setTrackingConsent) {
+              elapsed += POLL_INTERVAL_MS;
+              if (elapsed >= POLL_TIMEOUT_MS) {
+                clearInterval(id);
+                console.error(
+                  "[ShopifyWebPixels] window.Shopify.customerPrivacy did not appear " +
+                  "within 10 s of privacyBanner.loadBanner() resolving. " +
+                  "Consent decisions will not reach Shopify's API on this page load.",
+                );
+              }
+              return;
+            }
+
+            clearInterval(id);
+            // Propagate any pre-existing consent decision now that the API is
+            // ready. The useEffect above only fires on future changes; this
+            // covers the initial state on page load.
+            const c = getConsentPreferences();
+            if (!c.decided) return;
+            cpApi.setTrackingConsent({
+              analytics: c.analytics,
+              marketing: c.marketing,
+              preferences: false,
+              sale_of_data: false,
+              headlessStorefront: true,
+              checkoutRootDomain: SHOPIFY_CHECKOUT_DOMAIN,
+              storefrontRootDomain: SHOPIFY_STOREFRONT_ROOT_DOMAIN,
+              storefrontAccessToken: SHOPIFY_PUBLIC_STOREFRONT_TOKEN,
+            });
+          }, POLL_INTERVAL_MS);
+        }).catch(() => {
+          console.debug("[ShopifyWebPixels] privacyBanner.loadBanner() failed");
+        });
+      }}
+    />
+  );
 }

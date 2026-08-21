@@ -1,3 +1,9 @@
+import {
+  SHOPIFY_CHECKOUT_DOMAIN,
+  SHOPIFY_PUBLIC_STOREFRONT_TOKEN,
+  SHOPIFY_STOREFRONT_ROOT_DOMAIN,
+} from "@/lib/shopify/analytics-config";
+
 export type ConsentPreferences = {
   essential: true; // Always true
   analytics: boolean;
@@ -100,6 +106,22 @@ export function setConsentPreferences(prefs: { analytics: boolean; marketing: bo
           window.ttq.holdConsent();
         }
       }
+
+      // Propagate to Shopify's Customer Privacy API if available
+      const cpApi = (window as unknown as { Shopify?: Record<string, unknown> })
+        ?.Shopify?.["customerPrivacy"] as
+        | { setTrackingConsent?: (c: Record<string, unknown>, cb?: () => void) => void }
+        | undefined;
+      cpApi?.setTrackingConsent?.({
+        analytics: updated.analytics,
+        marketing: updated.marketing,
+        preferences: false,
+        sale_of_data: false,
+        headlessStorefront: true,
+        checkoutRootDomain: SHOPIFY_CHECKOUT_DOMAIN,
+        storefrontRootDomain: SHOPIFY_STOREFRONT_ROOT_DOMAIN,
+        storefrontAccessToken: SHOPIFY_PUBLIC_STOREFRONT_TOKEN,
+      });
 
       // Notify listeners
       listeners.forEach((listener) => listener(updated));
