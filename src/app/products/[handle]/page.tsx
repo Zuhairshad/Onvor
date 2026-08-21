@@ -9,6 +9,7 @@ import { ProductCard } from "@/components/theme/ProductCard";
 import { ProductDetails } from "@/components/theme/ProductDetails";
 import { ProductForm } from "@/components/theme/ProductForm";
 import { ProductGallery } from "@/components/theme/ProductGallery";
+import { ProductSelectionProvider } from "@/components/theme/ProductSelectionContext";
 import { Reveal } from "@/components/theme/Reveal";
 import { SizeGuideDrawer } from "@/components/theme/SizeGuideDrawer";
 import { WishlistButton } from "@/components/theme/WishlistButton";
@@ -113,6 +114,31 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
   if (!product) notFound();
 
   const catalog = toCatalogProduct(product);
+
+  // Map each color variant to its image(s), used by the gallery to swap images on color change.
+  const variantColorImages = product.variants.reduce<Record<string, string[]>>((acc, v) => {
+    const color = v.selectedOptions.find((o) => o.name === "Color")?.value;
+    if (color && v.image?.url) {
+      (acc[color] ??= []);
+      if (!acc[color].includes(v.image.url)) acc[color].push(v.image.url);
+    }
+    return acc;
+  }, {});
+
+  // Per-variant availability keyed by sorted "Name:Value|..." pairs.
+  const variantAvailability = product.variants.reduce<Record<string, boolean>>((acc, v) => {
+    const key = [...v.selectedOptions]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((o) => `${o.name}:${o.value}`)
+      .join("|");
+    acc[key] = v.availableForSale;
+    return acc;
+  }, {});
+
+  const initialSelected = Object.fromEntries(
+    Object.entries(catalog.options).map(([name, values]) => [name, values[0]]),
+  );
+
   const typeLabel =
     product.productType.charAt(0).toUpperCase() + product.productType.slice(1) ||
     "Product";
@@ -173,9 +199,18 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
             blow the media track past 55% and push the info column off-screen.
             The right track is capped at 520px so the copy stays readable at
             ultrawide (~2048px+) viewports without ballooning line length. */}
+        <ProductSelectionProvider
+          initialSelected={initialSelected}
+          variantAvailability={variantAvailability}
+          productAvailable={product.availableForSale}
+        >
         <div className="grid grid-cols-1 gap-10 imp:grid-cols-[minmax(0,1fr)_minmax(320px,440px)] imp:gap-10 wide:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] wide:gap-[60px]">
           <div className="min-w-0">
-            <ProductGallery images={catalog.images} title={product.title} />
+            <ProductGallery
+              images={catalog.images}
+              title={product.title}
+              variantColorImages={variantColorImages}
+            />
           </div>
 
           <div className="min-w-0">
@@ -208,6 +243,7 @@ export default async function ProductPage({ params }: PageProps<"/products/[hand
             <SizeGuideDrawer productType={product.productType} />
           </div>
         </div>
+        </ProductSelectionProvider>
       </div>
 
       <Suspense fallback={null}>

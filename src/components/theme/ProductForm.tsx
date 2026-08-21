@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 
 import { addToCart } from "@/app/actions/cart";
 import { useCart } from "@/components/theme/CartContext";
+import { useProductSelection } from "@/components/theme/ProductSelectionContext";
 import type { CatalogProduct } from "@/lib/content/catalog";
 import { formatPkr } from "@/lib/money";
 import { formatEcommerceItem, trackEvent } from "@/lib/analytics";
@@ -33,9 +34,7 @@ export function ProductForm({ product }: Props) {
     );
   }, [product.options]);
 
-  const [selected, setSelected] = useState<Record<string, string>>(() =>
-    Object.fromEntries(options.map(([name, values]) => [name, values[0]])),
-  );
+  const { selected, setSelected, isCurrentVariantAvailable } = useProductSelection();
   const [quantity, setQuantity] = useState(1);
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
@@ -158,10 +157,10 @@ export function ProductForm({ product }: Props) {
       <button
         type="button"
         onClick={submit}
-        disabled={pending || !product.available}
+        disabled={pending || !isCurrentVariantAvailable}
         className="btn mt-8 w-full disabled:opacity-60"
       >
-        {!product.available ? "Sold out" : pending ? "Adding…" : "Add to bag"}
+        {!isCurrentVariantAvailable ? "Sold out" : pending ? "Adding…" : "Add to bag"}
       </button>
 
       {message ? (

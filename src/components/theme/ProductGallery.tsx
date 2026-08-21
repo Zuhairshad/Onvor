@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { useProductSelectionOptional } from "./ProductSelectionContext";
 
 /**
  * Product gallery. On mobile, a single main frame stacks above a horizontal
@@ -10,10 +12,32 @@ import { useState } from "react";
  * boutique-catalogue proportion rather than dominating the page - which is the
  * treatment used by the Impulse reference PDP.
  */
-export function ProductGallery({ images, title }: { images: string[]; title: string }) {
+export function ProductGallery({
+  images,
+  title,
+  variantColorImages,
+}: {
+  images: string[];
+  title: string;
+  variantColorImages?: Record<string, string[]>;
+}) {
+  const selection = useProductSelectionOptional();
+  const selectedColor = selection?.selected["Color"];
+
+  const resolvedImages =
+    selectedColor && variantColorImages?.[selectedColor]?.length
+      ? variantColorImages[selectedColor]
+      : images;
+
   // A product is strictly allowed 1 main picture and at most 4 side pictures (max 5 total)
-  const galleryImages = images.slice(0, 5);
+  const galleryImages = resolvedImages.slice(0, 5);
   const [active, setActive] = useState(0);
+
+  // Reset to first image when the selected color changes
+  useEffect(() => {
+    setActive(0);
+  }, [selectedColor]);
+
   const src = galleryImages[active] ?? galleryImages[0];
   const showThumbs = galleryImages.length > 1;
 

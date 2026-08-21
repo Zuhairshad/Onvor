@@ -98,6 +98,9 @@ export async function addToCart(
       `No variant of ${handle} matches ${JSON.stringify(options)}`,
     );
   }
+  if (!variant.availableForSale) {
+    throw new Error(`This item is out of stock`);
+  }
 
   const cartId = await resolveCartId();
   const cart = await addCartLines(cartId, [{ merchandiseId: variant.id, quantity }]);
